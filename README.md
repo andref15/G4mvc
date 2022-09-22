@@ -7,7 +7,7 @@ It is a re-implementation of R4MVC using a C# Source Generator.
 ## Installation
 Install the [G4mvc](https://www.nuget.org/packages/G4mvc/) and [G4mvc.Generator](https://www.nuget.org/packages/G4mvc.Generator/) NuGet packages.
 
-To enable the use of the tag helpers for anchor and form tags, add the `@addTagHelper *, G4mvc` directive either in the view, or in the _ViewImports.cshtml to enable them globally.
+To enable the use of the tag helpers for anchor and form tags, add the `@addTagHelper *, G4mvc.TagHelpers` directive either in the view, or in the _ViewImports.cshtml to enable them globally.
 
 If you want to use the `IUrlHelper` and `IHtmlHelper` Extension methods, add a using directive for `G4mvc.Extensions` either in the view, or in the _ViewImports.cshtml to enable them globally.
 
@@ -30,4 +30,8 @@ Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would 
 ### Extensions
 The [G4mvc](https://www.nuget.org/packages/G4mvc/) package provides a number of extension methods that can make using the generated route helpers a bit easier. You do however not have to rely on these because the `G4mvcRouteValues` class derives from the standard `Microsoft.AspNetCore.Routing.RouteValueDictionary`, so you can use any of the methods provided by ASP.net Core, that have an `object routeValues` parameter. An example would be the [HtmlHelper.RouteLink Method](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.viewfeatures.htmlhelper.routelink?view=aspnetcore-6.0).
 The provided extension methods are just wrappers for these methods.
+
+### Tag Helpers
+G4mvc provides a TagHelper that can be used on anchor as well as form tags.
+`<a g4-action="MVC.Home.Index()">Home</a>`
 
