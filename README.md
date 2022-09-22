@@ -33,5 +33,6 @@ The provided extension methods are just wrappers for these methods.
 
 ### Tag Helpers
 G4mvc provides a TagHelper that can be used on anchor as well as form tags.
+
 `<a g4-action="MVC.Home.Index()">Home</a>`
 
