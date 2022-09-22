@@ -28,6 +28,6 @@ Examples:
 Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would be ignored.
 
 ### Extensions
-The [G4mvc](https://www.nuget.org/packages/G4mvc/) package provides a number of extension methods that can make using the route helpers a bit easier. You do however not have to rely on these because the `G4mvcRouteValues` class derives from the standard `Microsoft.AspNetCore.Routing.RouteValueDictionary`, so you can use any of the methods provided by ASP.net Core, that have an `object routeValues` parameter. An example would be the [HtmlHelper.RouteLink Method](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.viewfeatures.htmlhelper.routelink?view=aspnetcore-6.0).
+The [G4mvc](https://www.nuget.org/packages/G4mvc/) package provides a number of extension methods that can make using the generated route helpers a bit easier. You do however not have to rely on these because the `G4mvcRouteValues` class derives from the standard `Microsoft.AspNetCore.Routing.RouteValueDictionary`, so you can use any of the methods provided by ASP.net Core, that have an `object routeValues` parameter. An example would be the [HtmlHelper.RouteLink Method](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.viewfeatures.htmlhelper.routelink?view=aspnetcore-6.0).
 The provided extension methods are just wrappers for these methods.
 
