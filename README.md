@@ -14,3 +14,18 @@ If you want to use the `IUrlHelper` and `IHtmlHelper` Extension methods, add a u
 It might be necessary to restart Visual Studio for these changes to take affect.
 
 ## Use
+### Source Generation
+In order for the code generation to work, the controller class has to derive from the `Microsoft.AspNetCore.Mvc.Controller` class. Abstract classes will also be ignored. All Methods for which a routing helper should be generated, have to return `Microsoft.AspNetCore.Mvc.IActionResult`, `Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult` or an implementation of either of these interfaces. For asyncronous controller actions, the task has to return one of these.
+
+Examples:
+`public IActionResult Edit(EditViewModel viewModel)`
+`public JsonResult Edit(EditViewModel viewModel)`
+`public Task<IActionResult> Edit(EditViewModel viewModel)`
+`public Task<JsonResult> Edit(EditViewModel viewModel)`
+`public IConvertToActionResult Edit(EditViewModel viewModel)`
+`public ActionResult<IEnumerable<string>> Edit(EditViewModel viewModel)`
+
+Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would be ignored.
+
+### Extensions
+The [G4mvc](https://www.nuget.org/packages/G4mvc/) package provides a number of extension methods that can make using the route helpers a bit easier. You do however not have to rely on these because the `G4mvcRouteValues` class derives from the standard `Microsoft.AspNetCore.Routing.RouteValueDictionary`, so you can use any ASP.net Core Methods provided by Microsoft.
