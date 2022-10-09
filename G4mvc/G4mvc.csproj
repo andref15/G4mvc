@@ -14,7 +14,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<PackageProjectUrl>https://github.com/andref15/G4mvc</PackageProjectUrl>
-		<PackageDescription>https://raw.githubusercontent.com/andref15/G4mvc/main/README.md</PackageDescription>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
   <ItemGroup>
@@ -23,4 +23,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.2.0" />
   </ItemGroup>
 
+	<ItemGroup>
+		<None Include="../README.md" Pack="true" PackagePath=""/>
+	</ItemGroup>
+	
 </Project>
