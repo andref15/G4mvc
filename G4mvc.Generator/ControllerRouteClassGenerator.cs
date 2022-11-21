@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace G4mvc.Generator;
+﻿namespace G4mvc.Generator;
 internal static class ControllerRouteClassGenerator
 {
     internal static void AddSharedController(GeneratorExecutionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
@@ -77,20 +75,20 @@ internal static class ControllerRouteClassGenerator
 
                 foreach (MethodDeclarationContext httpMethod in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
                 {
-                    List<IParameterSymbol> relevantParameters = httpMethod.MethodSymbol.Parameters.Where(p => p.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
+                    List<ParameterContext> relevantParameters = httpMethod.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, controllerContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
 
                     if (relevantParameters.Count is 0)
                     {
                         continue;
                     }
 
-                    using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p} {p.Name}"))))
+                    using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
                     {
                         sourceBuilder.AppendLine($"{nameof(G4mvcRouteValues)} route = {actionName}()").AppendLine();
 
-                        foreach (IParameterSymbol parameter in relevantParameters)
+                        foreach (ParameterContext parameter in relevantParameters)
                         {
-                            sourceBuilder.AppendLine($"route[{SourceCode.String(parameter.Name)}] = {parameter.Name}");
+                            sourceBuilder.AppendLine($"route[{SourceCode.String(parameter.Symbol.Name)}] = {parameter.Symbol.Name}");
                         }
 
                         sourceBuilder.AppendLine().AppendLine("return route");
@@ -112,11 +110,14 @@ internal static class ControllerRouteClassGenerator
 
             AddViewsClass(sourceBuilder, projectDir, controllerArea, controllerContext.ControllerNameWithoutSuffix);
         }
-        
+
         context.AddGeneratedSource($"{controllerContext.ControllerNameWithoutSuffix}Routes", sourceBuilder);
     }
 
-    private static bool IsActionResult(ITypeSymbol returnType) 
+    private static string? GetDefaultValue(ParameterSyntax syntax) 
+        => syntax.Default is null ? null : $" {syntax.Default}";
+
+    private static bool IsActionResult(ITypeSymbol returnType)
         => IsOrImplementsActionResultIInterfaces(returnType) || (returnType is INamedTypeSymbol namedReturnType && namedReturnType.DerrivesFromType(TypeNames.Task) && namedReturnType.IsGenericType && IsOrImplementsActionResultIInterfaces(namedReturnType.TypeArguments[0]));
 
     private static bool IsOrImplementsActionResultIInterfaces(ITypeSymbol type)
