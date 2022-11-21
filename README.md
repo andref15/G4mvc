@@ -17,13 +17,13 @@ It might be necessary to restart Visual Studio for these changes to take affect.
 ### Source Generation
 In order for the code generation to work, the controller class has to derive from the `Microsoft.AspNetCore.Mvc.Controller` class. Abstract classes will also be ignored. All Methods for which a routing helper should be generated, have to return `Microsoft.AspNetCore.Mvc.IActionResult`, `Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult` or an implementation of either of these interfaces. For asyncronous controller actions, the task has to return one of these.
 
-Examples:
-`public IActionResult Edit(EditViewModel viewModel)`
-`public JsonResult Edit(EditViewModel viewModel)`
-`public Task<IActionResult> Edit(EditViewModel viewModel)`
-`public Task<JsonResult> Edit(EditViewModel viewModel)`
-`public IConvertToActionResult Edit(EditViewModel viewModel)`
-`public ActionResult<IEnumerable<string>> Edit(EditViewModel viewModel)`
+#### Examples:
+    public IActionResult Edit(EditViewModel viewModel)
+    public JsonResult Edit(EditViewModel viewModel)
+    public Task<IActionResult> Edit(EditViewModel viewModel)
+    public Task<JsonResult> Edit(EditViewModel viewModel)
+    public IConvertToActionResult Edit(EditViewModel viewModel)
+    public ActionResult<IEnumerable<string>> Edit(EditViewModel viewModel)
 
 Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would be ignored.
 
@@ -36,3 +36,28 @@ G4mvc provides a TagHelper that can be used on anchor as well as form tags.
 
 `<a g4-action="MVC.Home.Index()">Home</a>`
 
+### Configuration
+You can provide a JSON config file to change some of the defaults G4mvc uses.
+
+    {
+      "HelperClassName": "MVC",
+      "LinksClassName":  "Links",
+      "StaticFilesPath": "wwwroot",
+      "ExcludedStaticFileExtensions": [],
+      "ExcludedStaticFileDirectories": []
+    }
+
+#### HelperClassName
+Allows you to change the MVC prefix (e.g. MVC.Home.Index())
+
+#### LinksClassName
+The class in which the links for static files are generated in
+
+#### StaticFilesPath
+The root path for which links will be generated
+
+#### ExcludedStaticFileExtensions
+A list of file extensions that will be excluded from link generation
+
+#### ExcludedStaticFileDirectories
+A list of directories that will be excluded from link generation
