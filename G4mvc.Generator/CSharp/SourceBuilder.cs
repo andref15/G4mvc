@@ -120,6 +120,9 @@ internal class SourceBuilder
         return new(this);
     }
 
+    public NullableBlock BeginNullable(bool enable)
+        => new(this, enable);
+
     public SourceBuilder Nullable(bool enable)
     {
         _stringBuilder.AppendLine($"#nullable {(enable ? "enable" : "disable")}").AppendLine();
@@ -153,6 +156,20 @@ internal class SourceBuilder
 
     public SourceText ToSourceText()
         => SourceText.From(ToString(), Encoding.UTF8);
+
+    public class NullableBlock : IDisposable
+    {
+        private readonly SourceBuilder _sourceBuilder;
+
+        public NullableBlock(SourceBuilder sourceBuilder, bool enable)
+        {
+            _sourceBuilder = sourceBuilder;
+            sourceBuilder.Nullable(enable);
+        }
+
+        public void Dispose() 
+            => _sourceBuilder._stringBuilder.AppendLine().AppendLine($"#nullable restore").AppendLine();
+    }
 
     public class SourceBuilderBlock : IDisposable
     {

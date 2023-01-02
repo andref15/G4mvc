@@ -7,19 +7,19 @@ public class G4mvcGenerator : ISourceGenerator
 {
     public void Initialize(GeneratorInitializationContext context)
     {
-#if DEBUG
-        if (!Debugger.IsAttached)
-        {
-            Debugger.Launch();
-        }
-#endif
+//#if DEBUG
+//        if (!Debugger.IsAttached)
+//        {
+//            Debugger.Launch();
+//        }
+//#endif
     }
 
     public void Execute(GeneratorExecutionContext context)
     {
         Configuration.CreateConfig(context);
 
-        if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.projectdir", out string? projectDir) || string.IsNullOrWhiteSpace(projectDir))
+        if (!context.AnalyzerConfigOptions.GlobalOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out string? projectDir) || string.IsNullOrWhiteSpace(projectDir))
         {
             return;
         }

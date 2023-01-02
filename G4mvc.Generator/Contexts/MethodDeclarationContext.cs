@@ -1,12 +1,12 @@
 ﻿namespace G4mvc.Generator.Contexts;
-internal class MethodDeclarationContext
+internal class MethodDeclarationContext : BaseDeclarationContext
 {
     public MethodDeclarationSyntax Syntax { get; }
     public IMethodSymbol MethodSymbol { get; }
 
-    public MethodDeclarationContext(MethodDeclarationSyntax syntax, IMethodSymbol methodSymbol)
+    public MethodDeclarationContext(MethodDeclarationSyntax syntax, SemanticModel model) : base(model, syntax.SpanStart)
     {
         Syntax = syntax;
-        MethodSymbol = methodSymbol;
+        MethodSymbol = model.GetDeclaredSymbol(syntax)!;
     }
 }

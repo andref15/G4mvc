@@ -27,7 +27,7 @@ internal static class ControllerRouteClassGenerator
 
         List<MethodDeclarationContext> httpMethods = controllerContext.Syntax.DescendantNodes()
                 .OfType<MethodDeclarationSyntax>()
-                .Select(md => new MethodDeclarationContext(md, controllerContext.Model.GetDeclaredSymbol(md)!))
+                .Select(md => new MethodDeclarationContext(md, controllerContext.Model))
                 .Where(mc => IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
 
         IEnumerable<string> parameterNamespaces = httpMethods.SelectMany(mc => mc.MethodSymbol.Parameters.Select(p => p.Type.ContainingNamespace.ToDisplayString())).Distinct();
@@ -73,15 +73,23 @@ internal static class ControllerRouteClassGenerator
 
                 sourceBuilder.AppendLine();
 
-                foreach (MethodDeclarationContext httpMethod in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
+                foreach (MethodDeclarationContext httpMethodContext in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
                 {
-                    List<ParameterContext> relevantParameters = httpMethod.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, controllerContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
+                    List<ParameterContext> relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, controllerContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
 
                     if (relevantParameters.Count is 0)
                     {
                         continue;
                     }
 
+                    SourceBuilder.NullableBlock? nullableBlock = null;
+
+                    if (controllerContext.NullableEnabled != httpMethodContext.NullableEnabled)
+                    {
+                        nullableBlock = sourceBuilder.BeginNullable(httpMethodContext.NullableEnabled);
+                    }
+
+                    using (nullableBlock)
                     using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
                     {
                         sourceBuilder.AppendLine($"{nameof(G4mvcRouteValues)} route = {actionName}()").AppendLine();
