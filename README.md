@@ -37,15 +37,21 @@ G4mvc provides a TagHelper that can be used on anchor as well as form tags.
 `<a g4-action="MVC.Home.Index()">Home</a>`
 
 ### Configuration
-You can provide a JSON config file to change some of the defaults G4mvc uses.
-
+You can provide a JSON config file called g4mvc.json to change some of the defaults G4mvc uses.
     {
       "HelperClassName": "MVC",
       "LinksClassName":  "Links",
       "StaticFilesPath": "wwwroot",
       "ExcludedStaticFileExtensions": [],
-      "ExcludedStaticFileDirectories": []
+      "ExcludedStaticFileDirectories": [],
+      "AdditionalStaticFilesPaths": {}
     }
+
+This configuration file needs to be added to the compilation context by adding it as an additional file in the csproj file:
+
+    <ItemGroup>
+        <AdditionalFiles Include="g4mvc.json" />
+    </ItemGroup>
 
 #### HelperClassName
 Allows you to change the MVC prefix (e.g. MVC.Home.Index())
@@ -61,3 +67,13 @@ A list of file extensions that will be excluded from link generation
 
 #### ExcludedStaticFileDirectories
 A list of directories that will be excluded from link generation
+
+#### AdditionalStaticFilesPaths
+A dictionary of additional static file paths for which links will be generated
+This is useful when you use the UseStaticFiles method serve files that are outside of the wwwroot folder. The key of this dictionary is the request path and the value is the physical path relative to the project root.
+
+For the example provided in the [Microsoft Documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-7.0#serve-files-outside-of-web-root) the AdditionalStaticFilesPaths configuration would look like this:
+
+    "AdditionalStaticFilesPaths": {
+        "StaticFiles": "MyStaticFiles"
+    }
