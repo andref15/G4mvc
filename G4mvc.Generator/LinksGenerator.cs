@@ -10,10 +10,26 @@ internal static class @LinksGenerator
         string root = Path.Combine(projectDir, Configuration.Instance.JsonConfig.StaticFilesPath);
 
         List<string> excludedDirectories = Configuration.Instance.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(root, d)).FullName).ToList() ?? new List<string>();
+        Dictionary<string, string>? additionalStaticFilesPaths = Configuration.Instance.JsonConfig.AdditionalStaticFilesPaths;
 
         using (sourceBuilder.BeginClass("public static", Configuration.Instance.JsonConfig.LinksClassName))
         {
-            CreateLinksClass(sourceBuilder, new(root), root, excludedDirectories, context.CancellationToken);
+            CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, context.CancellationToken);
+
+            if (additionalStaticFilesPaths is not null)
+            {
+                sourceBuilder.AppendLine();
+
+                foreach (KeyValuePair<string, string> additionalStaticFilesPath in additionalStaticFilesPaths)
+                {
+                    string additionalRoot = Path.Combine(projectDir, additionalStaticFilesPath.Value);
+
+                    using (sourceBuilder.BeginClass("public static", $"{CreateIdentifierFromFile(additionalStaticFilesPath.Value)}Links"))
+                    {
+                        CreateLinksClass(sourceBuilder, new(additionalRoot), additionalRoot, additionalStaticFilesPath.Key.Trim('/'), excludedDirectories, context.CancellationToken);
+                    }
+                }
+            }
         }
 
         context.CancellationToken.ThrowIfCancellationRequested();
@@ -21,14 +37,14 @@ internal static class @LinksGenerator
         context.AddGeneratedSource(Configuration.Instance.JsonConfig.LinksClassName, sourceBuilder);
     }
 
-    private static void CreateLinksClass(SourceBuilder sourceBuilder, DirectoryInfo directory, string root, List<string> excludedDirectories, CancellationToken cancellationToken)
+    private static void CreateLinksClass(SourceBuilder sourceBuilder, DirectoryInfo directory, string root, string? subRoute, List<string> excludedDirectories, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         FileInfo[] files = directory.GetFiles();
         DirectoryInfo[] subDirectories = directory.GetDirectories();
 
-        sourceBuilder.AppendConst("public", "string", "UrlPath", SourceCode.String(GetRelativePath(root, directory.FullName)));
+        sourceBuilder.AppendConst("public", "string", "UrlPath", SourceCode.String(GetRelativePath(root, subRoute, directory.FullName)));
 
         foreach (FileInfo file in files)
         {
@@ -39,7 +55,7 @@ internal static class @LinksGenerator
                 continue;
             }
 
-            sourceBuilder.AppendConst("public", "string", CreateIdentifierFromFile(file.Name), SourceCode.String(GetRelativePath(root, file.FullName)));
+            sourceBuilder.AppendConst("public", "string", CreateIdentifierFromFile(file.Name), SourceCode.String(GetRelativePath(root, subRoute, file.FullName)));
         }
 
         foreach (DirectoryInfo subDirectory in subDirectories)
@@ -50,18 +66,18 @@ internal static class @LinksGenerator
             {
                 continue;
             }
-            
+
             sourceBuilder.AppendLine();
 
             using (sourceBuilder.BeginClass("public static", $"{CreateIdentifierFromFile(subDirectory.Name)}Links"))
             {
-                CreateLinksClass(sourceBuilder, subDirectory, root, excludedDirectories, cancellationToken);
+                CreateLinksClass(sourceBuilder, subDirectory, root, subRoute, excludedDirectories, cancellationToken);
             }
         }
     }
 
-    private static string GetRelativePath(string root, string path)
-        => path.Replace(root, "~").Replace('\\', '/').TrimEnd('/');
+    private static string GetRelativePath(string root, string? subRoute, string path)
+        => path.Replace(root, subRoute is null ? "~" : $"~/{subRoute}").Replace('\\', '/').TrimEnd('/');
 
     private static string CreateIdentifierFromFile(string fileName)
     {
@@ -71,7 +87,7 @@ internal static class @LinksGenerator
 
         int idx = 0;
         identifierName[idx++] = '@';
-        
+
         if (!SyntaxFacts.IsIdentifierStartCharacter(span[0]))
         {
             identifierName[idx++] = '_';

@@ -42,6 +42,7 @@ internal partial class Configuration
         public string StaticFilesPath { get; set; } = null!;
         public List<string>? ExcludedStaticFileExtensions { get; set; }
         public List<string>? ExcludedStaticFileDirectories { get; set; }
+        public Dictionary<string, string>? AdditionalStaticFilesPaths { get; set; }
 
         internal void SetDefaults()
         {
