@@ -37,7 +37,7 @@ G4mvc provides a TagHelper that can be used on anchor as well as form tags.
 `<a g4-action="MVC.Home.Index()">Home</a>`
 
 ### Configuration
-You can provide a JSON config file to change some of the defaults G4mvc uses.
+You can provide a JSON config file named g4mvc.json to change some of the defaults G4mvc uses.
 
     {
       "HelperClassName": "MVC",
