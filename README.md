@@ -1,8 +1,8 @@
 # G4mvc
 
-G4mvc is a source generator for ASP.NET Core MVC apps that creates strongly typed helpers that eliminate the use of literal strings in many places.
+G4mvc is a source generator for ASP.NET Core MVC apps that creates strongly typed helpers that eliminate the use of literal strings for routing.
 
-It is an improved re-implementation of R4MVC using a C# Source Generator because R4MVC lacks support for many newer language and MVC features.
+It is an improved re-implementation of R4MVC using a C# Source Generator because R4MVC lacks support for many newer language - and MVC features.
 
 ## Installation
 Install the [G4mvc](https://www.nuget.org/packages/G4mvc/) and [G4mvc.Generator](https://www.nuget.org/packages/G4mvc.Generator/) NuGet packages.
@@ -37,7 +37,7 @@ G4mvc provides a TagHelper that can be used on anchor as well as form tags.
 `<a g4-action="MVC.Home.Index()">Home</a>`
 
 ### Configuration
-You can provide a JSON config file named g4mvc.json to change some of the defaults G4mvc uses.
+You can provide a JSON config file called g4mvc.json to change some of the defaults G4mvc uses.
 
     {
       "HelperClassName": "MVC",
@@ -46,6 +46,7 @@ You can provide a JSON config file named g4mvc.json to change some of the defaul
       "ExcludedStaticFileExtensions": [],
       "ExcludedStaticFileDirectories": [],
       "AdditionalStaticFilesPaths": {}
+      "CustomStaticFileDirectoryAlias": {}
     }
 
 This configuration file needs to be added to the compilation context by adding it as an additional file in the csproj file:
@@ -61,13 +62,13 @@ Allows you to change the MVC prefix (e.g. MVC.Home.Index())
 The class in which the links for static files are generated in
 
 #### StaticFilesPath
-The root path for which links will be generated
+The root path (relative to project dir) for which links will be generated
 
 #### ExcludedStaticFileExtensions
 A list of file extensions that will be excluded from link generation
 
 #### ExcludedStaticFileDirectories
-A list of directories that will be excluded from link generation
+A list of directories (relative to project dir) that will be excluded from link generation
 
 #### AdditionalStaticFilesPaths
 A dictionary of additional static file paths for which links will be generated
@@ -77,4 +78,13 @@ For the example provided in the [Microsoft Documentation](https://learn.microsof
 
     "AdditionalStaticFilesPaths": {
         "StaticFiles": "MyStaticFiles"
+    }
+
+#### CustomStaticFileDirectoryAlias
+A dictionary of aliases for certain directories (relative to project dir). This can be useful if the sanitized names of two or more subdirectories in a directory are the same and renaming them is not an option.
+e.g. if you had a directory called `some-directory` and another one called `some.directory` in the `wwwroot` directory, the sanitized name of both of these would be `some_directory`, therefore the same class name would be generated twice.
+To fix the situation described, a possible configuration would be the following:
+
+    "CustomStaticFileDirectoryAlias": {
+        "wwwroot/some.directory": "SomeDotDirectory"
     }
