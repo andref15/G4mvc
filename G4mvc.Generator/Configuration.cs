@@ -43,6 +43,7 @@ internal partial class Configuration
         public List<string>? ExcludedStaticFileExtensions { get; set; }
         public List<string>? ExcludedStaticFileDirectories { get; set; }
         public Dictionary<string, string>? AdditionalStaticFilesPaths { get; set; }
+        public Dictionary<string, string>? CustomStaticFileDirectoryAlias { get; set; }
 
         internal void SetDefaults()
         {

@@ -46,6 +46,5 @@ public class G4mvcGenerator : ISourceGenerator
         MvcClassGenerator.AddMvcClass(context, controllerRouteClassNames);
 
         LinksGenerator.AddLinksClass(context, projectDir);
-
     }
 }
