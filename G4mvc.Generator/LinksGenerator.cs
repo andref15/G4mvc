@@ -1,20 +1,25 @@
 ﻿namespace G4mvc.Generator;
-internal static class @LinksGenerator
+internal static class LinksGenerator
 {
+    private static Dictionary<string, string> _customStaticFileDirectoryClassNames = null!;
+
     public static void AddLinksClass(GeneratorExecutionContext context, string projectDir)
     {
         SourceBuilder sourceBuilder = Configuration.Instance.CreateSourceBuilder();
 
         sourceBuilder.Nullable(Configuration.Instance.GlobalNullable);
 
-        string root = Path.Combine(projectDir, Configuration.Instance.JsonConfig.StaticFilesPath);
+        _customStaticFileDirectoryClassNames = Configuration.Instance.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? new Dictionary<string, string>();
 
-        List<string> excludedDirectories = Configuration.Instance.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(root, d)).FullName).ToList() ?? new List<string>();
+        List<string> excludedDirectories = Configuration.Instance.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(projectDir, d)).FullName).ToList() ?? new List<string>();
         Dictionary<string, string>? additionalStaticFilesPaths = Configuration.Instance.JsonConfig.AdditionalStaticFilesPaths;
+        string linksClassName = Configuration.Instance.JsonConfig.LinksClassName;
+        ReadOnlySpan<char> linksClassNameSpan = linksClassName.AsSpan();
 
-        using (sourceBuilder.BeginClass("public static", Configuration.Instance.JsonConfig.LinksClassName))
+        using (sourceBuilder.BeginClass("public static", linksClassName))
         {
-            CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, context.CancellationToken);
+            string root = Path.Combine(projectDir, Configuration.Instance.JsonConfig.StaticFilesPath);
+            CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, linksClassNameSpan, context.CancellationToken) ;
 
             if (additionalStaticFilesPaths is not null)
             {
@@ -22,11 +27,12 @@ internal static class @LinksGenerator
 
                 foreach (KeyValuePair<string, string> additionalStaticFilesPath in additionalStaticFilesPaths)
                 {
-                    string additionalRoot = Path.Combine(projectDir, additionalStaticFilesPath.Value);
+                    DirectoryInfo additionalRoot = new(Path.Combine(projectDir, additionalStaticFilesPath.Value));
 
-                    using (sourceBuilder.BeginClass("public static", $"{CreateIdentifierFromFile(additionalStaticFilesPath.Value)}Links"))
+                    string directoryClassName = GetConfigAliasOrIdentifierFromPath(additionalRoot, linksClassNameSpan);
+                    using (sourceBuilder.BeginClass("public static", $"{directoryClassName}Links"))
                     {
-                        CreateLinksClass(sourceBuilder, new(additionalRoot), additionalRoot, additionalStaticFilesPath.Key.Trim('/'), excludedDirectories, context.CancellationToken);
+                        CreateLinksClass(sourceBuilder, additionalRoot, additionalRoot.FullName, additionalStaticFilesPath.Key.Trim('/'), excludedDirectories, linksClassNameSpan, context.CancellationToken);
                     }
                 }
             }
@@ -37,7 +43,7 @@ internal static class @LinksGenerator
         context.AddGeneratedSource(Configuration.Instance.JsonConfig.LinksClassName, sourceBuilder);
     }
 
-    private static void CreateLinksClass(SourceBuilder sourceBuilder, DirectoryInfo directory, string root, string? subRoute, List<string> excludedDirectories, CancellationToken cancellationToken)
+    private static void CreateLinksClass(SourceBuilder sourceBuilder, DirectoryInfo directory, string root, string? subRoute, List<string> excludedDirectories, ReadOnlySpan<char> enclosingClass, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -55,23 +61,24 @@ internal static class @LinksGenerator
                 continue;
             }
 
-            sourceBuilder.AppendConst("public", "string", CreateIdentifierFromFile(file.Name), SourceCode.String(GetRelativePath(root, subRoute, file.FullName)));
+            sourceBuilder.AppendConst("public", "string", GetConfigAliasOrIdentifierFromPath(file, enclosingClass), SourceCode.String(GetRelativePath(root, subRoute, file.FullName)));
         }
 
         foreach (DirectoryInfo subDirectory in subDirectories)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (excludedDirectories.Contains(subDirectory.FullName))
+            if ( excludedDirectories.Contains(subDirectory.FullName))
             {
                 continue;
             }
 
             sourceBuilder.AppendLine();
 
-            using (sourceBuilder.BeginClass("public static", $"{CreateIdentifierFromFile(subDirectory.Name)}Links"))
+            string newClassName = GetConfigAliasOrIdentifierFromPath(subDirectory, enclosingClass);
+            using (sourceBuilder.BeginClass("public static", $"{newClassName}Links"))
             {
-                CreateLinksClass(sourceBuilder, subDirectory, root, subRoute, excludedDirectories, cancellationToken);
+                CreateLinksClass(sourceBuilder, subDirectory, root, subRoute, excludedDirectories, newClassName.AsSpan(), cancellationToken);
             }
         }
     }
@@ -79,11 +86,16 @@ internal static class @LinksGenerator
     private static string GetRelativePath(string root, string? subRoute, string path)
         => path.Replace(root, subRoute is null ? "~" : $"~/{subRoute}").Replace('\\', '/').TrimEnd('/');
 
-    private static string CreateIdentifierFromFile(string fileName)
-    {
-        ReadOnlySpan<char> span = fileName.AsSpan();
+    private static string GetConfigAliasOrIdentifierFromPath(FileSystemInfo fileSystemInfo, ReadOnlySpan<char> enclosing) 
+        => _customStaticFileDirectoryClassNames.TryGetValue(fileSystemInfo.FullName, out string? alias)
+            ? alias
+            : CreateIdentifierFromPath(fileSystemInfo.Name, enclosing);
 
-        Span<char> identifierName = stackalloc char[fileName.Length * 2];
+    private static string CreateIdentifierFromPath(string pathSegment, ReadOnlySpan<char> enclosing)
+    {
+        ReadOnlySpan<char> span = pathSegment.AsSpan();
+
+        Span<char> identifierName = stackalloc char[pathSegment.Length + 3];
 
         int idx = 0;
         identifierName[idx++] = '@';
@@ -93,23 +105,22 @@ internal static class @LinksGenerator
             identifierName[idx++] = '_';
         }
 
-        for (int i = 0; i < span.Length; i++, idx++)
+        for (int i = 0; i < span.Length; i++)
         {
             if (SyntaxFacts.IsIdentifierPartCharacter(span[i]))
             {
-                identifierName[idx] = span[i];
+                identifierName[idx++] = span[i];
                 continue;
             }
 
-            if (span[i] is '-')
-            {
-                identifierName[idx] = char.ToUpper(span[++i]);
-                continue;
-            }
-
-            identifierName[idx] = '_';
+            identifierName[idx++] = '_';
         }
 
-        return identifierName.ToString().TrimEnd('\0');
+        if (enclosing.Equals(identifierName.Slice(0, idx), StringComparison.Ordinal))
+        {
+            identifierName[idx++] = '_';
+        }
+
+        return identifierName.Slice(0, idx).ToString();
     }
 }
