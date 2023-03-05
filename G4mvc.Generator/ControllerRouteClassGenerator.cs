@@ -90,7 +90,7 @@ internal static class ControllerRouteClassGenerator
                     }
 
                     using (nullableBlock)
-                    using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
+                    using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
                     {
                         sourceBuilder.AppendLine($"{nameof(G4mvcRouteValues)} route = {actionName}()").AppendLine();
 
