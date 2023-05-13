@@ -1,11 +1,11 @@
 ﻿namespace G4mvc.Generator;
 internal static class ControllerRouteClassGenerator
 {
-    internal static void AddSharedController(GeneratorExecutionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
+    internal static void AddSharedController(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
     {
         SourceBuilder sourceBuilder = Configuration.Instance.CreateSourceBuilder();
 
-        AddClassNameToDictionary(controllerRouteClassNames, null, "Shared", "SharedRoutes");
+        AddClassNameToDictionary(controllerRouteClassNames, null, "Shared", $"SharedRoutes");
 
         sourceBuilder.Nullable(Configuration.Instance.GlobalNullable);
 
@@ -19,7 +19,7 @@ internal static class ControllerRouteClassGenerator
         context.AddGeneratedSource("SharedRoutes", sourceBuilder);
     }
 
-    internal static void AddControllerRouteClass(GeneratorExecutionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, ControllerDeclarationContext controllerContext)
+    internal static void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, ControllerDeclarationContext controllerContext)
     {
         SourceBuilder sourceBuilder = Configuration.Instance.CreateSourceBuilder();
 
@@ -59,6 +59,8 @@ internal static class ControllerRouteClassGenerator
 
             foreach (IGrouping<string, MethodDeclarationContext> httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
             {
+                context.CancellationToken.ThrowIfCancellationRequested();
+
                 string actionName = httpMethodsGroup.Key;
 
                 if (!actionNames.Contains(actionName))
@@ -75,6 +77,8 @@ internal static class ControllerRouteClassGenerator
 
                 foreach (MethodDeclarationContext httpMethodContext in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
                 {
+                    context.CancellationToken.ThrowIfCancellationRequested();
+
                     List<ParameterContext> relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, controllerContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
 
                     if (relevantParameters.Count is 0)
@@ -96,6 +100,8 @@ internal static class ControllerRouteClassGenerator
 
                         foreach (ParameterContext parameter in relevantParameters)
                         {
+                            context.CancellationToken.ThrowIfCancellationRequested();
+
                             sourceBuilder.AppendLine($"route[{SourceCode.String(parameter.Symbol.Name)}] = {parameter.Symbol.Name}");
                         }
 
@@ -110,6 +116,8 @@ internal static class ControllerRouteClassGenerator
             {
                 foreach (string actionName in actionNames)
                 {
+                    context.CancellationToken.ThrowIfCancellationRequested();
+
                     sourceBuilder.AppendProperty("public", "string", actionName, "get", null, SourceCode.Nameof(actionName));
                 }
             }
@@ -122,7 +130,7 @@ internal static class ControllerRouteClassGenerator
         context.AddGeneratedSource($"{controllerContext.ControllerNameWithoutSuffix}Routes", sourceBuilder);
     }
 
-    private static string? GetDefaultValue(ParameterSyntax syntax) 
+    private static string? GetDefaultValue(ParameterSyntax syntax)
         => syntax.Default is null ? null : $" {syntax.Default}";
 
     private static bool IsActionResult(ITypeSymbol returnType)

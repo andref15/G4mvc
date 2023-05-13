@@ -3,7 +3,11 @@ internal static class LinksGenerator
 {
     private static Dictionary<string, string> _customStaticFileDirectoryClassNames = null!;
 
-    public static void AddLinksClass(GeneratorExecutionContext context, string projectDir)
+    public static void AddLinksClass(SourceProductionContext context, string projectDir
+#if DEBUG
+        , int linksVersion 
+#endif
+        )
     {
         SourceBuilder sourceBuilder = Configuration.Instance.CreateSourceBuilder();
 
@@ -18,8 +22,11 @@ internal static class LinksGenerator
 
         using (sourceBuilder.BeginClass("public static", linksClassName))
         {
+#if DEBUG
+            sourceBuilder.AppendLine($"//v{linksVersion}"); 
+#endif
             string root = Path.Combine(projectDir, Configuration.Instance.JsonConfig.StaticFilesPath);
-            CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, linksClassNameSpan, context.CancellationToken) ;
+            CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, linksClassNameSpan, context.CancellationToken);
 
             if (additionalStaticFilesPaths is not null)
             {
@@ -27,6 +34,8 @@ internal static class LinksGenerator
 
                 foreach (KeyValuePair<string, string> additionalStaticFilesPath in additionalStaticFilesPaths)
                 {
+                    context.CancellationToken.ThrowIfCancellationRequested();
+
                     DirectoryInfo additionalRoot = new(Path.Combine(projectDir, additionalStaticFilesPath.Value));
 
                     string directoryClassName = GetConfigAliasOrIdentifierFromPath(additionalRoot, linksClassNameSpan);
@@ -68,7 +77,7 @@ internal static class LinksGenerator
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if ( excludedDirectories.Contains(subDirectory.FullName))
+            if (excludedDirectories.Contains(subDirectory.FullName))
             {
                 continue;
             }
@@ -86,7 +95,7 @@ internal static class LinksGenerator
     private static string GetRelativePath(string root, string? subRoute, string path)
         => path.Replace(root, subRoute is null ? "~" : $"~/{subRoute}").Replace('\\', '/').TrimEnd('/');
 
-    private static string GetConfigAliasOrIdentifierFromPath(FileSystemInfo fileSystemInfo, ReadOnlySpan<char> enclosing) 
+    private static string GetConfigAliasOrIdentifierFromPath(FileSystemInfo fileSystemInfo, ReadOnlySpan<char> enclosing)
         => _customStaticFileDirectoryClassNames.TryGetValue(fileSystemInfo.FullName, out string? alias)
             ? alias
             : CreateIdentifierFromPath(fileSystemInfo.Name, enclosing);

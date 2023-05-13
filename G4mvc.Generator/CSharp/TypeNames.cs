@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace G4mvc.Generator.CSharp;
+﻿namespace G4mvc.Generator.CSharp;
 internal static class TypeNames
 {
     public const string Controller = $"{Namespaces.MicrosoftAspNetCoreMvc}.Controller";

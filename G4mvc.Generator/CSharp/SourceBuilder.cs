@@ -167,7 +167,7 @@ internal class SourceBuilder
             sourceBuilder.Nullable(enable);
         }
 
-        public void Dispose() 
+        public void Dispose()
             => _sourceBuilder._stringBuilder.AppendLine().AppendLine($"#nullable restore").AppendLine();
     }
 

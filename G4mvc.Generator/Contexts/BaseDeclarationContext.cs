@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace G4mvc.Generator.Contexts;
+﻿namespace G4mvc.Generator.Contexts;
 internal abstract class BaseDeclarationContext
 {
     public SemanticModel Model { get; }

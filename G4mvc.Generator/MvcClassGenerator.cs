@@ -1,7 +1,11 @@
 ﻿namespace G4mvc.Generator;
 internal static class MvcClassGenerator
 {
-    public static void AddMvcClass(GeneratorExecutionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
+    public static void AddMvcClass(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames
+#if DEBUG
+        , int version 
+#endif
+        )
     {
         context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -22,6 +26,10 @@ internal static class MvcClassGenerator
 
         using (sourceBuilder.BeginClass("public", Configuration.Instance.JsonConfig.HelperClassName))
         {
+#if DEBUG
+            sourceBuilder.AppendLine($"//v{version}"); 
+#endif
+
             if (controllerRouteClassNames.TryGetValue(string.Empty, out Dictionary<string, string> classNames))
             {
                 sourceBuilder.AppendProperties("public static", classNames, "get", null, SourceCode.NewCtor);

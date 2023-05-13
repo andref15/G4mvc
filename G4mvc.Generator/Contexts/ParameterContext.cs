@@ -7,6 +7,6 @@ internal class ParameterContext
     public ParameterContext(ParameterSyntax syntax, IParameterSymbol symbol)
     {
         Syntax = syntax;
-        Symbol= symbol;
+        Symbol = symbol;
     }
 }

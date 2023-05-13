@@ -1,7 +1,7 @@
 ﻿namespace G4mvc.Generator;
 internal static class AreaClassesGenerator
 {
-    internal static void AddAreaClasses(GeneratorExecutionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
+    internal static void AddAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
     {
         foreach (KeyValuePair<string, Dictionary<string, string>> area in controllerRouteClassNames.Where(kvp => kvp.Key != string.Empty))
         {

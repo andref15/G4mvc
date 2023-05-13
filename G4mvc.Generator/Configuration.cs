@@ -3,6 +3,8 @@
 namespace G4mvc.Generator;
 internal partial class Configuration
 {
+    public const string FileName = "G4mvc.json";
+
     public LanguageVersion LanguageVersion { get; private set; }
     public JsonConfigClass JsonConfig { get; private set; } = null!;
     public List<string> GlobalUsings { get; private set; } = new();
@@ -10,10 +12,8 @@ internal partial class Configuration
 
     public static Configuration Instance { get; private set; } = null!;
 
-    internal static void CreateConfig(GeneratorExecutionContext context)
+    internal static void CreateConfig(CSharpCompilation compilation, string? configFile)
     {
-        CSharpCompilation compilation = (context.Compilation as CSharpCompilation)!;
-
         Instance = new()
         {
             LanguageVersion = compilation.LanguageVersion
@@ -21,13 +21,12 @@ internal partial class Configuration
 
         if (Instance.LanguageVersion >= LanguageVersion.CSharp10)
         {
-            Instance.GlobalUsings = context.Compilation.SyntaxTrees.SelectMany(st => st.GetRoot().DescendantNodes().OfType<UsingDirectiveSyntax>()).Where(ud => ud.GlobalKeyword.Text is "global").Select(ud => ud.Name.ToString().RemoveStart("global::")).ToList();
+            Instance.GlobalUsings = compilation.SyntaxTrees.SelectMany(st => st.GetRoot().DescendantNodes().OfType<UsingDirectiveSyntax>()).Where(ud => ud.GlobalKeyword.Text is "global").Select(ud => ud.Name.ToString().RemoveStart("global::")).ToList();
         }
 
         Instance.GlobalNullable = compilation.Options.NullableContextOptions is not NullableContextOptions.Disable;
 
-        AdditionalText? configFile = context.AdditionalFiles.FirstOrDefault(f => Path.GetFileName(f.Path).Equals("g4mvc.json", StringComparison.OrdinalIgnoreCase));
-        Instance.JsonConfig = configFile is null ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile.GetText(context.CancellationToken)!.ToString()) ?? new();
+        Instance.JsonConfig = configFile is null ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile) ?? new();
 
         Instance.JsonConfig.SetDefaults();
     }
