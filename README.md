@@ -15,7 +15,8 @@ It might be necessary to restart Visual Studio for these changes to take affect.
 
 ## Use
 ### Source Generation
-In order for the code generation to work, the controller class has to derive from the `Microsoft.AspNetCore.Mvc.Controller` class. Abstract classes will also be ignored. All Methods for which a routing helper should be generated, have to return `Microsoft.AspNetCore.Mvc.IActionResult`, `Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult` or an implementation of either of these interfaces. For asyncronous controller actions, the task has to return one of these.
+In order for the code generation to work, the controller class has to derive from the `Microsoft.AspNetCore.Mvc.Controller` class. Abstract classes will also be ignored. All Methods for which a routing helper should be generated, have to return `Microsoft.AspNetCore.Mvc.IActionResult`, `Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult` or an implementation of either of these interfaces. For asyncronous controller actions, the task has to return one of these.\
+To trigger the generation of the links class, it is necessary to manually build or rebuild the ASP.net core project or make change in the config file 
 
 #### Examples:
     public IActionResult Edit(EditViewModel viewModel)
