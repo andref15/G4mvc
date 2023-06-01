@@ -15,7 +15,8 @@ It might be necessary to restart Visual Studio for these changes to take affect.
 
 ## Use
 ### Source Generation
-In order for the code generation to work, the controller class has to derive from the `Microsoft.AspNetCore.Mvc.Controller` class. Abstract classes will also be ignored. All Methods for which a routing helper should be generated, have to return `Microsoft.AspNetCore.Mvc.IActionResult`, `Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult` or an implementation of either of these interfaces. For asyncronous controller actions, the task has to return one of these.
+In order for the code generation to work, the controller class has to derive from the `Microsoft.AspNetCore.Mvc.Controller` class. Abstract classes will also be ignored. All Methods for which a routing helper should be generated, have to return `Microsoft.AspNetCore.Mvc.IActionResult`, `Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult` or an implementation of either of these interfaces. For asyncronous controller actions, the task has to return one of these.\
+To trigger the generation of the links class, it is necessary to manually build or rebuild the ASP.net core project or make change in the config file 
 
 #### Examples:
     public IActionResult Edit(EditViewModel viewModel)
@@ -43,6 +44,7 @@ You can provide a JSON config file called g4mvc.json to change some of the defau
       "HelperClassName": "MVC",
       "LinksClassName":  "Links",
       "StaticFilesPath": "wwwroot",
+      "UseVirtualPathProcessor": false,
       "ExcludedStaticFileExtensions": [],
       "ExcludedStaticFileDirectories": [],
       "AdditionalStaticFilesPaths": {}
@@ -63,6 +65,18 @@ The class in which the links for static files are generated in
 
 #### StaticFilesPath
 The root path (relative to project dir) for which links will be generated
+
+#### UseVirtualPathProcessor
+Defines if you want to define a custom VirtualPathProcessor funcion. When this is set to true, all generated links will be static readonly instead of const fields and a partial class `VirtualPathProcessor` with a partial method `Process` will be generated and you have to write the implementation of this partial method.
+An example of this can be seen here:
+
+    public static partial class VirtualPathProcessor
+    {
+        public static partial string Process(string path)
+        {
+            return path.ToUpper();
+        }
+    }
 
 #### ExcludedStaticFileExtensions
 A list of file extensions that will be excluded from link generation

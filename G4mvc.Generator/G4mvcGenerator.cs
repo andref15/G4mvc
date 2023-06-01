@@ -27,10 +27,12 @@ public class G4mvcGenerator : IIncrementalGenerator
             .Combine(context.AnalyzerConfigOptionsProvider
                 .Select(static (a, ct) => a.GlobalOptions))
             .Select(static (c, ct) => (c.Left.Config, c.Left.ControllerContexts, AnalyzerConfigOptions: c.Right));
-
+        
         context.RegisterSourceOutput(analyzerOptionsCompilationConfigAndClasses, static (c, a) => ExecuteClassGeneration(c, a.Config, a.ControllerContexts, a.AnalyzerConfigOptions));
 
-        context.RegisterSourceOutput(configFile.Combine(context.AnalyzerConfigOptionsProvider.Select(static (a, ct) => a.GlobalOptions)), static (c, a) => ExecuteLinksGeneration(c, a.Right));
+        IncrementalValuesProvider<((string? ConfigFile, AnalyzerConfigOptions AnalyzerConfigOptions) Left, ParseOptions ParseOptions)> configFileAnalyzerConfigOptionsAndParseProvider = configFile.Combine(context.AnalyzerConfigOptionsProvider.Select(static (a, ct) => a.GlobalOptions)).Combine(context.ParseOptionsProvider);
+
+        context.RegisterSourceOutput(configFileAnalyzerConfigOptionsAndParseProvider, static (c, a) => ExecuteLinksGeneration(c, a.Left.ConfigFile, a.Left.AnalyzerConfigOptions, (CSharpParseOptions)a.ParseOptions));
     }
 
     private static bool IsPossibleControllerDeclaration(SyntaxNode syntaxNode, CancellationToken cancellationToken)
@@ -56,7 +58,7 @@ public class G4mvcGenerator : IIncrementalGenerator
             return;
         }
 
-        Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, additionalFileText);
+        Configuration configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, additionalFileText);
 
         if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out string? projectDir) || string.IsNullOrWhiteSpace(projectDir))
         {
@@ -65,37 +67,41 @@ public class G4mvcGenerator : IIncrementalGenerator
 
         Dictionary<string, Dictionary<string, string>> controllerRouteClassNames = new();
 
-        ControllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
+        ControllerRouteClassGenerator controllerRouteClassGenerator = new(configuration);
+
+        controllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
 
         foreach (ControllerDeclarationContext controllerContext in controllerContexts)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            ControllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContext);
-            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContext);
+            controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContext);
+            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContext, configuration);
         }
 
-        AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames);
+        AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);
 
-        MvcClassGenerator.AddMvcClass(context, controllerRouteClassNames
+        MvcClassGenerator.AddMvcClass(context, controllerRouteClassNames, configuration
 #if DEBUG
         , _version 
 #endif
         );
     }
 
-    private static void ExecuteLinksGeneration(SourceProductionContext context, AnalyzerConfigOptions analyzerConfigOptions)
+    private static void ExecuteLinksGeneration(SourceProductionContext context, string? left, AnalyzerConfigOptions analyzerConfigOptions, CSharpParseOptions parseOptions)
     {
 #if DEBUG
         _linksVersion++; 
 #endif
+
+        Configuration configuration = Configuration.CreateConfig(parseOptions, left);
 
         if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out string? projectDir) || string.IsNullOrWhiteSpace(projectDir))
         {
             return;
         }
 
-        LinksGenerator.AddLinksClass(context, projectDir
+        LinksGenerator.AddLinksClass(context, configuration, projectDir
 #if DEBUG
         , _linksVersion 
 #endif

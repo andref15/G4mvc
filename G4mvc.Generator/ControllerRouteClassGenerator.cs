@@ -1,13 +1,20 @@
 ﻿namespace G4mvc.Generator;
-internal static class ControllerRouteClassGenerator
+internal class ControllerRouteClassGenerator
 {
-    internal static void AddSharedController(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
+    private readonly Configuration _configuration;
+
+    public ControllerRouteClassGenerator(Configuration configuration)
     {
-        SourceBuilder sourceBuilder = Configuration.Instance.CreateSourceBuilder();
+        _configuration = configuration;
+    }
+
+    internal void AddSharedController(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
+    {
+        SourceBuilder sourceBuilder = _configuration.CreateSourceBuilder();
 
         AddClassNameToDictionary(controllerRouteClassNames, null, "Shared", $"SharedRoutes");
 
-        sourceBuilder.Nullable(Configuration.Instance.GlobalNullable);
+        sourceBuilder.Nullable(_configuration.GlobalNullable);
 
         using (sourceBuilder.BeginNamespace($"{nameof(G4mvc)}.Routes", true))
         using (sourceBuilder.BeginClass("public", "SharedRoutes"))
@@ -19,15 +26,15 @@ internal static class ControllerRouteClassGenerator
         context.AddGeneratedSource("SharedRoutes", sourceBuilder);
     }
 
-    internal static void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, ControllerDeclarationContext controllerContext)
+    internal void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, ControllerDeclarationContext controllerContext)
     {
-        SourceBuilder sourceBuilder = Configuration.Instance.CreateSourceBuilder();
+        SourceBuilder sourceBuilder = _configuration.CreateSourceBuilder();
 
         string? controllerArea = GetControllerArea(controllerContext.TypeSymbol);
 
         List<MethodDeclarationContext> httpMethods = controllerContext.Syntax.DescendantNodes()
                 .OfType<MethodDeclarationSyntax>()
-                .Select(md => new MethodDeclarationContext(md, controllerContext.Model))
+                .Select(md => new MethodDeclarationContext(md, controllerContext.Model, _configuration.GlobalNullable))
                 .Where(mc => IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
 
         IEnumerable<string> parameterNamespaces = httpMethods.SelectMany(mc => mc.MethodSymbol.Parameters.Select(p => p.Type.ContainingNamespace.ToDisplayString())).Distinct();

@@ -6,14 +6,12 @@ internal class SourceBuilder
 {
     private readonly StringBuilder _stringBuilder = new();
     private readonly LanguageVersion _languageVersion;
-    private readonly List<string> _globalUsings;
     private int _indentCounter = 0;
     private NamespaceBlock? _currentNamespace;
 
-    public SourceBuilder(LanguageVersion languageVersion, List<string> globalUsings)
+    public SourceBuilder(LanguageVersion languageVersion)
     {
         _languageVersion = languageVersion;
-        _globalUsings = globalUsings;
     }
 
     public SourceBuilder AppendLine()
@@ -26,6 +24,27 @@ internal class SourceBuilder
     {
         AppendIndentation();
         _stringBuilder.Append(line).AppendLine(";");
+
+        return this;
+    }
+
+    public SourceBuilder AppendField(string modifiers, string type, string name, string? value = null)
+    {
+        AppendIndentation();
+
+        _stringBuilder.Append($"{modifiers} {type} {name}");
+
+        if (value is not null)
+        {
+            if (value is SourceCode.NewCtor && _languageVersion < LanguageVersion.CSharp9)
+            {
+                value = $"new {type}()";
+            }
+
+            _stringBuilder.Append($" = {value}");
+        }
+
+        _stringBuilder.AppendLine(";");
 
         return this;
     }
@@ -65,6 +84,14 @@ internal class SourceBuilder
         {
             AppendProperty(modifier, propertyDefinition.Key, propertyDefinition.Value, get, set, assignmnet);
         }
+
+        return this;
+    }
+
+    public SourceBuilder AppendPartialMethod(string modifiers, string returnType, string methodName, string? parameters = null)
+    {
+        AppendIndentation();
+        _stringBuilder.AppendLine($"{modifiers} partial {returnType} {methodName}({parameters});");
 
         return this;
     }
@@ -137,11 +164,6 @@ internal class SourceBuilder
     {
         foreach (string @using in usings)
         {
-            if (_globalUsings.Contains(@using))
-            {
-                continue;
-            }
-
             _stringBuilder.AppendLine($"using {@using};");
         }
 

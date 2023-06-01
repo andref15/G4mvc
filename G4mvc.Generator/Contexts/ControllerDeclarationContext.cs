@@ -6,7 +6,7 @@ internal class ControllerDeclarationContext : BaseDeclarationContext
     public string ControllerName { get; }
     public string ControllerNameWithoutSuffix { get; }
 
-    private ControllerDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol) : base(model, syntax.SpanStart)
+    private ControllerDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, syntax.SpanStart, globalNullable)
     {
         Syntax = syntax;
         TypeSymbol = typeSymbol;
@@ -19,6 +19,6 @@ internal class ControllerDeclarationContext : BaseDeclarationContext
     {
         ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
 
-        return new ControllerDeclarationContext(context.SemanticModel, classDeclaration, context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken)!);
+        return new ControllerDeclarationContext(context.SemanticModel, classDeclaration, context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken)!, ((CSharpCompilation)context.SemanticModel.Compilation).IsNullableEnabled());
     }
 }

@@ -1,14 +1,14 @@
 ﻿namespace G4mvc.Generator;
 internal static class ControllerPartialClassGenerator
 {
-    internal static void AddControllerPartialClass(SourceProductionContext context, ControllerDeclarationContext controllerContext)
+    internal static void AddControllerPartialClass(SourceProductionContext context, ControllerDeclarationContext controllerContext, Configuration configuration)
     {
         if (!controllerContext.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword))
         {
             return;
         }
 
-        SourceBuilder sourceBuilder = Configuration.Instance.CreateSourceBuilder();
+        SourceBuilder sourceBuilder = configuration.CreateSourceBuilder();
 
         sourceBuilder
             .Using(nameof(G4mvc), Namespaces.MicrosoftAspNetCoreMvc).AppendLine()

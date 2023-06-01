@@ -10,35 +10,43 @@ internal partial class Configuration
     public List<string> GlobalUsings { get; private set; } = new();
     public bool GlobalNullable { get; private set; }
 
-    public static Configuration Instance { get; private set; } = null!;
-
-    internal static void CreateConfig(CSharpCompilation compilation, string? configFile)
+    internal static Configuration CreateConfig(CSharpCompilation compilation, string? configFile)
     {
-        Instance = new()
+        Configuration configuration = new()
         {
-            LanguageVersion = compilation.LanguageVersion
+            LanguageVersion = compilation.LanguageVersion,
+            GlobalNullable = compilation.IsNullableEnabled(),
+            JsonConfig = configFile is null ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile) ?? new()
         };
 
-        if (Instance.LanguageVersion >= LanguageVersion.CSharp10)
+        configuration.JsonConfig.SetDefaults();
+
+        return configuration;
+    }
+
+    internal static Configuration CreateConfig(CSharpParseOptions parseOptions, string? configFile)
+    {
+        Configuration configuration = new()
         {
-            Instance.GlobalUsings = compilation.SyntaxTrees.SelectMany(st => st.GetRoot().DescendantNodes().OfType<UsingDirectiveSyntax>()).Where(ud => ud.GlobalKeyword.Text is "global").Select(ud => ud.Name.ToString().RemoveStart("global::")).ToList();
-        }
+            LanguageVersion = parseOptions.LanguageVersion,
+            GlobalNullable = true,
+            JsonConfig = configFile is null ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile) ?? new()
+        };
 
-        Instance.GlobalNullable = compilation.Options.NullableContextOptions is not NullableContextOptions.Disable;
+        configuration.JsonConfig.SetDefaults();
 
-        Instance.JsonConfig = configFile is null ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile) ?? new();
-
-        Instance.JsonConfig.SetDefaults();
+        return configuration;
     }
 
     internal SourceBuilder CreateSourceBuilder()
-        => new(LanguageVersion, GlobalUsings);
+        => new(LanguageVersion);
 
     internal class JsonConfigClass
     {
         public string HelperClassName { get; set; } = null!;
         public string LinksClassName { get; set; } = null!;
         public string StaticFilesPath { get; set; } = null!;
+        public bool UseVirtualPathProcessor { get; set; }
         public List<string>? ExcludedStaticFileExtensions { get; set; }
         public List<string>? ExcludedStaticFileDirectories { get; set; }
         public Dictionary<string, string>? AdditionalStaticFilesPaths { get; set; }
