@@ -21,18 +21,18 @@ public class G4mvcGenerator : IIncrementalGenerator
             .CreateSyntaxProvider(IsPossibleControllerDeclaration, ControllerDeclarationContext.Create)
             .Where(cs => !cs.TypeSymbol.IsAbstract && cs.TypeSymbol.DerrivesFromType(TypeNames.Controller));
 
-        IncrementalValuesProvider<(string? Config, ImmutableArray<ControllerDeclarationContext> ControllerContexts)> configAndClasses = configFile.Combine(classes.Collect());
+        IncrementalValueProvider<(ImmutableArray<ControllerDeclarationContext> ControllerContexts, ImmutableArray<string?> Configs)> configAndClasses = classes.Collect().Combine(configFile.Collect());
 
-        IncrementalValuesProvider<(string? Config, ImmutableArray<ControllerDeclarationContext> ControllerContexts, AnalyzerConfigOptions AnalyzerConfigOptions)> analyzerOptionsCompilationConfigAndClasses = configAndClasses
+        IncrementalValueProvider<(string? Config, ImmutableArray<ControllerDeclarationContext> ControllerContexts, AnalyzerConfigOptions AnalyzerConfigOptions)> analyzerOptionsCompilationConfigAndClasses = configAndClasses
             .Combine(context.AnalyzerConfigOptionsProvider
                 .Select(static (a, ct) => a.GlobalOptions))
-            .Select(static (c, ct) => (c.Left.Config, c.Left.ControllerContexts, AnalyzerConfigOptions: c.Right));
+            .Select(static (c, ct) => (c.Left.Configs.FirstOrDefault(), c.Left.ControllerContexts, AnalyzerConfigOptions: c.Right));
         
         context.RegisterSourceOutput(analyzerOptionsCompilationConfigAndClasses, static (c, a) => ExecuteClassGeneration(c, a.Config, a.ControllerContexts, a.AnalyzerConfigOptions));
 
-        IncrementalValuesProvider<((string? ConfigFile, AnalyzerConfigOptions AnalyzerConfigOptions) Left, ParseOptions ParseOptions)> configFileAnalyzerConfigOptionsAndParseProvider = configFile.Combine(context.AnalyzerConfigOptionsProvider.Select(static (a, ct) => a.GlobalOptions)).Combine(context.ParseOptionsProvider);
+        IncrementalValueProvider<((AnalyzerConfigOptions AnalyzerConfigOptions, ImmutableArray<string?> ConfigFiles) Left, ParseOptions ParseOptions)> configFileAnalyzerConfigOptionsAndParseProvider = context.AnalyzerConfigOptionsProvider.Select(static (a, ct) => a.GlobalOptions).Combine(configFile.Collect()).Combine(context.ParseOptionsProvider);
 
-        context.RegisterSourceOutput(configFileAnalyzerConfigOptionsAndParseProvider, static (c, a) => ExecuteLinksGeneration(c, a.Left.ConfigFile, a.Left.AnalyzerConfigOptions, (CSharpParseOptions)a.ParseOptions));
+        context.RegisterSourceOutput(configFileAnalyzerConfigOptionsAndParseProvider, static (c, a) => ExecuteLinksGeneration(c, a.Left.ConfigFiles.FirstOrDefault(), a.Left.AnalyzerConfigOptions, (CSharpParseOptions)a.ParseOptions));
     }
 
     private static bool IsPossibleControllerDeclaration(SyntaxNode syntaxNode, CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ public class G4mvcGenerator : IIncrementalGenerator
         return classDeclaration.BaseList?.Types.Any() ?? false;
     }
 
-    private static void ExecuteClassGeneration(SourceProductionContext context, string? additionalFileText, ImmutableArray<ControllerDeclarationContext> controllerContexts, AnalyzerConfigOptions analyzerConfigOptions)
+    private static void ExecuteClassGeneration(SourceProductionContext context, string? configFileText, ImmutableArray<ControllerDeclarationContext> controllerContexts, AnalyzerConfigOptions analyzerConfigOptions)
     {
 #if DEBUG
         _version++; 
@@ -58,7 +58,7 @@ public class G4mvcGenerator : IIncrementalGenerator
             return;
         }
 
-        Configuration configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, additionalFileText);
+        Configuration configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText);
 
         if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out string? projectDir) || string.IsNullOrWhiteSpace(projectDir))
         {
@@ -88,13 +88,13 @@ public class G4mvcGenerator : IIncrementalGenerator
         );
     }
 
-    private static void ExecuteLinksGeneration(SourceProductionContext context, string? left, AnalyzerConfigOptions analyzerConfigOptions, CSharpParseOptions parseOptions)
+    private static void ExecuteLinksGeneration(SourceProductionContext context, string? configFileText, AnalyzerConfigOptions analyzerConfigOptions, CSharpParseOptions parseOptions)
     {
 #if DEBUG
         _linksVersion++; 
 #endif
 
-        Configuration configuration = Configuration.CreateConfig(parseOptions, left);
+        Configuration configuration = Configuration.CreateConfig(parseOptions, configFileText);
 
         if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out string? projectDir) || string.IsNullOrWhiteSpace(projectDir))
         {
