@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <ItemGroup>
+        <AdditionalFiles Include="g4mvc.json" />
+    </ItemGroup>
+</Project>

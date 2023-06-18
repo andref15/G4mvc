@@ -64,6 +64,7 @@
 
 	<ItemGroup>
 		<None Include="../README.md" Pack="true" PackagePath="" />
+	  <None Update="G4mvc.Generator.props" Pack="true" PackagePath="build" />
 	</ItemGroup>
 
 </Project>
