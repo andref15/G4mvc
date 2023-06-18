@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
-    <ItemGroup>
+    <ItemGroup Condition="Exists('g4mvc.json')">
         <AdditionalFiles Include="g4mvc.json" />
     </ItemGroup>
 </Project>
