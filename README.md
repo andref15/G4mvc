@@ -51,12 +51,6 @@ You can provide a JSON config file called g4mvc.json to change some of the defau
       "CustomStaticFileDirectoryAlias": {}
     }
 
-This configuration file needs to be added to the compilation context by adding it as an additional file in the csproj file:
-
-    <ItemGroup>
-        <AdditionalFiles Include="g4mvc.json" />
-    </ItemGroup>
-
 #### HelperClassName
 Allows you to change the MVC prefix (e.g. MVC.Home.Index())
 
