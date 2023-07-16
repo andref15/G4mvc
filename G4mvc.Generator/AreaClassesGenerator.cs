@@ -16,6 +16,7 @@ internal static class AreaClassesGenerator
             using (sourceBuilder.BeginNamespace($"{nameof(G4mvc)}.Areas", true))
             using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, $"{area.Key}Area"))
             {
+                sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(area.Key));
                 sourceBuilder.AppendProperties("public", area.Value, "get", null, "new()");
             }
 
