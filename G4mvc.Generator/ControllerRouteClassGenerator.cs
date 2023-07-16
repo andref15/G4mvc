@@ -57,7 +57,16 @@ internal class ControllerRouteClassGenerator
                 .AppendProperty("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames", "ActionNames", "get", null, SourceCode.NewCtor)
                 .AppendProperty("public", $"{mainControllerContext.ControllerNameWithoutSuffix}Views", "Views", "get", null, SourceCode.NewCtor);
 
-            List<string> actionNames = new();
+            Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups = httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")).ToDictionary(g => g.Key, g => g.AsEnumerable());
+
+            foreach (string actionName in httpMethodGroups.Keys)
+            {
+                sourceBuilder.AppendProperty("public", $"{actionName}ParamsClass", $"{actionName}Params", "get", null, SourceCode.NewCtor);
+            }
+
+            sourceBuilder.AppendLine();
+
+            Dictionary<string, HashSet<string>> actionParameterGroups = new();
 
             foreach (IGrouping<string, MethodDeclarationContext> httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
             {
@@ -65,10 +74,8 @@ internal class ControllerRouteClassGenerator
 
                 string actionName = httpMethodsGroup.Key;
 
-                if (!actionNames.Contains(actionName))
-                {
-                    actionNames.Add(actionName);
-                }
+                HashSet<string> methodsGroupParameterNames = new();
+                actionParameterGroups.Add(actionName, methodsGroupParameterNames);
 
                 using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName))
                 {
@@ -81,11 +88,16 @@ internal class ControllerRouteClassGenerator
                 {
                     context.CancellationToken.ThrowIfCancellationRequested();
 
-                    List<ParameterContext> relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, controllerContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
+                    List<ParameterContext> relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, httpMethodContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
 
                     if (relevantParameters.Count is 0)
                     {
                         continue;
+                    }
+
+                    foreach (string paramName in relevantParameters.Select(p => p.Symbol.Name))
+                    {
+                        methodsGroupParameterNames.Add(paramName);
                     }
 
                     SourceBuilder.NullableBlock? nullableBlock = null;
@@ -116,11 +128,24 @@ internal class ControllerRouteClassGenerator
 
             using (sourceBuilder.BeginClass("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames"))
             {
-                foreach (string actionName in actionNames)
+                foreach (string actionName in httpMethodGroups.Keys)
                 {
                     context.CancellationToken.ThrowIfCancellationRequested();
 
                     sourceBuilder.AppendProperty("public", "string", actionName, "get", null, SourceCode.Nameof(actionName));
+                }
+            }
+
+            foreach (KeyValuePair<string, HashSet<string>> actionParameters in actionParameterGroups)
+            {
+                sourceBuilder.AppendLine();
+
+                using (sourceBuilder.BeginClass("public", $"{actionParameters.Key}ParamsClass"))
+                {
+                    foreach (string paramName in actionParameters.Value)
+                    {
+                        sourceBuilder.AppendProperty("public", "string", paramName, $"get", null, SourceCode.Nameof(paramName));
+                    }
                 }
             }
 
