@@ -44,7 +44,7 @@ public class G4mvcGenerator : IIncrementalGenerator
 
         ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)syntaxNode;
 
-        return classDeclaration.BaseList?.Types.Any() ?? false;
+        return classDeclaration.Identifier.Text.EndsWith("Controller");
     }
 
     private static void ExecuteClassGeneration(SourceProductionContext context, string? configFileText, ImmutableArray<ControllerDeclarationContext> controllerContexts, AnalyzerConfigOptions analyzerConfigOptions)
@@ -71,12 +71,14 @@ public class G4mvcGenerator : IIncrementalGenerator
 
         controllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
 
-        foreach (ControllerDeclarationContext controllerContext in controllerContexts)
+        foreach (IGrouping<string, ControllerDeclarationContext> controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContext);
-            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContext, configuration);
+            List<ControllerDeclarationContext> controllerContextImplementations = controllerContextGroup.ToList();
+
+            controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContextImplementations);
+            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContextImplementations[0], configuration);
         }
 
         AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);

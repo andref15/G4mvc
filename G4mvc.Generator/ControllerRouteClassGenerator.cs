@@ -26,16 +26,15 @@ internal class ControllerRouteClassGenerator
         context.AddGeneratedSource("SharedRoutes", sourceBuilder);
     }
 
-    internal void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, ControllerDeclarationContext controllerContext)
+    internal void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, List<ControllerDeclarationContext> controllerContexts)
     {
+        ControllerDeclarationContext mainControllerContext = controllerContexts[0];
+
         SourceBuilder sourceBuilder = _configuration.CreateSourceBuilder();
 
-        string? controllerArea = GetControllerArea(controllerContext.TypeSymbol);
-
-        List<MethodDeclarationContext> httpMethods = controllerContext.Syntax.DescendantNodes()
-                .OfType<MethodDeclarationSyntax>()
-                .Select(md => new MethodDeclarationContext(md, controllerContext.Model, _configuration.GlobalNullable))
-                .Where(mc => IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
+        List<MethodDeclarationContext> httpMethods = controllerContexts.SelectMany(cc => cc.Syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+                .Select(md => new MethodDeclarationContext(md, cc.Model, _configuration.GlobalNullable))
+                .Where(mc => IsActionResult(mc.MethodSymbol.ReturnType))).ToList();
 
         IEnumerable<string> parameterNamespaces = httpMethods.SelectMany(mc => mc.MethodSymbol.Parameters.Select(p => p.Type.ContainingNamespace.ToDisplayString())).Distinct();
 
@@ -43,24 +42,23 @@ internal class ControllerRouteClassGenerator
             .Using(nameof(G4mvc))
             .Using(parameterNamespaces)
             .AppendLine()
-            .Nullable(controllerContext.NullableEnabled);
+            .Nullable(mainControllerContext.NullableEnabled);
 
-        string controllerRouteClassName = $"{controllerContext.ControllerNameWithoutSuffix}Routes";
-        AddClassNameToDictionary(controllerRouteClassNames, controllerArea, controllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
+        string controllerRouteClassName = $"{mainControllerContext.ControllerNameWithoutSuffix}Routes";
+        AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
 
         using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
         using (sourceBuilder.BeginClass("public", controllerRouteClassName))
         {
-            if (controllerArea is not null)
+            if (mainControllerContext.ControllerArea is not null)
             {
-                sourceBuilder.AppendProperty("public", "string", "Area", "get", null, SourceCode.String(controllerArea));
+                sourceBuilder.AppendProperty("public", "string", "Area", "get", null, SourceCode.String(mainControllerContext.ControllerArea));
             }
 
             sourceBuilder
-                .AppendProperty("public", "string", "Name", "get", null, SourceCode.String(controllerContext.ControllerNameWithoutSuffix))
-                .AppendProperty("public", $"{controllerContext.ControllerNameWithoutSuffix}ActionNames", "ActionNames", "get", null, SourceCode.NewCtor)
-                .AppendProperty("public", $"{controllerContext.ControllerNameWithoutSuffix}Views", "Views", "get", null, SourceCode.NewCtor)
-                .AppendLine();
+                .AppendProperty("public", "string", "Name", "get", null, SourceCode.String(mainControllerContext.ControllerNameWithoutSuffix))
+                .AppendProperty("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames", "ActionNames", "get", null, SourceCode.NewCtor)
+                .AppendProperty("public", $"{mainControllerContext.ControllerNameWithoutSuffix}Views", "Views", "get", null, SourceCode.NewCtor);
 
             List<string> actionNames = new();
 
@@ -77,7 +75,7 @@ internal class ControllerRouteClassGenerator
 
                 using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName))
                 {
-                    sourceBuilder.AppendReturnCtor(nameof(G4mvcRouteValues), SourceCode.String(controllerArea), SourceCode.String(controllerContext.ControllerNameWithoutSuffix), SourceCode.String(actionName));
+                    sourceBuilder.AppendReturnCtor(nameof(G4mvcRouteValues), SourceCode.String(mainControllerContext.ControllerArea), SourceCode.String(mainControllerContext.ControllerNameWithoutSuffix), SourceCode.String(actionName));
                 }
 
                 sourceBuilder.AppendLine();
@@ -95,7 +93,7 @@ internal class ControllerRouteClassGenerator
 
                     SourceBuilder.NullableBlock? nullableBlock = null;
 
-                    if (controllerContext.NullableEnabled != httpMethodContext.NullableEnabled)
+                    if (mainControllerContext.NullableEnabled != httpMethodContext.NullableEnabled)
                     {
                         nullableBlock = sourceBuilder.BeginNullable(httpMethodContext.NullableEnabled);
                     }
@@ -119,7 +117,7 @@ internal class ControllerRouteClassGenerator
                 }
             }
 
-            using (sourceBuilder.BeginClass("public", $"{controllerContext.ControllerNameWithoutSuffix}ActionNames"))
+            using (sourceBuilder.BeginClass("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames"))
             {
                 foreach (string actionName in actionNames)
                 {
@@ -131,10 +129,10 @@ internal class ControllerRouteClassGenerator
 
             sourceBuilder.AppendLine();
 
-            AddViewsClass(sourceBuilder, projectDir, controllerArea, controllerContext.ControllerNameWithoutSuffix);
+            AddViewsClass(sourceBuilder, projectDir, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix);
         }
 
-        context.AddGeneratedSource($"{controllerContext.ControllerNameWithoutSuffix}Routes", sourceBuilder);
+        context.AddGeneratedSource($"{mainControllerContext.ControllerNameWithoutSuffix}Routes", sourceBuilder);
     }
 
     private static string? GetDefaultValue(ParameterSyntax syntax)
