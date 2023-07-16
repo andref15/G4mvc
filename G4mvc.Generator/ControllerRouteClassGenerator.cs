@@ -36,11 +36,8 @@ internal class ControllerRouteClassGenerator
                 .Select(md => new MethodDeclarationContext(md, cc.Model, _configuration.GlobalNullable))
                 .Where(mc => IsActionResult(mc.MethodSymbol.ReturnType))).ToList();
 
-        IEnumerable<string> parameterNamespaces = httpMethods.SelectMany(mc => mc.MethodSymbol.Parameters.Select(p => p.Type.ContainingNamespace.ToDisplayString())).Distinct();
-
         sourceBuilder
             .Using(nameof(G4mvc))
-            .Using(parameterNamespaces)
             .AppendLine()
             .Nullable(mainControllerContext.NullableEnabled);
 
