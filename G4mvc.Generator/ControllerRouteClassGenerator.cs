@@ -16,7 +16,7 @@ internal class ControllerRouteClassGenerator
 
         sourceBuilder.Nullable(_configuration.GlobalNullable);
 
-        using (sourceBuilder.BeginNamespace($"{nameof(G4mvc)}.Routes", true))
+        using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
         using (sourceBuilder.BeginClass("public", "SharedRoutes"))
         {
             sourceBuilder.AppendProperty("public", "SharedViews", "Views", "get", null, SourceCode.NewCtor);
@@ -48,7 +48,7 @@ internal class ControllerRouteClassGenerator
         string controllerRouteClassName = $"{controllerContext.ControllerNameWithoutSuffix}Routes";
         AddClassNameToDictionary(controllerRouteClassNames, controllerArea, controllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
 
-        using (sourceBuilder.BeginNamespace($"{nameof(G4mvc)}.Routes", true))
+        using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
         using (sourceBuilder.BeginClass("public", controllerRouteClassName))
         {
             if (controllerArea is not null)

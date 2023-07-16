@@ -4,6 +4,7 @@ namespace G4mvc.Generator;
 internal partial class Configuration
 {
     public const string FileName = "G4mvc.json";
+    public const string RoutesNameSpace = $"{nameof(G4mvc)}.Routes";
 
     public LanguageVersion LanguageVersion { get; private set; }
     public JsonConfigClass JsonConfig { get; private set; } = null!;

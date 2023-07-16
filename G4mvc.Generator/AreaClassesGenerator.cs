@@ -10,7 +10,7 @@ internal static class AreaClassesGenerator
             SourceBuilder sourceBuilder = configuration.CreateSourceBuilder();
 
             sourceBuilder
-                .Using($"{nameof(G4mvc)}.Routes")
+                .Using(Configuration.RoutesNameSpace)
                 .Nullable(configuration.GlobalNullable);
 
             using (sourceBuilder.BeginNamespace($"{nameof(G4mvc)}.Areas", true))

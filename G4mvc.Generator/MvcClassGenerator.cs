@@ -20,7 +20,7 @@ internal static class MvcClassGenerator
             sourceBuilder.Using($"{nameof(G4mvc)}.Areas");
         }
 
-        sourceBuilder.Using($"{nameof(G4mvc)}.Routes").AppendLine();
+        sourceBuilder.Using(Configuration.RoutesNameSpace).AppendLine();
 
         sourceBuilder.Nullable(configuration.GlobalNullable);
 
