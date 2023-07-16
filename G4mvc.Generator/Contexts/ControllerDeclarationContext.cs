@@ -3,6 +3,7 @@ internal class ControllerDeclarationContext : BaseDeclarationContext
 {
     public ClassDeclarationSyntax Syntax { get; }
     public INamedTypeSymbol TypeSymbol { get; }
+    public string? ControllerArea { get; }
     public string ControllerName { get; }
     public string ControllerNameWithoutSuffix { get; }
 
@@ -11,6 +12,7 @@ internal class ControllerDeclarationContext : BaseDeclarationContext
         Syntax = syntax;
         TypeSymbol = typeSymbol;
 
+        ControllerArea = GetControllerArea(typeSymbol);
         ControllerName = Syntax.Identifier.Text;
         ControllerNameWithoutSuffix = ControllerName.RemoveEnd("Controller");
     }
@@ -20,5 +22,12 @@ internal class ControllerDeclarationContext : BaseDeclarationContext
         ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
 
         return new ControllerDeclarationContext(context.SemanticModel, classDeclaration, context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken)!, ((CSharpCompilation)context.SemanticModel.Compilation).IsNullableEnabled());
+    }
+
+    private static string? GetControllerArea(INamedTypeSymbol typeSymbol)
+    {
+        AttributeData? areaAttribute = typeSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
+
+        return areaAttribute?.ConstructorArguments[0].Value as string;
     }
 }

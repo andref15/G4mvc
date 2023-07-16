@@ -181,13 +181,6 @@ internal class ControllerRouteClassGenerator
         }
     }
 
-    private static string? GetControllerArea(INamedTypeSymbol typeSymbol)
-    {
-        AttributeData? areaAttribute = typeSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
-
-        return areaAttribute?.ConstructorArguments[0].Value as string;
-    }
-
     private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, string? area, string controller)
     {
         string root = area is null ? Path.Combine(projectDir, "Views", controller) : Path.Combine(projectDir, "Areas", area, "Views", controller);
