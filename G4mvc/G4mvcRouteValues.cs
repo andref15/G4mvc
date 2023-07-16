@@ -31,4 +31,37 @@ public class G4mvcRouteValues : RouteValueDictionary
 
         return this;
     }
+
+    public override string ToString()
+    {
+#if NETCOREAPP
+        int length = 3 + (Area?.Length ?? -1) + Controller.Length + Action.Length; //3 is the maximum number of slashes, if area is null count -1
+
+        return string.Create(length, this, (span, routeValues) =>
+        {
+            span[0] = '/';
+            int currentIdx = 1;
+
+            if (routeValues.Area is not null)
+            {
+                CopyPathSegmentToSpanAt(span, routeValues.Area, ref currentIdx);
+            }
+
+            CopyPathSegmentToSpanAt(span: span, routeValues.Controller, ref currentIdx);
+
+            routeValues.Action.AsSpan().CopyTo(span[currentIdx..]);
+        }); 
+#else
+        return $"/{(Area is null ? null : $"{Area}/")}{Controller}/{Action}";
+#endif
+    }
+
+#if NETCOREAPP
+    private static void CopyPathSegmentToSpanAt(Span<char> span, ReadOnlySpan<char> value, ref int idx)
+    {
+        value.CopyTo(span[idx..]);
+        idx += value.Length;
+        span[idx++] = '/';
+    }
+#endif
 }
