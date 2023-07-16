@@ -45,6 +45,7 @@ You can provide a JSON config file called g4mvc.json to change some of the defau
       "LinksClassName":  "Links",
       "StaticFilesPath": "wwwroot",
       "UseVirtualPathProcessor": false,
+      "MakeGeneratedClassesInternal": false,
       "ExcludedStaticFileExtensions": [],
       "ExcludedStaticFileDirectories": [],
       "AdditionalStaticFilesPaths": {}
@@ -64,13 +65,16 @@ The root path (relative to project dir) for which links will be generated
 Defines if you want to define a custom VirtualPathProcessor funcion. When this is set to true, all generated links will be static readonly instead of const fields and a partial class `VirtualPathProcessor` with a partial method `Process` will be generated and you have to write the implementation of this partial method.
 An example of this can be seen here:
 
-    public static partial class VirtualPathProcessor
+    internal static partial class VirtualPathProcessor
     {
         public static partial string Process(string path)
         {
             return path.ToUpper();
         }
     }
+
+#### MakeGeneratedClassesInternal
+Defines if the generated route classes and the MVC and Links class will be public or internal
 
 #### ExcludedStaticFileExtensions
 A list of file extensions that will be excluded from link generation

@@ -24,7 +24,7 @@ internal static class MvcClassGenerator
 
         sourceBuilder.Nullable(configuration.GlobalNullable);
 
-        using (sourceBuilder.BeginClass("public", configuration.JsonConfig.HelperClassName))
+        using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, configuration.JsonConfig.HelperClassName))
         {
 #if DEBUG
             sourceBuilder.AppendLine($"//v{version}"); 

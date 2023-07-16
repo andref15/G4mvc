@@ -20,7 +20,7 @@ internal class LinksGenerator
 
         if (configuration.JsonConfig.UseVirtualPathProcessor)
         {
-            using (sourceBuilder.BeginClass("public static partial", "VirtualPathProcessor"))
+            using (sourceBuilder.BeginClass("internal static partial", "VirtualPathProcessor"))
             {
                 sourceBuilder.AppendPartialMethod("public static", "string", "Process", "string path");
             }
@@ -28,7 +28,7 @@ internal class LinksGenerator
             sourceBuilder.AppendLine();
         }
 
-        using (sourceBuilder.BeginClass("public static", linksClassName))
+        using (sourceBuilder.BeginClass($"{configuration.GeneratedClassModifier} static", linksClassName))
         {
 #if DEBUG
             sourceBuilder.AppendLine($"//v{linksVersion}");

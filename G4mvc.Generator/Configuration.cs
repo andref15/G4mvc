@@ -10,6 +10,7 @@ internal partial class Configuration
     public JsonConfigClass JsonConfig { get; private set; } = null!;
     public List<string> GlobalUsings { get; private set; } = new();
     public bool GlobalNullable { get; private set; }
+    public string GeneratedClassModifier => JsonConfig.MakeGeneratedClassesInternal ? "internal" : "public";
 
     internal static Configuration CreateConfig(CSharpCompilation compilation, string? configFile)
     {
@@ -48,6 +49,7 @@ internal partial class Configuration
         public string LinksClassName { get; set; } = null!;
         public string StaticFilesPath { get; set; } = null!;
         public bool UseVirtualPathProcessor { get; set; }
+        public bool MakeGeneratedClassesInternal { get; set; }
         public List<string>? ExcludedStaticFileExtensions { get; set; }
         public List<string>? ExcludedStaticFileDirectories { get; set; }
         public Dictionary<string, string>? AdditionalStaticFilesPaths { get; set; }

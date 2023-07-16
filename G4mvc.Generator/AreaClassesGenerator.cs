@@ -14,7 +14,7 @@ internal static class AreaClassesGenerator
                 .Nullable(configuration.GlobalNullable);
 
             using (sourceBuilder.BeginNamespace($"{nameof(G4mvc)}.Areas", true))
-            using (sourceBuilder.BeginClass("public", $"{area.Key}Area"))
+            using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, $"{area.Key}Area"))
             {
                 sourceBuilder.AppendProperties("public", area.Value, "get", null, "new()");
             }

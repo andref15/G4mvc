@@ -45,7 +45,7 @@ internal class ControllerRouteClassGenerator
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
 
         using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
-        using (sourceBuilder.BeginClass("public", controllerRouteClassName))
+        using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, controllerRouteClassName))
         {
             if (mainControllerContext.ControllerArea is not null)
             {
