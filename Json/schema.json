@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "G4mvc",
+  "type": "object",
+  "properties": {
+    "HelperClassName": {
+      "type": "string",
+      "description": "Allows you to change the MVC prefix (e.g. MVC.Home.Index())"
+    },
+    "LinksClassName": {
+      "type": "string",
+      "description": "The class in which the links for static files are generated in"
+    },
+    "StaticFilesPath": {
+      "type": "string",
+      "description": "The root path (relative to project dir) for which links will be generated"
+    },
+    "UseVirtualPathProcessor": {
+      "type": "boolean",
+      "description": "Defines if you want to define a custom VirtualPathProcessor funcion"
+    },
+    "MakeGeneratedClassesInternal": {
+      "type": "boolean",
+      "description": "Defines if the generated route classes and the MVC and Links class will be public or internal"
+    },
+    "ExcludedStaticFileExtensions": {
+      "type": "array",
+      "description": "A list of file extensions that will be excluded from link generation",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "ExcludedStaticFileDirectories": {
+      "type": "array",
+      "description": "A list of directories (relative to project dir) that will be excluded from link generation",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "AdditionalStaticFilesPaths": {
+      "type": "object",
+      "description": "AdditionalStaticFilesPaths",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "CustomStaticFileDirectoryAlias": {
+      "type": "object",
+      "description": "A dictionary of aliases for certain directories (relative to project dir)",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}
