@@ -28,7 +28,7 @@ internal class LinksGenerator
             sourceBuilder.AppendLine();
         }
 
-        using (sourceBuilder.BeginClass($"{configuration.GeneratedClassModifier} static", linksClassName))
+        using (sourceBuilder.BeginClass($"{configuration.GeneratedClassModifier} static partial", linksClassName))
         {
 #if DEBUG
             sourceBuilder.AppendLine($"//v{linksVersion}");
@@ -49,7 +49,7 @@ internal class LinksGenerator
                     DirectoryInfo additionalRoot = new(Path.Combine(projectDir, additionalStaticFilesPath.Value));
 
                     string directoryClassName = linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(additionalRoot, linksClassNameSpan);
-                    using (sourceBuilder.BeginClass("public static", $"{directoryClassName}Links"))
+                    using (sourceBuilder.BeginClass("public static partial", $"{directoryClassName}"))
                     {
                         CreateLinksClass(sourceBuilder, additionalRoot, additionalRoot.FullName, additionalStaticFilesPath.Key.Trim('/'), excludedDirectories, linksClassNameSpan, configuration, linkIdentifierParser, context.CancellationToken);
                     }
@@ -102,7 +102,7 @@ internal class LinksGenerator
             sourceBuilder.AppendLine();
 
             string newClassName = linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(subDirectory, enclosingClass);
-            using (sourceBuilder.BeginClass("public static", $"{newClassName}Links"))
+            using (sourceBuilder.BeginClass("public static partial", $"{newClassName}"))
             {
                 CreateLinksClass(sourceBuilder, subDirectory, root, subRoute, excludedDirectories, newClassName.AsSpan(), configuration, linkIdentifierParser, cancellationToken);
             }
