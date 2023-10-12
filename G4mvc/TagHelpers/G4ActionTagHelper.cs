@@ -30,7 +30,7 @@ public class G4ActionTagHelper : TagHelper
     {
         output.Attributes.RemoveAll(_attributeName);
 
-        IUrlHelper urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
+        var urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
 
         switch (output.TagName)
         {
@@ -40,7 +40,7 @@ public class G4ActionTagHelper : TagHelper
             case _form:
                 output.Attributes.SetAttribute("action", urlHelper.RouteUrl(Action));
 
-                if (!context.AllAttributes.TryGetAttribute("method", out TagHelperAttribute attribute) || string.IsNullOrEmpty(attribute.Value?.ToString()))
+                if (!context.AllAttributes.TryGetAttribute("method", out var attribute) || string.IsNullOrEmpty(attribute.Value?.ToString()))
                 {
                     output.Attributes.SetAttribute("method", "POST");
                 }

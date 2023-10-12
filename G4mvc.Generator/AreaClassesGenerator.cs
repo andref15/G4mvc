@@ -3,11 +3,11 @@ internal static class AreaClassesGenerator
 {
     internal static void AddAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, Configuration configuration)
     {
-        foreach (KeyValuePair<string, Dictionary<string, string>> area in controllerRouteClassNames.Where(kvp => kvp.Key != string.Empty))
+        foreach (var area in controllerRouteClassNames.Where(kvp => kvp.Key != string.Empty))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            SourceBuilder sourceBuilder = configuration.CreateSourceBuilder();
+            var sourceBuilder = configuration.CreateSourceBuilder();
 
             sourceBuilder
                 .Using(Configuration.RoutesNameSpace)

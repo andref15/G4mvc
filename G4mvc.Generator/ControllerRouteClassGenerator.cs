@@ -10,7 +10,7 @@ internal class ControllerRouteClassGenerator
 
     internal void AddSharedController(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
     {
-        SourceBuilder sourceBuilder = _configuration.CreateSourceBuilder();
+        var sourceBuilder = _configuration.CreateSourceBuilder();
 
         AddClassNameToDictionary(controllerRouteClassNames, null, "Shared", $"SharedRoutes");
 
@@ -28,11 +28,11 @@ internal class ControllerRouteClassGenerator
 
     internal void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, List<ControllerDeclarationContext> controllerContexts)
     {
-        ControllerDeclarationContext mainControllerContext = controllerContexts[0];
+        var mainControllerContext = controllerContexts[0];
 
-        SourceBuilder sourceBuilder = _configuration.CreateSourceBuilder();
+        var sourceBuilder = _configuration.CreateSourceBuilder();
 
-        List<MethodDeclarationContext> httpMethods = controllerContexts.SelectMany(cc => cc.Syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
+        var httpMethods = controllerContexts.SelectMany(cc => cc.Syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
                 .Select(md => new MethodDeclarationContext(md, cc.Model, _configuration.GlobalNullable))
                 .Where(mc => IsActionResult(mc.MethodSymbol.ReturnType))).ToList();
 
@@ -41,7 +41,7 @@ internal class ControllerRouteClassGenerator
             .AppendLine()
             .Nullable(mainControllerContext.NullableEnabled);
 
-        string controllerRouteClassName = $"{mainControllerContext.ControllerNameWithoutSuffix}Routes";
+        var controllerRouteClassName = $"{mainControllerContext.ControllerNameWithoutSuffix}Routes";
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
 
         using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
@@ -57,9 +57,9 @@ internal class ControllerRouteClassGenerator
                 .AppendProperty("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames", "ActionNames", "get", null, SourceCode.NewCtor)
                 .AppendProperty("public", $"{mainControllerContext.ControllerNameWithoutSuffix}Views", "Views", "get", null, SourceCode.NewCtor);
 
-            Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups = httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")).ToDictionary(g => g.Key, g => g.AsEnumerable());
+            var httpMethodGroups = httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
-            foreach (string actionName in httpMethodGroups.Keys)
+            foreach (var actionName in httpMethodGroups.Keys)
             {
                 sourceBuilder.AppendProperty("public", $"{actionName}ParamsClass", $"{actionName}Params", "get", null, SourceCode.NewCtor);
             }
@@ -68,11 +68,11 @@ internal class ControllerRouteClassGenerator
 
             Dictionary<string, HashSet<string>> actionParameterGroups = new();
 
-            foreach (IGrouping<string, MethodDeclarationContext> httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
+            foreach (var httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
-                string actionName = httpMethodsGroup.Key;
+                var actionName = httpMethodsGroup.Key;
 
                 HashSet<string> methodsGroupParameterNames = new();
                 actionParameterGroups.Add(actionName, methodsGroupParameterNames);
@@ -84,18 +84,18 @@ internal class ControllerRouteClassGenerator
 
                 sourceBuilder.AppendLine();
 
-                foreach (MethodDeclarationContext httpMethodContext in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
+                foreach (var httpMethodContext in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
                 {
                     context.CancellationToken.ThrowIfCancellationRequested();
 
-                    List<ParameterContext> relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, httpMethodContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
+                    var relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, httpMethodContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
 
                     if (relevantParameters.Count is 0)
                     {
                         continue;
                     }
 
-                    foreach (string paramName in relevantParameters.Select(p => p.Symbol.Name))
+                    foreach (var paramName in relevantParameters.Select(p => p.Symbol.Name))
                     {
                         methodsGroupParameterNames.Add(paramName);
                     }
@@ -112,7 +112,7 @@ internal class ControllerRouteClassGenerator
                     {
                         sourceBuilder.AppendLine($"{nameof(G4mvcRouteValues)} route = {actionName}()").AppendLine();
 
-                        foreach (ParameterContext parameter in relevantParameters)
+                        foreach (var parameter in relevantParameters)
                         {
                             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -128,7 +128,7 @@ internal class ControllerRouteClassGenerator
 
             using (sourceBuilder.BeginClass("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames"))
             {
-                foreach (string actionName in httpMethodGroups.Keys)
+                foreach (var actionName in httpMethodGroups.Keys)
                 {
                     context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -136,13 +136,13 @@ internal class ControllerRouteClassGenerator
                 }
             }
 
-            foreach (KeyValuePair<string, HashSet<string>> actionParameters in actionParameterGroups)
+            foreach (var actionParameters in actionParameterGroups)
             {
                 sourceBuilder.AppendLine();
 
                 using (sourceBuilder.BeginClass("public", $"{actionParameters.Key}ParamsClass"))
                 {
-                    foreach (string paramName in actionParameters.Value)
+                    foreach (var paramName in actionParameters.Value)
                     {
                         sourceBuilder.AppendProperty("public", "string", paramName, $"get", null, SourceCode.Nameof(paramName));
                     }
@@ -183,7 +183,7 @@ internal class ControllerRouteClassGenerator
             sourceBuilder.AppendProperty("public", $"{controllerNameWithoutSuffix}ViewNames", "ViewNames", "get", null, SourceCode.NewCtor);
 
             List<string> viewNames = new();
-            foreach (KeyValuePair<string, string> view in GetViewsForController(projectDir, controllerArea, controllerNameWithoutSuffix))
+            foreach (var view in GetViewsForController(projectDir, controllerArea, controllerNameWithoutSuffix))
             {
                 viewNames.Add(view.Key);
                 sourceBuilder.AppendProperty("public", "string", view.Key, "get", null, SourceCode.String(view.Value));
@@ -193,7 +193,7 @@ internal class ControllerRouteClassGenerator
 
             using (sourceBuilder.BeginClass("public", $"{controllerNameWithoutSuffix}ViewNames"))
             {
-                foreach (string viewName in viewNames)
+                foreach (var viewName in viewNames)
                 {
                     sourceBuilder.AppendProperty("public", "string", viewName, "get", null, SourceCode.Nameof(viewName));
                 }
@@ -203,7 +203,7 @@ internal class ControllerRouteClassGenerator
 
     private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, string? area, string controller)
     {
-        string root = area is null ? Path.Combine(projectDir, "Views", controller) : Path.Combine(projectDir, "Areas", area, "Views", controller);
+        var root = area is null ? Path.Combine(projectDir, "Views", controller) : Path.Combine(projectDir, "Areas", area, "Views", controller);
         DirectoryInfo directory = new(root);
 
         if (!directory.Exists)
@@ -211,7 +211,7 @@ internal class ControllerRouteClassGenerator
             yield break;
         }
 
-        foreach (FileInfo file in directory.GetFiles("*.cshtml"))
+        foreach (var file in directory.GetFiles("*.cshtml"))
         {
             yield return new KeyValuePair<string, string>(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, "~/").Replace("\\", "/"));
         }

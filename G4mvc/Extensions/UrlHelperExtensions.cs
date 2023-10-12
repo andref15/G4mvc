@@ -19,7 +19,7 @@ public static class UrlHelperExtensions
 
     public static string ActionAbsolute(this IUrlHelper urlHelper, G4mvcRouteValues route)
     {
-        HttpRequest request = urlHelper.ActionContext.HttpContext.Request;
+        var request = urlHelper.ActionContext.HttpContext.Request;
         return $"{request.Scheme}://{request.Host}{urlHelper.RouteUrl(route)}";
     }
 

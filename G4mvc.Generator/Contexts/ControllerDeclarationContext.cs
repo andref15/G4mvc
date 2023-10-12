@@ -19,14 +19,14 @@ internal class ControllerDeclarationContext : BaseDeclarationContext
 
     public static ControllerDeclarationContext Create(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
-        ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
+        var classDeclaration = (ClassDeclarationSyntax)context.Node;
 
         return new ControllerDeclarationContext(context.SemanticModel, classDeclaration, context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken)!, ((CSharpCompilation)context.SemanticModel.Compilation).IsNullableEnabled());
     }
 
     private static string? GetControllerArea(INamedTypeSymbol typeSymbol)
     {
-        AttributeData? areaAttribute = typeSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
+        var areaAttribute = typeSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
 
         return areaAttribute?.ConstructorArguments[0].Value as string;
     }

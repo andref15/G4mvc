@@ -8,7 +8,7 @@ internal static class ControllerPartialClassGenerator
             return;
         }
 
-        SourceBuilder sourceBuilder = configuration.CreateSourceBuilder();
+        var sourceBuilder = configuration.CreateSourceBuilder();
 
         sourceBuilder
             .Using(nameof(G4mvc), Namespaces.MicrosoftAspNetCoreMvc).AppendLine()
