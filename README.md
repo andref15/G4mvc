@@ -7,7 +7,7 @@ It is an improved re-implementation of R4MVC using a C# Source Generator because
 ## Installation
 Install the [G4mvc](https://www.nuget.org/packages/G4mvc/) and [G4mvc.Generator](https://www.nuget.org/packages/G4mvc.Generator/) NuGet packages.
 
-To enable the use of the tag helpers for anchor and form tags, add the `@addTagHelper *, G4mvc.TagHelpers` directive either in the view, or in the _ViewImports.cshtml to enable them globally.
+To enable the use of the tag helpers for anchor and form tags, add the `@addTagHelper *, G4mvc` directive either in the view, or in the _ViewImports.cshtml to enable them globally.
 
 If you want to use the `IUrlHelper` and `IHtmlHelper` Extension methods, add a using directive for `G4mvc.Extensions` either in the view, or in the _ViewImports.cshtml to enable them globally.
 

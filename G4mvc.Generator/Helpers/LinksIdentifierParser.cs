@@ -9,17 +9,17 @@ internal class LinkIdentifierParser
     }
 
     public string GetConfigAliasOrIdentifierFromPath(FileSystemInfo fileSystemInfo, ReadOnlySpan<char> enclosing)
-        => _customStaticFileDirectoryClassNames.TryGetValue(fileSystemInfo.FullName, out string? alias)
+        => _customStaticFileDirectoryClassNames.TryGetValue(fileSystemInfo.FullName, out var alias)
             ? alias
             : CreateIdentifierFromPath(fileSystemInfo.Name, enclosing);
 
     private static string CreateIdentifierFromPath(string pathSegment, ReadOnlySpan<char> enclosing)
     {
-        ReadOnlySpan<char> span = pathSegment.AsSpan();
+        var span = pathSegment.AsSpan();
 
         Span<char> identifierName = stackalloc char[pathSegment.Length + 3];
 
-        int idx = 0;
+        var idx = 0;
         identifierName[idx++] = '@';
 
         if (!SyntaxFacts.IsIdentifierStartCharacter(span[0]))
@@ -27,7 +27,7 @@ internal class LinkIdentifierParser
             identifierName[idx++] = '_';
         }
 
-        for (int i = 0; i < span.Length; i++)
+        for (var i = 0; i < span.Length; i++)
         {
             if (SyntaxFacts.IsIdentifierPartCharacter(span[i]))
             {

@@ -7,16 +7,16 @@ internal class LinksGenerator
 #endif
         )
     {
-        SourceBuilder sourceBuilder = configuration.CreateSourceBuilder();
+        var sourceBuilder = configuration.CreateSourceBuilder();
 
         sourceBuilder.Nullable(configuration.GlobalNullable);
 
-        Dictionary<string, string> customStaticFileDirectoryClassNames = configuration.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? new Dictionary<string, string>();
+        var customStaticFileDirectoryClassNames = configuration.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? new Dictionary<string, string>();
 
-        List<string> excludedDirectories = configuration.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(projectDir, d)).FullName).ToList() ?? new List<string>();
-        Dictionary<string, string>? additionalStaticFilesPaths = configuration.JsonConfig.AdditionalStaticFilesPaths;
-        string linksClassName = configuration.JsonConfig.LinksClassName;
-        ReadOnlySpan<char> linksClassNameSpan = linksClassName.AsSpan();
+        var excludedDirectories = configuration.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(projectDir, d)).FullName).ToList() ?? new List<string>();
+        var additionalStaticFilesPaths = configuration.JsonConfig.AdditionalStaticFilesPaths;
+        var linksClassName = configuration.JsonConfig.LinksClassName;
+        var linksClassNameSpan = linksClassName.AsSpan();
 
         if (configuration.JsonConfig.UseVirtualPathProcessor)
         {
@@ -28,28 +28,28 @@ internal class LinksGenerator
             sourceBuilder.AppendLine();
         }
 
-        using (sourceBuilder.BeginClass($"{configuration.GeneratedClassModifier} static", linksClassName))
+        using (sourceBuilder.BeginClass($"{configuration.GeneratedClassModifier} static partial", linksClassName))
         {
 #if DEBUG
             sourceBuilder.AppendLine($"//v{linksVersion}");
 #endif
 
             LinkIdentifierParser linkIdentifierParser = new(configuration, projectDir);
-            string root = Path.Combine(projectDir, configuration.JsonConfig.StaticFilesPath);
+            var root = Path.Combine(projectDir, configuration.JsonConfig.StaticFilesPath);
             CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, linksClassNameSpan, configuration, linkIdentifierParser, context.CancellationToken);
 
             if (additionalStaticFilesPaths is not null)
             {
                 sourceBuilder.AppendLine();
 
-                foreach (KeyValuePair<string, string> additionalStaticFilesPath in additionalStaticFilesPaths)
+                foreach (var additionalStaticFilesPath in additionalStaticFilesPaths)
                 {
                     context.CancellationToken.ThrowIfCancellationRequested();
 
                     DirectoryInfo additionalRoot = new(Path.Combine(projectDir, additionalStaticFilesPath.Value));
 
-                    string directoryClassName = linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(additionalRoot, linksClassNameSpan);
-                    using (sourceBuilder.BeginClass("public static", $"{directoryClassName}Links"))
+                    var directoryClassName = linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(additionalRoot, linksClassNameSpan);
+                    using (sourceBuilder.BeginClass("public static partial", $"{directoryClassName}"))
                     {
                         CreateLinksClass(sourceBuilder, additionalRoot, additionalRoot.FullName, additionalStaticFilesPath.Key.Trim('/'), excludedDirectories, linksClassNameSpan, configuration, linkIdentifierParser, context.CancellationToken);
                     }
@@ -66,12 +66,12 @@ internal class LinksGenerator
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        FileInfo[] files = directory.GetFiles();
-        DirectoryInfo[] subDirectories = directory.GetDirectories();
+        var files = directory.GetFiles();
+        var subDirectories = directory.GetDirectories();
 
         sourceBuilder.AppendConst("public", "string", "UrlPath", SourceCode.String(GetRelativePath(root, subRoute, directory.FullName)));
 
-        foreach (FileInfo file in files)
+        foreach (var file in files)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -90,7 +90,7 @@ internal class LinksGenerator
             }
         }
 
-        foreach (DirectoryInfo subDirectory in subDirectories)
+        foreach (var subDirectory in subDirectories)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -101,8 +101,8 @@ internal class LinksGenerator
 
             sourceBuilder.AppendLine();
 
-            string newClassName = linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(subDirectory, enclosingClass);
-            using (sourceBuilder.BeginClass("public static", $"{newClassName}Links"))
+            var newClassName = linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(subDirectory, enclosingClass);
+            using (sourceBuilder.BeginClass("public static partial", $"{newClassName}"))
             {
                 CreateLinksClass(sourceBuilder, subDirectory, root, subRoute, excludedDirectories, newClassName.AsSpan(), configuration, linkIdentifierParser, cancellationToken);
             }

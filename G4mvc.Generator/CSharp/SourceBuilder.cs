@@ -80,7 +80,7 @@ internal class SourceBuilder
 
     public SourceBuilder AppendProperties(string modifier, Dictionary<string, string> propertyDefinitions, string get, string? set, string? assignmnet = null)
     {
-        foreach (KeyValuePair<string, string> propertyDefinition in propertyDefinitions)
+        foreach (var propertyDefinition in propertyDefinitions)
         {
             AppendProperty(modifier, propertyDefinition.Key, propertyDefinition.Value, get, set, assignmnet);
         }
@@ -105,7 +105,7 @@ internal class SourceBuilder
 
     public SourceBuilder AppendReturnCtor(string type, params string[] parameters)
     {
-        string ctorCall = _languageVersion >= LanguageVersion.CSharp9 ? "new" : $"new {type}";
+        var ctorCall = _languageVersion >= LanguageVersion.CSharp9 ? "new" : $"new {type}";
 
         AppendReturn($"{ctorCall}({string.Join(", ", parameters)})");
 
@@ -138,7 +138,7 @@ internal class SourceBuilder
 
     public SourceBuilderBlock BeginObjectInitializer(string type, bool @return, params string[] parameters)
     {
-        string ctorCall = _languageVersion >= LanguageVersion.CSharp9 ? "new" : $"new {type}";
+        var ctorCall = _languageVersion >= LanguageVersion.CSharp9 ? "new" : $"new {type}";
 
         AppendIndentation();
 
@@ -162,7 +162,7 @@ internal class SourceBuilder
 
     public SourceBuilder Using(IEnumerable<string> usings)
     {
-        foreach (string @using in usings)
+        foreach (var @using in usings)
         {
             _stringBuilder.AppendLine($"using {@using};");
         }

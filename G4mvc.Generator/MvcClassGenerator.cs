@@ -9,11 +9,11 @@ internal static class MvcClassGenerator
     {
         context.CancellationToken.ThrowIfCancellationRequested();
 
-        SourceBuilder sourceBuilder = configuration.CreateSourceBuilder();
+        var sourceBuilder = configuration.CreateSourceBuilder();
 
         sourceBuilder.Using(nameof(G4mvc));
 
-        List<string> areaNames = controllerRouteClassNames.Keys.Where(k => k != string.Empty).ToList();
+        var areaNames = controllerRouteClassNames.Keys.Where(k => k != string.Empty).ToList();
 
         if (areaNames.Count > 0)
         {
@@ -30,12 +30,12 @@ internal static class MvcClassGenerator
             sourceBuilder.AppendLine($"//v{version}"); 
 #endif
 
-            if (controllerRouteClassNames.TryGetValue(string.Empty, out Dictionary<string, string> classNames))
+            if (controllerRouteClassNames.TryGetValue(string.Empty, out var classNames))
             {
                 sourceBuilder.AppendProperties("public static", classNames, "get", null, SourceCode.NewCtor);
             }
 
-            foreach (string areaName in areaNames)
+            foreach (var areaName in areaNames)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 

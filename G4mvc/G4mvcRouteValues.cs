@@ -35,12 +35,12 @@ public class G4mvcRouteValues : RouteValueDictionary
     public override string ToString()
     {
 #if NETCOREAPP
-        int length = 3 + (Area?.Length ?? -1) + Controller.Length + Action.Length; //3 is the maximum number of slashes, if area is null count -1
+        var length = 3 + (Area?.Length ?? -1) + Controller.Length + Action.Length; //3 is the maximum number of slashes, if area is null count -1
 
         return string.Create(length, this, (span, routeValues) =>
         {
             span[0] = '/';
-            int currentIdx = 1;
+            var currentIdx = 1;
 
             if (routeValues.Area is not null)
             {

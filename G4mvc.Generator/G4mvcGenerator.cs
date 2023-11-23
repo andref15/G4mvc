@@ -13,11 +13,11 @@ public class G4mvcGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<string?> configFile = context.AdditionalTextsProvider
+        var configFile = context.AdditionalTextsProvider
             .Where(static f => Path.GetFileName(f.Path).Equals(Configuration.FileName, StringComparison.OrdinalIgnoreCase))
             .Select(static (at, ct) => at.GetText(ct)?.ToString());
 
-        IncrementalValuesProvider<ControllerDeclarationContext> classes = context.SyntaxProvider
+        var classes = context.SyntaxProvider
             .CreateSyntaxProvider(IsPossibleControllerDeclaration, ControllerDeclarationContext.Create)
             .Where(cs => !cs.TypeSymbol.IsAbstract && cs.TypeSymbol.DerrivesFromType(TypeNames.Controller));
 
@@ -42,7 +42,7 @@ public class G4mvcGenerator : IIncrementalGenerator
             return false;
         }
 
-        ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)syntaxNode;
+        var classDeclaration = (ClassDeclarationSyntax)syntaxNode;
 
         return classDeclaration.Identifier.Text.EndsWith("Controller");
     }
@@ -58,9 +58,9 @@ public class G4mvcGenerator : IIncrementalGenerator
             return;
         }
 
-        Configuration configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText);
+        var configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText);
 
-        if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out string? projectDir) || string.IsNullOrWhiteSpace(projectDir))
+        if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out var projectDir) || string.IsNullOrWhiteSpace(projectDir))
         {
             return;
         }
@@ -71,11 +71,11 @@ public class G4mvcGenerator : IIncrementalGenerator
 
         controllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
 
-        foreach (IGrouping<string, ControllerDeclarationContext> controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
+        foreach (var controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            List<ControllerDeclarationContext> controllerContextImplementations = controllerContextGroup.ToList();
+            var controllerContextImplementations = controllerContextGroup.ToList();
 
             controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContextImplementations);
             ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContextImplementations[0], configuration);
@@ -96,9 +96,9 @@ public class G4mvcGenerator : IIncrementalGenerator
         _linksVersion++; 
 #endif
 
-        Configuration configuration = Configuration.CreateConfig(parseOptions, configFileText);
+        var configuration = Configuration.CreateConfig(parseOptions, configFileText);
 
-        if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out string? projectDir) || string.IsNullOrWhiteSpace(projectDir))
+        if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out var projectDir) || string.IsNullOrWhiteSpace(projectDir))
         {
             return;
         }
