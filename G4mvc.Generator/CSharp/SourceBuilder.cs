@@ -2,17 +2,12 @@
 using System.Text;
 
 namespace G4mvc.Generator.CSharp;
-internal class SourceBuilder
+internal class SourceBuilder(LanguageVersion languageVersion)
 {
     private readonly StringBuilder _stringBuilder = new();
-    private readonly LanguageVersion _languageVersion;
+    private readonly LanguageVersion _languageVersion = languageVersion;
     private int _indentCounter = 0;
     private NamespaceBlock? _currentNamespace;
-
-    public SourceBuilder(LanguageVersion languageVersion)
-    {
-        _languageVersion = languageVersion;
-    }
 
     public SourceBuilder AppendLine()
     {

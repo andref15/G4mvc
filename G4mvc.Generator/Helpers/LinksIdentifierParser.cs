@@ -1,12 +1,7 @@
 ﻿namespace G4mvc.Generator.Helpers;
-internal class LinkIdentifierParser
+internal class LinkIdentifierParser(Configuration configuration, string projectDir)
 {
-    private readonly Dictionary<string, string> _customStaticFileDirectoryClassNames;
-
-    public LinkIdentifierParser(Configuration configuration, string projectDir)
-    {
-        _customStaticFileDirectoryClassNames = configuration.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? new Dictionary<string, string>();
-    }
+    private readonly Dictionary<string, string> _customStaticFileDirectoryClassNames = configuration.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? [];
 
     public string GetConfigAliasOrIdentifierFromPath(FileSystemInfo fileSystemInfo, ReadOnlySpan<char> enclosing)
         => _customStaticFileDirectoryClassNames.TryGetValue(fileSystemInfo.FullName, out var alias)

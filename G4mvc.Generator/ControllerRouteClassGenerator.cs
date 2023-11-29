@@ -1,12 +1,7 @@
 ﻿namespace G4mvc.Generator;
-internal class ControllerRouteClassGenerator
+internal class ControllerRouteClassGenerator(Configuration configuration)
 {
-    private readonly Configuration _configuration;
-
-    public ControllerRouteClassGenerator(Configuration configuration)
-    {
-        _configuration = configuration;
-    }
+    private readonly Configuration _configuration = configuration;
 
     internal void AddSharedController(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
     {
@@ -17,7 +12,7 @@ internal class ControllerRouteClassGenerator
         sourceBuilder.Nullable(_configuration.GlobalNullable);
 
         using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
-        using (sourceBuilder.BeginClass("public", "SharedRoutes"))
+        using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, "SharedRoutes"))
         {
             sourceBuilder.AppendProperty("public", "SharedViews", "Views", "get", null, SourceCode.NewCtor);
             AddViewsClass(sourceBuilder, projectDir, null, "Shared");
@@ -66,7 +61,7 @@ internal class ControllerRouteClassGenerator
 
             sourceBuilder.AppendLine();
 
-            Dictionary<string, HashSet<string>> actionParameterGroups = new();
+            Dictionary<string, HashSet<string>> actionParameterGroups = [];
 
             foreach (var httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
             {
@@ -74,7 +69,7 @@ internal class ControllerRouteClassGenerator
 
                 var actionName = httpMethodsGroup.Key;
 
-                HashSet<string> methodsGroupParameterNames = new();
+                HashSet<string> methodsGroupParameterNames = [];
                 actionParameterGroups.Add(actionName, methodsGroupParameterNames);
 
                 using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName))
@@ -170,7 +165,7 @@ internal class ControllerRouteClassGenerator
     {
         if (!controllerRouteClassNames.ContainsKey(controllerArea ?? string.Empty))
         {
-            controllerRouteClassNames[controllerArea ?? string.Empty] = new();
+            controllerRouteClassNames[controllerArea ?? string.Empty] = [];
         }
 
         controllerRouteClassNames[controllerArea ?? string.Empty].Add(controllerRouteClassName, controllerNameWithoutSuffix);
@@ -182,7 +177,7 @@ internal class ControllerRouteClassGenerator
         {
             sourceBuilder.AppendProperty("public", $"{controllerNameWithoutSuffix}ViewNames", "ViewNames", "get", null, SourceCode.NewCtor);
 
-            List<string> viewNames = new();
+            List<string> viewNames = [];
             foreach (var view in GetViewsForController(projectDir, controllerArea, controllerNameWithoutSuffix))
             {
                 viewNames.Add(view.Key);

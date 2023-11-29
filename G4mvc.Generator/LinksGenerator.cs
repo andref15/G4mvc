@@ -11,9 +11,9 @@ internal class LinksGenerator
 
         sourceBuilder.Nullable(configuration.GlobalNullable);
 
-        var customStaticFileDirectoryClassNames = configuration.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? new Dictionary<string, string>();
+        var customStaticFileDirectoryClassNames = configuration.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? [];
 
-        var excludedDirectories = configuration.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(projectDir, d)).FullName).ToList() ?? new List<string>();
+        var excludedDirectories = configuration.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(projectDir, d)).FullName).ToList() ?? [];
         var additionalStaticFilesPaths = configuration.JsonConfig.AdditionalStaticFilesPaths;
         var linksClassName = configuration.JsonConfig.LinksClassName;
         var linksClassNameSpan = linksClassName.AsSpan();
