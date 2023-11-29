@@ -1,12 +1,6 @@
 ﻿namespace G4mvc.Generator.Contexts;
-internal class ParameterContext
+internal class ParameterContext(ParameterSyntax syntax, IParameterSymbol symbol)
 {
-    public ParameterSyntax Syntax { get; }
-    public IParameterSymbol Symbol { get; }
-
-    public ParameterContext(ParameterSyntax syntax, IParameterSymbol symbol)
-    {
-        Syntax = syntax;
-        Symbol = symbol;
-    }
+    public ParameterSyntax Syntax { get; } = syntax;
+    public IParameterSymbol Symbol { get; } = symbol;
 }

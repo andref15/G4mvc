@@ -65,7 +65,7 @@ public class G4mvcGenerator : IIncrementalGenerator
             return;
         }
 
-        Dictionary<string, Dictionary<string, string>> controllerRouteClassNames = new();
+        Dictionary<string, Dictionary<string, string>> controllerRouteClassNames = [];
 
         ControllerRouteClassGenerator controllerRouteClassGenerator = new(configuration);
 

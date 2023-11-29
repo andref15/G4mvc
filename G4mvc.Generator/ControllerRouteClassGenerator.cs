@@ -1,12 +1,7 @@
 ﻿namespace G4mvc.Generator;
-internal class ControllerRouteClassGenerator
+internal class ControllerRouteClassGenerator(Configuration configuration)
 {
-    private readonly Configuration _configuration;
-
-    public ControllerRouteClassGenerator(Configuration configuration)
-    {
-        _configuration = configuration;
-    }
+    private readonly Configuration _configuration = configuration;
 
     internal void AddSharedController(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
     {

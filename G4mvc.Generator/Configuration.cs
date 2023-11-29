@@ -8,7 +8,7 @@ internal partial class Configuration
 
     public LanguageVersion LanguageVersion { get; private set; }
     public JsonConfigClass JsonConfig { get; private set; } = null!;
-    public List<string> GlobalUsings { get; private set; } = new();
+    public List<string> GlobalUsings { get; private set; } = [];
     public bool GlobalNullable { get; private set; }
     public string GeneratedClassModifier => JsonConfig.MakeGeneratedClassesInternal ? "internal" : "public";
 
