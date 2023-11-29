@@ -75,6 +75,38 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
+    public void CustomOptions_ExcludedStaticFileExtensions()
+    {
+        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
+        {
+            ExcludedStaticFileExtensions = new()
+            {
+                ".ico"
+            }
+        });
+
+        var expectedOutputs = new ExpectedOutputs(excludeIco: true);
+
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
+    }
+
+    [TestMethod]
+    public void CustomOptions_ExcludedStaticFileDirectories()
+    {
+        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
+        {
+            ExcludedStaticFileDirectories = new()
+            {
+                "wwwroot/css"
+            }
+        });
+
+        var expectedOutputs = new ExpectedOutputs(excludeCss: true);
+
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
+    }
+
+    [TestMethod]
     public void CustomOptions_AdditionalStaticFilesPaths()
     {
         var outputCompilation = BaseTest(new Configuration.JsonConfigClass
@@ -91,17 +123,17 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
-    public void CustomOptions_ExcludedStaticFileExtensions()
+    public void CustomOptions_CustomStaticFileDirectoryAlias()
     {
         var outputCompilation = BaseTest(new Configuration.JsonConfigClass
         {
-            ExcludedStaticFileExtensions = new()
+            CustomStaticFileDirectoryAlias = new()
             {
-                ".ico"
+                ["wwwroot/js"] = "otherjs"
             }
         });
 
-        var expectedOutputs = new ExpectedOutputs(excludeIco: true);
+        var expectedOutputs = new ExpectedOutputs(customJsName: true);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }

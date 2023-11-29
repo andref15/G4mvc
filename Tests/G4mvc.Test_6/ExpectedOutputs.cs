@@ -4,7 +4,7 @@ namespace G4mvc.Test_6;
 
 internal class ExpectedOutputs : ExpectedOutputsBase
 {
-	public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool excludeIco = false) : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, excludeIco) { }
+	public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false) : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, excludeIco, excludeCss, customJsName) { }
 
     public override string SharedClass => @"#nullable enable
 
@@ -334,13 +334,13 @@ public static partial class {LinksClassName}
 	public const string UrlPath = ""~"";
 	{(ExcludeIco ? "" : @$"public const string @{(AltRoot ? "alt" : "")}favicon_ico = ""~/{(AltRoot ? "alt" : "")}favicon.ico"";")}
 
-	public static partial class @css
+{(ExcludeCss ? "" : @$"public static partial class @css
 	{{
 		public const string UrlPath = ""~/css"";
 		public const string @{(AltRoot ? "alt" : "")}site_css = ""~/css/{(AltRoot ? "alt" : "")}site.css"";
-	}}
+	}}")}
 
-	public static partial class @js
+	public static partial class @{(CustomJsName ? "otherjs" : "js")}
 	{{
 		public const string UrlPath = ""~/js"";
 		public const string @{(AltRoot ? "alt" : "")}site_js = ""~/js/{(AltRoot ? "alt" : "")}site.js"";
