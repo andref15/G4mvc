@@ -6,14 +6,9 @@ using System.Diagnostics;
 
 namespace G4mvc.Test_8.Controllers;
 
-public partial class TestPartialController : Controller
+public partial class TestPartialController(ILogger<TestController> logger) : Controller
 {
-    private readonly ILogger<TestController> _logger;
-
-    public TestPartialController(ILogger<TestController> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<TestController> _logger = logger;
 
 #nullable disable
     [HttpGet]
