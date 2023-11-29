@@ -15,8 +15,8 @@ env:
   Minor: 0
   Patch: 0
   Suffix: preview.${{ github.run_number }}
-  VersionPrefix: '$(Major).$(Minor).$(Patch)'
-  Version: '$(VersionPrefix)-$(Suffix)'
+  VersionPrefix: '$Major.$Minor.$Patch'
+  Version: '$VersionPrefix-$Suffix'
 
 jobs:
   build:
@@ -41,5 +41,5 @@ jobs:
       run: dotnet test --no-build --verbosity normal
 
     - name: G4mvc
-      run:  dotnet pack --no-restore --no-build -p:vVersion=$(Version)
+      run:  dotnet pack --no-restore --no-build -p:vVersion=$Version
     
