@@ -17,7 +17,7 @@ internal class ControllerRouteClassGenerator
         sourceBuilder.Nullable(_configuration.GlobalNullable);
 
         using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
-        using (sourceBuilder.BeginClass("public", "SharedRoutes"))
+        using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, "SharedRoutes"))
         {
             sourceBuilder.AppendProperty("public", "SharedViews", "Views", "get", null, SourceCode.NewCtor);
             AddViewsClass(sourceBuilder, projectDir, null, "Shared");

@@ -62,6 +62,19 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
+    public void CustomOptions_MakeGeneratedClassesInternal()
+    {
+        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
+        {
+            MakeGeneratedClassesInternal = true
+        });
+
+        var expectedOutputs = new ExpectedOutputs(classesInternal: true);
+
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
+    }
+
+    [TestMethod]
     public void CustomOptions_StaticFilesPath()
     {
         var outputCompilation = BaseTest(new Configuration.JsonConfigClass

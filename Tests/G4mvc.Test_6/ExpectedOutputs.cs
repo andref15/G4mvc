@@ -4,181 +4,181 @@ namespace G4mvc.Test_6;
 
 internal class ExpectedOutputs : ExpectedOutputsBase
 {
-	public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false) : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, excludeIco, excludeCss, customJsName) { }
+	public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool classesInternal = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false) : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, classesInternal, excludeIco, excludeCss, customJsName) { }
 
-    public override string SharedClass => @"#nullable enable
+    public override string SharedClass => @$"#nullable enable
 
 namespace G4mvc.Routes;
-public class SharedRoutes
-{
-	public SharedViews Views { get; } = new();
+{(ClassesInternal ? "internal" : "public")} class SharedRoutes
+{{
+	public SharedViews Views {{ get; }} = new();
 	public class SharedViews
-	{
-		public SharedViewNames ViewNames { get; } = new();
-		public string Error { get; } = ""~//Views/Shared/Error.cshtml"";
-		public string _Layout { get; } = ""~//Views/Shared/_Layout.cshtml"";
-		public string _ValidationScriptsPartial { get; } = ""~//Views/Shared/_ValidationScriptsPartial.cshtml"";
+	{{
+		public SharedViewNames ViewNames {{ get; }} = new();
+		public string Error {{ get; }} = ""~//Views/Shared/Error.cshtml"";
+		public string _Layout {{ get; }} = ""~//Views/Shared/_Layout.cshtml"";
+		public string _ValidationScriptsPartial {{ get; }} = ""~//Views/Shared/_ValidationScriptsPartial.cshtml"";
 
 		public class SharedViewNames
-		{
-			public string Error { get; } = nameof(Error);
-			public string _Layout { get; } = nameof(_Layout);
-			public string _ValidationScriptsPartial { get; } = nameof(_ValidationScriptsPartial);
-		}
-	}
-}
+		{{
+			public string Error {{ get; }} = nameof(Error);
+			public string _Layout {{ get; }} = nameof(_Layout);
+			public string _ValidationScriptsPartial {{ get; }} = nameof(_ValidationScriptsPartial);
+		}}
+	}}
+}}
 ";
 
-    public override string TestRoutesClass => @"using G4mvc;
+    public override string TestRoutesClass => @$"using G4mvc;
 
 #nullable enable
 
 namespace G4mvc.Routes;
-public class TestRoutes
-{
-	public string Name { get; } = ""Test"";
-	public TestActionNames ActionNames { get; } = new();
-	public TestViews Views { get; } = new();
-	public IndexParamsClass IndexParams { get; } = new();
-	public PrivacyParamsClass PrivacyParams { get; } = new();
-	public ErrorParamsClass ErrorParams { get; } = new();
+{(ClassesInternal ? "internal" : "public")} class TestRoutes
+{{
+	public string Name {{ get; }} = ""Test"";
+	public TestActionNames ActionNames {{ get; }} = new();
+	public TestViews Views {{ get; }} = new();
+	public IndexParamsClass IndexParams {{ get; }} = new();
+	public PrivacyParamsClass PrivacyParams {{ get; }} = new();
+	public ErrorParamsClass ErrorParams {{ get; }} = new();
 
 	public G4mvcRouteValues Index()
-	{
+	{{
 		return new(null, ""Test"", ""Index"");
-	}
+	}}
 
 #nullable disable
 
 	public G4mvcRouteValues Index(string test)
-	{
+	{{
 		G4mvcRouteValues route = Index();
 
 		route[""test""] = test;
 
 		return route;
-	}
+	}}
 
 #nullable restore
 
 
 	public G4mvcRouteValues Privacy()
-	{
+	{{
 		return new(null, ""Test"", ""Privacy"");
-	}
+	}}
 
 	public G4mvcRouteValues Error()
-	{
+	{{
 		return new(null, ""Test"", ""Error"");
-	}
+	}}
 
 	public class TestActionNames
-	{
-		public string Index { get; } = nameof(Index);
-		public string Privacy { get; } = nameof(Privacy);
-		public string Error { get; } = nameof(Error);
-	}
+	{{
+		public string Index {{ get; }} = nameof(Index);
+		public string Privacy {{ get; }} = nameof(Privacy);
+		public string Error {{ get; }} = nameof(Error);
+	}}
 
 	public class IndexParamsClass
-	{
-		public string test { get; } = nameof(test);
-	}
+	{{
+		public string test {{ get; }} = nameof(test);
+	}}
 
 	public class PrivacyParamsClass
-	{
-	}
+	{{
+	}}
 
 	public class ErrorParamsClass
-	{
-	}
+	{{
+	}}
 
 	public class TestViews
-	{
-		public TestViewNames ViewNames { get; } = new();
-		public string Index { get; } = ""~//Views/Test/Index.cshtml"";
-		public string Privacy { get; } = ""~//Views/Test/Privacy.cshtml"";
+	{{
+		public TestViewNames ViewNames {{ get; }} = new();
+		public string Index {{ get; }} = ""~//Views/Test/Index.cshtml"";
+		public string Privacy {{ get; }} = ""~//Views/Test/Privacy.cshtml"";
 
 		public class TestViewNames
-		{
-			public string Index { get; } = nameof(Index);
-			public string Privacy { get; } = nameof(Privacy);
-		}
-	}
-}
+		{{
+			public string Index {{ get; }} = nameof(Index);
+			public string Privacy {{ get; }} = nameof(Privacy);
+		}}
+	}}
+}}
 ";
 
-	public override string TestPartialRoutesClass => @"using G4mvc;
+	public override string TestPartialRoutesClass => @$"using G4mvc;
 
 #nullable enable
 
 namespace G4mvc.Routes;
-public class TestPartialRoutes
-{
-	public string Name { get; } = ""TestPartial"";
-	public TestPartialActionNames ActionNames { get; } = new();
-	public TestPartialViews Views { get; } = new();
-	public IndexParamsClass IndexParams { get; } = new();
-	public PrivacyParamsClass PrivacyParams { get; } = new();
-	public ErrorParamsClass ErrorParams { get; } = new();
+{(ClassesInternal ? "internal" : "public")} class TestPartialRoutes
+{{
+	public string Name {{ get; }} = ""TestPartial"";
+	public TestPartialActionNames ActionNames {{ get; }} = new();
+	public TestPartialViews Views {{ get; }} = new();
+	public IndexParamsClass IndexParams {{ get; }} = new();
+	public PrivacyParamsClass PrivacyParams {{ get; }} = new();
+	public ErrorParamsClass ErrorParams {{ get; }} = new();
 
 	public G4mvcRouteValues Index()
-	{
+	{{
 		return new(null, ""TestPartial"", ""Index"");
-	}
+	}}
 
 #nullable disable
 
 	public G4mvcRouteValues Index(string test)
-	{
+	{{
 		G4mvcRouteValues route = Index();
 
 		route[""test""] = test;
 
 		return route;
-	}
+	}}
 
 #nullable restore
 
 
 	public G4mvcRouteValues Privacy()
-	{
+	{{
 		return new(null, ""TestPartial"", ""Privacy"");
-	}
+	}}
 
 	public G4mvcRouteValues Error()
-	{
+	{{
 		return new(null, ""TestPartial"", ""Error"");
-	}
+	}}
 
 	public class TestPartialActionNames
-	{
-		public string Index { get; } = nameof(Index);
-		public string Privacy { get; } = nameof(Privacy);
-		public string Error { get; } = nameof(Error);
-	}
+	{{
+		public string Index {{ get; }} = nameof(Index);
+		public string Privacy {{ get; }} = nameof(Privacy);
+		public string Error {{ get; }} = nameof(Error);
+	}}
 
 	public class IndexParamsClass
-	{
-		public string test { get; } = nameof(test);
-	}
+	{{
+		public string test {{ get; }} = nameof(test);
+	}}
 
 	public class PrivacyParamsClass
-	{
-	}
+	{{
+	}}
 
 	public class ErrorParamsClass
-	{
-	}
+	{{
+	}}
 
 	public class TestPartialViews
-	{
-		public TestPartialViewNames ViewNames { get; } = new();
+	{{
+		public TestPartialViewNames ViewNames {{ get; }} = new();
 
 		public class TestPartialViewNames
-		{
-		}
-	}
-}
+		{{
+		}}
+	}}
+}}
 ";
 
     public override string TestPartialClass => @$"using G4mvc;
@@ -189,7 +189,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace G4mvc.Test_6.Controllers;
 public partial class TestPartialController
 {{
-	protected G4mvc.Routes.TestPartialRoutes.TestPartialViews Views {{ get; }} = {MvcClassName}.TestPartial.Views;
+	{(ClassesInternal ? "private " : "")}protected G4mvc.Routes.TestPartialRoutes.TestPartialViews Views {{ get; }} = {MvcClassName}.TestPartial.Views;
 
 	protected RedirectToRouteResult RedirectToAction(G4mvcRouteValues route)
 	{{
@@ -209,7 +209,7 @@ using G4mvc.Routes;
 
 #nullable enable
 
-public class {MvcClassName}
+{(ClassesInternal ? "internal" : "public")} class {MvcClassName}
 {{
 	public static SharedRoutes Shared {{ get; }} = new();
 	public static TestRoutes Test {{ get; }} = new();
@@ -329,7 +329,7 @@ public static partial class Links
 "
         : @$"#nullable enable
 
-public static partial class {LinksClassName}
+{(ClassesInternal ? "internal" : "public")} static partial class {LinksClassName}
 {{
 	public const string UrlPath = ""~"";
 	{(ExcludeIco ? "" : @$"public const string @{(AltRoot ? "alt" : "")}favicon_ico = ""~/{(AltRoot ? "alt" : "")}favicon.ico"";")}
