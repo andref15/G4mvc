@@ -8,14 +8,10 @@ public class G4mvcAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
     public override AnalyzerConfigOptions GlobalOptions => new G4mvcAnalyzerConfigOptions();
 
     public override AnalyzerConfigOptions GetOptions(SyntaxTree tree)
-    {
-        return new G4mvcAnalyzerConfigOptions();
-    }
+        => new G4mvcAnalyzerConfigOptions();
 
     public override AnalyzerConfigOptions GetOptions(AdditionalText textFile)
-    {
-        return new G4mvcAnalyzerConfigOptions();
-    }
+        => new G4mvcAnalyzerConfigOptions();
 
     public class G4mvcAnalyzerConfigOptions : AnalyzerConfigOptions
     {
