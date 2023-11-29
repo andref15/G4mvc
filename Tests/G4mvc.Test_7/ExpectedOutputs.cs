@@ -1,10 +1,10 @@
 ﻿using G4mvc.TestBase;
 
-namespace G4mvc.Test_6;
+namespace G4mvc.Test_7;
 
 internal class ExpectedOutputs : ExpectedOutputsBase
 {
-	public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool classesInternal = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false) : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, classesInternal, excludeIco, excludeCss, customJsName) { }
+    public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool classesInternal = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false) : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, classesInternal, excludeIco, excludeCss, customJsName) { }
 
     public override string SharedClass => @$"#nullable enable
 
@@ -107,7 +107,7 @@ namespace G4mvc.Routes;
 }}
 ";
 
-	public override string TestPartialRoutesClass => @$"using G4mvc;
+    public override string TestPartialRoutesClass => @$"using G4mvc;
 
 #nullable enable
 
@@ -186,7 +186,7 @@ using Microsoft.AspNetCore.Mvc;
 
 #nullable enable
 
-namespace G4mvc.{nameof(Test_6)}.Controllers;
+namespace G4mvc.{nameof(Test_7)}.Controllers;
 public partial class TestPartialController
 {{
 	{(ClassesInternal ? "private " : "")}protected G4mvc.Routes.TestPartialRoutes.TestPartialViews Views {{ get; }} = {MvcClassName}.TestPartial.Views;
@@ -218,7 +218,7 @@ using G4mvc.Routes;
 ";
 
     public override string LinksClass => WithVpp
-		? @"#nullable enable
+        ? @"#nullable enable
 
 internal static partial class VirtualPathProcessor
 {
