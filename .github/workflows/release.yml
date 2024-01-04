@@ -43,7 +43,7 @@ jobs:
     - name: Version
       run: |
         echo "VERSION=$VersionPrefix-$Suffix"
-      if: ${{ github.ref_name !== 'main' }}
+      if: ${{ github.ref_name != 'main' }}
 
     - name: G4mvc
       run:  dotnet pack --no-restore --no-build -p:vVersion=$Version
