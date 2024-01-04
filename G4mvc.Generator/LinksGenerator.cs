@@ -66,7 +66,7 @@ internal class LinksGenerator
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var files = directory.GetFiles();
+        var files = directory.EnumerateFiles().OrderBy(f => f.Name);
         var subDirectories = directory.GetDirectories();
 
         sourceBuilder.AppendConst("public", "string", "UrlPath", SourceCode.String(GetRelativePath(root, subRoute, directory.FullName)));

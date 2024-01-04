@@ -116,7 +116,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
     {
         var directoryInfo = new DirectoryInfo(Environment.CurrentDirectory);
 
-        foreach (var file in directoryInfo.EnumerateFiles("*.cs", SearchOption.AllDirectories))
+        foreach (var file in directoryInfo.EnumerateFiles("*.cs", SearchOption.AllDirectories).OrderBy(f => f.Name))
         {
             using var stream = file.OpenRead();
             var sourceText = SourceText.From(stream);
