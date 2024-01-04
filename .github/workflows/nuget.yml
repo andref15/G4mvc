@@ -2,6 +2,9 @@ name: NuGet
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+    - '!main'
   
 env:
   Major: 3
