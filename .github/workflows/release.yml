@@ -5,18 +5,14 @@ name: .NET
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+  
 env:
   Major: 3
   Minor: 0
   Patch: 0
   Suffix: preview.${{ github.run_number }}
   VersionPrefix: '$Major.$Minor.$Patch'
-  Version: '$VersionPrefix-$Suffix'
+  Version: '$VersionPrefix'
 
 jobs:
   build:
@@ -29,7 +25,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     
     - name: Restore dependencies
       run: dotnet restore
