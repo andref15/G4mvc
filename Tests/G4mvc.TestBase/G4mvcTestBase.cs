@@ -81,12 +81,35 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
     {
         Assert.AreEqual(expectedCount, syntaxTrees.Length);
 
-        SyntaxAssert.AreAnyEquivalent(expectedOutputs.SharedClass, syntaxTrees, ParseOptions);
-        SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestRoutesClass, syntaxTrees, ParseOptions);
-        SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialRoutesClass, syntaxTrees, ParseOptions);
-        SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialClass, syntaxTrees, ParseOptions);
-        SyntaxAssert.AreAnyEquivalent(expectedOutputs.MvcClass, syntaxTrees, ParseOptions);
-        SyntaxAssert.AreAnyEquivalent(expectedOutputs.LinksClass, syntaxTrees, ParseOptions);
+        try
+        {
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.SharedClass, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestRoutesClass, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialRoutesClass, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialClass, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.MvcClass, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.LinksClass, syntaxTrees, ParseOptions);
+        }
+        catch
+        {
+            Console.WriteLine("EXPECTED:");
+            Console.WriteLine(expectedOutputs.SharedClass);
+            Console.WriteLine(expectedOutputs.TestRoutesClass);
+            Console.WriteLine(expectedOutputs.TestPartialRoutesClass);
+            Console.WriteLine(expectedOutputs.TestPartialClass);
+            Console.WriteLine(expectedOutputs.MvcClass);
+            Console.WriteLine(expectedOutputs.LinksClass);
+            Console.WriteLine("END EXPECTED\n");
+
+            Console.WriteLine("ACTUAL:");
+            foreach (var syntaxTree in syntaxTrees)
+            {
+                Console.WriteLine(syntaxTree);
+            }
+            Console.WriteLine("END ACTUAL\n");
+
+            throw;
+        }
     }
 
     protected IEnumerable<SyntaxTree> GetSyntaxTreesInBuildDirectory()
