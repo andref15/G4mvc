@@ -18,31 +18,14 @@ jobs:
     
     - name: Restore dependencies
       run: dotnet restore
-    
-    - name: Build
-      run: dotnet build --no-restore
-    
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-
-    - name: Release Version
-      run: |
-        echo "VERSION=$Major.$Minor.$Patch" >> $GITHUB_ENV
-      if: ${{ github.ref_name == 'main' }}
-
-    - name: Prerelease Version
-      run: |
-        echo "VERSION=$Major.$Minor.$Patch-preview.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
-      if: ${{ github.ref_name != 'main' }}
-
-    - name: Version
-      run: |
-        echo $env.Version
 
     - name: Pack Release
-      run:  dotnet pack -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }}
+      run:  dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -o ./packages/
       if: ${{ github.ref_name == 'main' }}
     
     - name: Pack Prerelease
-      run:  dotnet pack -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }};VersionSuffix=preview.${{ vars.GITHUB_RUN_NUMBER }}
+      run:  dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -p:VersionSuffix=preview.${{ github.run_number }} -o ./packages/
       if: ${{ github.ref_name != 'main' }}
+      
+    - name: Push
+      run: dotnet nuget push packages/*.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
