@@ -15,15 +15,15 @@ namespace G4mvc.Routes;
 	public class SharedViews
 	{{
 		public SharedViewNames ViewNames {{ get; }} = new();
-		public string Error {{ get; }} = ""~//Views/Shared/Error.cshtml"";
 		public string _Layout {{ get; }} = ""~//Views/Shared/_Layout.cshtml"";
 		public string _ValidationScriptsPartial {{ get; }} = ""~//Views/Shared/_ValidationScriptsPartial.cshtml"";
+		public string Error {{ get; }} = ""~//Views/Shared/Error.cshtml"";
 
 		public class SharedViewNames
 		{{
-			public string Error {{ get; }} = nameof(Error);
 			public string _Layout {{ get; }} = nameof(_Layout);
 			public string _ValidationScriptsPartial {{ get; }} = nameof(_ValidationScriptsPartial);
+			public string Error {{ get; }} = nameof(Error);
 		}}
 	}}
 }}
