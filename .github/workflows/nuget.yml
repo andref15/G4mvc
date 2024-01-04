@@ -8,9 +8,9 @@ on:
       - '!main'
   
 env:
-  Major: 3
+  Major: 4
   Minor: 0
-  Patch: 1
+  Patch: 0
 
 jobs:
   Create:
