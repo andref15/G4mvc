@@ -28,4 +28,5 @@ jobs:
       if: ${{ github.ref_name != 'main' }}
       
     - name: Push
-      run: dotnet nuget push packages/*.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+      working-directory: packages
+      run: dotnet nuget push *.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
