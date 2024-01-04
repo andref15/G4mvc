@@ -3,16 +3,13 @@
 
 name: Release
 
-on: 
+on:
   workflow_dispatch:
   
 env:
   Major: 3
   Minor: 0
   Patch: 0
-  Suffix: preview.${{ github.run_number }}
-  VersionPrefix: '$Major.$Minor.$Patch'
-  Version: '$VersionPrefix'
 
 jobs:
   build:
@@ -21,11 +18,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.0.x
     
     - name: Restore dependencies
       run: dotnet restore
@@ -36,11 +28,24 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
-    - name: Version
+    - name: Release Version
       run: |
-        echo "VERSION=$VersionPrefix-$Suffix"
+        echo "VERSION=$Major.$Minor.$Patch" >> $GITHUB_ENV
+      if: ${{ github.ref_name == 'main' }}
+
+    - name: Prerelease Version
+      run: |
+        echo "VERSION=$Major.$Minor.$Patch-preview.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
       if: ${{ github.ref_name != 'main' }}
 
-    - name: G4mvc
-      run:  dotnet pack --no-restore --no-build -p:vVersion=$Version
+    - name: Version
+      run: |
+        echo $env.Version
+
+    - name: Pack Release
+      run:  dotnet pack -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }}
+      if: ${{ github.ref_name == 'main' }}
     
+    - name: Pack Prerelease
+      run:  dotnet pack -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }};VersionSuffix=preview.${{ vars.GITHUB_RUN_NUMBER }}
+      if: ${{ github.ref_name != 'main' }}
