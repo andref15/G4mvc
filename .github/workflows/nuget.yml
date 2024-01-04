@@ -1,0 +1,32 @@
+name: NuGet
+
+on:
+  workflow_dispatch:
+  
+env:
+  Major: 3
+  Minor: 0
+  Patch: 0
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Pack Release
+      run:  dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -o ./packages/
+      if: ${{ github.ref_name == 'main' }}
+    
+    - name: Pack Prerelease
+      run:  dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -p:VersionSuffix=preview.${{ github.run_number }} -o ./packages/
+      if: ${{ github.ref_name != 'main' }}
+      
+    - name: Push
+      working-directory: packages
+      run: dotnet nuget push *.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
