@@ -4,7 +4,7 @@
 name: .NET
 
 on:
-  workflow_dispatch:
+  workflow_dispatch
   
 env:
   Major: 3
