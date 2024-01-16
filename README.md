@@ -4,6 +4,8 @@ G4mvc is a source generator for ASP.NET Core MVC apps that creates strongly type
 
 It is an improved re-implementation of R4MVC using a C# Source Generator because R4MVC lacks support for many newer language - and MVC features.
 
+[![CI](https://github.com/andref15/G4mvc/actions/workflows/ci.yml/badge.svg)](https://github.com/andref15/G4mvc/actions/workflows/ci.yml)
+
 ## Installation
 Install the [G4mvc](https://www.nuget.org/packages/G4mvc/) and [G4mvc.Generator](https://www.nuget.org/packages/G4mvc.Generator/) NuGet packages.
 
