@@ -23,10 +23,10 @@ public class G4mvcGenerator : IIncrementalGenerator
 
         IncrementalValueProvider<(ImmutableArray<ControllerDeclarationContext> ControllerContexts, ImmutableArray<string?> Configs)> configAndClasses = classes.Collect().Combine(configFile.Collect());
 
-        IncrementalValueProvider<(string? Config, ImmutableArray<ControllerDeclarationContext> ControllerContexts, AnalyzerConfigOptions AnalyzerConfigOptions)> analyzerOptionsCompilationConfigAndClasses = configAndClasses
+        var analyzerOptionsCompilationConfigAndClasses = configAndClasses
             .Combine(context.AnalyzerConfigOptionsProvider
                 .Select(static (a, ct) => a.GlobalOptions))
-            .Select(static (c, ct) => (c.Left.Configs.FirstOrDefault(), c.Left.ControllerContexts, AnalyzerConfigOptions: c.Right));
+            .Select(static (c, ct) => (Config: c.Left.Configs.FirstOrDefault(), c.Left.ControllerContexts, AnalyzerConfigOptions: c.Right));
         
         context.RegisterSourceOutput(analyzerOptionsCompilationConfigAndClasses, static (c, a) => ExecuteClassGeneration(c, a.Config, a.ControllerContexts, a.AnalyzerConfigOptions));
 
