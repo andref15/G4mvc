@@ -199,7 +199,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
     private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, string? area, string controller)
     {
         var root = area is null ? Path.Combine(projectDir, "Views", controller) : Path.Combine(projectDir, "Areas", area, "Views", controller);
-        DirectoryInfo directory = new(root);
+        var directory = new DirectoryInfo(root);
 
         if (!directory.Exists)
         {

@@ -24,6 +24,10 @@
       "type": "boolean",
       "description": "Defines if the generated route classes and the MVC and Links class will be public or internal"
     },
+    "EnableSubfoldersInViews": {
+      "type": "boolean",
+      "description": "Defines if subfolders in the controller's Views folder should be supported"
+    },
     "ExcludedStaticFileExtensions": {
       "type": "array",
       "description": "A list of file extensions that will be excluded from link generation",
