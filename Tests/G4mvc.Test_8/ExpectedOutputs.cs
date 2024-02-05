@@ -104,7 +104,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
                     public string Privacy { get; } = nameof(Privacy);
                 }
 
-        {{(EnumerateSubDirectories ? """
+                {{(EnumerateSubDirectories ? """
         public class SubDirViews
         {
             public SubDirViewNames ViewNames { get; } = new();
@@ -186,11 +186,6 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
 
             public class TestPartialViews
             {
-                public TestPartialViewNames ViewNames { get; } = new();
-
-                public class TestPartialViewNames
-                {
-                }
             }
         }
         """;
@@ -447,106 +442,108 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
                 }
             }
 
-            {{(AdditionalStatic ? @"public static partial class @wwwrootAlt
-    {
-        public const string UrlPath = ""~/wwwrootAlt"";
-        public const string @altfavicon_ico = ""~/wwwrootAlt/altfavicon.ico"";
-
-        public static partial class @css
-        {
-            public const string UrlPath = ""~/wwwrootAlt/css"";
-            public const string @altsite_css = ""~/wwwrootAlt/css/altsite.css"";
-        }
-
-        public static partial class @js
-        {
-            public const string UrlPath = ""~/wwwrootAlt/js"";
-            public const string @altsite_js = ""~/wwwrootAlt/js/altsite.js"";
-        }
-
-        public static partial class @lib
-        {
-            public const string UrlPath = ""~/wwwrootAlt/lib"";
-
-            public static partial class @bootstrap
+            {{(AdditionalStatic ? """
+            public static partial class @wwwrootAlt
             {
-                public const string UrlPath = ""~/wwwrootAlt/lib/bootstrap"";
-                public const string @LICENSE = ""~/wwwrootAlt/lib/bootstrap/LICENSE"";
+                public const string UrlPath = "~/wwwrootAlt";
+                public const string @altfavicon_ico = "~/wwwrootAlt/altfavicon.ico";
 
-                public static partial class @dist
+                public static partial class @css
                 {
-                    public const string UrlPath = ""~/wwwrootAlt/lib/bootstrap/dist"";
+                    public const string UrlPath = "~/wwwrootAlt/css";
+                    public const string @altsite_css = "~/wwwrootAlt/css/altsite.css";
+                }
 
-                    public static partial class @css
+                public static partial class @js
+                {
+                    public const string UrlPath = "~/wwwrootAlt/js";
+                    public const string @altsite_js = "~/wwwrootAlt/js/altsite.js";
+                }
+
+                public static partial class @lib
+                {
+                    public const string UrlPath = "~/wwwrootAlt/lib";
+
+                    public static partial class @bootstrap
                     {
-                        public const string UrlPath = ""~/wwwrootAlt/lib/bootstrap/dist/css"";
-                        public const string @bootstrap_grid_css = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-grid.css"";
-                        public const string @bootstrap_grid_css_map = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-grid.css.map"";
-                        public const string @bootstrap_grid_min_css = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-grid.min.css"";
-                        public const string @bootstrap_grid_min_css_map = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-grid.min.css.map"";
-                        public const string @bootstrap_reboot_css = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-reboot.css"";
-                        public const string @bootstrap_reboot_css_map = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-reboot.css.map"";
-                        public const string @bootstrap_reboot_min_css = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-reboot.min.css"";
-                        public const string @bootstrap_reboot_min_css_map = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map"";
-                        public const string @bootstrap_css = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap.css"";
-                        public const string @bootstrap_css_map = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap.css.map"";
-                        public const string @bootstrap_min_css = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap.min.css"";
-                        public const string @bootstrap_min_css_map = ""~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap.min.css.map"";
+                        public const string UrlPath = "~/wwwrootAlt/lib/bootstrap";
+                        public const string @LICENSE = "~/wwwrootAlt/lib/bootstrap/LICENSE";
+
+                        public static partial class @dist
+                        {
+                            public const string UrlPath = "~/wwwrootAlt/lib/bootstrap/dist";
+
+                            public static partial class @css
+                            {
+                                public const string UrlPath = "~/wwwrootAlt/lib/bootstrap/dist/css";
+                                public const string @bootstrap_grid_css = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-grid.css";
+                                public const string @bootstrap_grid_css_map = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-grid.css.map";
+                                public const string @bootstrap_grid_min_css = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-grid.min.css";
+                                public const string @bootstrap_grid_min_css_map = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-grid.min.css.map";
+                                public const string @bootstrap_reboot_css = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-reboot.css";
+                                public const string @bootstrap_reboot_css_map = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-reboot.css.map";
+                                public const string @bootstrap_reboot_min_css = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-reboot.min.css";
+                                public const string @bootstrap_reboot_min_css_map = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map";
+                                public const string @bootstrap_css = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap.css";
+                                public const string @bootstrap_css_map = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap.css.map";
+                                public const string @bootstrap_min_css = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap.min.css";
+                                public const string @bootstrap_min_css_map = "~/wwwrootAlt/lib/bootstrap/dist/css/bootstrap.min.css.map";
+                            }
+
+                            public static partial class @js
+                            {
+                                public const string UrlPath = "~/wwwrootAlt/lib/bootstrap/dist/js";
+                                public const string @bootstrap_bundle_js = "~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.bundle.js";
+                                public const string @bootstrap_bundle_js_map = "~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.bundle.js.map";
+                                public const string @bootstrap_bundle_min_js = "~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.bundle.min.js";
+                                public const string @bootstrap_bundle_min_js_map = "~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map";
+                                public const string @bootstrap_js = "~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.js";
+                                public const string @bootstrap_js_map = "~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.js.map";
+                                public const string @bootstrap_min_js = "~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.min.js";
+                                public const string @bootstrap_min_js_map = "~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.min.js.map";
+                            }
+                        }
                     }
 
-                    public static partial class @js
+                    public static partial class @jquery
                     {
-                        public const string UrlPath = ""~/wwwrootAlt/lib/bootstrap/dist/js"";
-                        public const string @bootstrap_bundle_js = ""~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.bundle.js"";
-                        public const string @bootstrap_bundle_js_map = ""~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.bundle.js.map"";
-                        public const string @bootstrap_bundle_min_js = ""~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.bundle.min.js"";
-                        public const string @bootstrap_bundle_min_js_map = ""~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map"";
-                        public const string @bootstrap_js = ""~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.js"";
-                        public const string @bootstrap_js_map = ""~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.js.map"";
-                        public const string @bootstrap_min_js = ""~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.min.js"";
-                        public const string @bootstrap_min_js_map = ""~/wwwrootAlt/lib/bootstrap/dist/js/bootstrap.min.js.map"";
+                        public const string UrlPath = "~/wwwrootAlt/lib/jquery";
+                        public const string @LICENSE_txt = "~/wwwrootAlt/lib/jquery/LICENSE.txt";
+
+                        public static partial class @dist
+                        {
+                            public const string UrlPath = "~/wwwrootAlt/lib/jquery/dist";
+                            public const string @jquery_js = "~/wwwrootAlt/lib/jquery/dist/jquery.js";
+                            public const string @jquery_min_js = "~/wwwrootAlt/lib/jquery/dist/jquery.min.js";
+                            public const string @jquery_min_map = "~/wwwrootAlt/lib/jquery/dist/jquery.min.map";
+                        }
+                    }
+
+                    public static partial class @jquery_validation
+                    {
+                        public const string UrlPath = "~/wwwrootAlt/lib/jquery-validation";
+                        public const string @LICENSE_md = "~/wwwrootAlt/lib/jquery-validation/LICENSE.md";
+
+                        public static partial class @dist
+                        {
+                            public const string UrlPath = "~/wwwrootAlt/lib/jquery-validation/dist";
+                            public const string @additional_methods_js = "~/wwwrootAlt/lib/jquery-validation/dist/additional-methods.js";
+                            public const string @additional_methods_min_js = "~/wwwrootAlt/lib/jquery-validation/dist/additional-methods.min.js";
+                            public const string @jquery_validate_js = "~/wwwrootAlt/lib/jquery-validation/dist/jquery.validate.js";
+                            public const string @jquery_validate_min_js = "~/wwwrootAlt/lib/jquery-validation/dist/jquery.validate.min.js";
+                        }
+                    }
+
+                    public static partial class @jquery_validation_unobtrusive
+                    {
+                        public const string UrlPath = "~/wwwrootAlt/lib/jquery-validation-unobtrusive";
+                        public const string @jquery_validate_unobtrusive_js = "~/wwwrootAlt/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js";
+                        public const string @jquery_validate_unobtrusive_min_js = "~/wwwrootAlt/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js";
+                        public const string @LICENSE_txt = "~/wwwrootAlt/lib/jquery-validation-unobtrusive/LICENSE.txt";
                     }
                 }
             }
-
-            public static partial class @jquery
-            {
-                public const string UrlPath = ""~/wwwrootAlt/lib/jquery"";
-                public const string @LICENSE_txt = ""~/wwwrootAlt/lib/jquery/LICENSE.txt"";
-
-                public static partial class @dist
-                {
-                    public const string UrlPath = ""~/wwwrootAlt/lib/jquery/dist"";
-                    public const string @jquery_js = ""~/wwwrootAlt/lib/jquery/dist/jquery.js"";
-                    public const string @jquery_min_js = ""~/wwwrootAlt/lib/jquery/dist/jquery.min.js"";
-                    public const string @jquery_min_map = ""~/wwwrootAlt/lib/jquery/dist/jquery.min.map"";
-                }
-            }
-
-            public static partial class @jquery_validation
-            {
-                public const string UrlPath = ""~/wwwrootAlt/lib/jquery-validation"";
-                public const string @LICENSE_md = ""~/wwwrootAlt/lib/jquery-validation/LICENSE.md"";
-
-                public static partial class @dist
-                {
-                    public const string UrlPath = ""~/wwwrootAlt/lib/jquery-validation/dist"";
-                    public const string @additional_methods_js = ""~/wwwrootAlt/lib/jquery-validation/dist/additional-methods.js"";
-                    public const string @additional_methods_min_js = ""~/wwwrootAlt/lib/jquery-validation/dist/additional-methods.min.js"";
-                    public const string @jquery_validate_js = ""~/wwwrootAlt/lib/jquery-validation/dist/jquery.validate.js"";
-                    public const string @jquery_validate_min_js = ""~/wwwrootAlt/lib/jquery-validation/dist/jquery.validate.min.js"";
-                }
-            }
-
-            public static partial class @jquery_validation_unobtrusive
-            {
-                public const string UrlPath = ""~/wwwrootAlt/lib/jquery-validation-unobtrusive"";
-                public const string @jquery_validate_unobtrusive_js = ""~/wwwrootAlt/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"";
-                public const string @jquery_validate_unobtrusive_min_js = ""~/wwwrootAlt/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"";
-                public const string @LICENSE_txt = ""~/wwwrootAlt/lib/jquery-validation-unobtrusive/LICENSE.txt"";
-            }
-        }
-    }" : "")}}
+            """ : "")}}
         }
         """;
 }

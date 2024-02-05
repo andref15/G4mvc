@@ -4,7 +4,7 @@ namespace G4mvc.Test_6;
 
 internal class ExpectedOutputs : ExpectedOutputsBase
 {
-    public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool classesInternal = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false) : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, classesInternal, excludeIco, excludeCss, customJsName) { }
+    public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool classesInternal = false, bool enumerateSubDirectories = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false) : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, classesInternal, enumerateSubDirectories, excludeIco, excludeCss, customJsName) { }
 
     public override string SharedClass => @$"#nullable enable
 
@@ -103,6 +103,19 @@ namespace G4mvc.Routes;
             public string Index {{ get; }} = nameof(Index);
             public string Privacy {{ get; }} = nameof(Privacy);
         }}
+
+        {(EnumerateSubDirectories ? @"
+        public class SubDirViews
+        {
+            public SubDirViewNames ViewNames { get; } = new();
+            public string SubItem { get; } = ""~/Views/Test/SubDir/SubItem.cshtml"";
+
+            public class SubDirViewNames
+            {
+                public string SubItem { get; } = nameof(SubItem);
+            }
+        }
+        " : null)}
     }}
 }}
 ";
@@ -172,11 +185,6 @@ namespace G4mvc.Routes;
 
     public class TestPartialViews
     {{
-        public TestPartialViewNames ViewNames {{ get; }} = new();
-
-        public class TestPartialViewNames
-        {{
-        }}
     }}
 }}
 ";
