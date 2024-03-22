@@ -1,6 +1,9 @@
 ﻿namespace G4mvc.Generator;
 internal class LinksGenerator
 {
+    private const string _vppClassName = "VirtualPathProcessor";
+    private const string _vppMethodName = "Process";
+
     public static void AddLinksClass(SourceProductionContext context, Configuration configuration, string projectDir
 #if DEBUG
         , int linksVersion 
@@ -9,6 +12,7 @@ internal class LinksGenerator
     {
         var sourceBuilder = configuration.CreateSourceBuilder();
 
+        sourceBuilder.Using(nameof(G4mvc));
         sourceBuilder.Nullable(configuration.GlobalNullable);
 
         var customStaticFileDirectoryClassNames = configuration.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? [];
@@ -20,9 +24,9 @@ internal class LinksGenerator
 
         if (configuration.JsonConfig.UseVirtualPathProcessor)
         {
-            using (sourceBuilder.BeginClass("internal static partial", "VirtualPathProcessor"))
+            using (sourceBuilder.BeginClass("internal static partial", _vppClassName))
             {
-                sourceBuilder.AppendPartialMethod("public static", "string", "Process", "string path");
+                sourceBuilder.AppendPartialMethod("public static", "string", _vppMethodName, "string path");
             }
 
             sourceBuilder.AppendLine();
@@ -82,11 +86,11 @@ internal class LinksGenerator
 
             if (configuration.JsonConfig.UseVirtualPathProcessor)
             {
-                sourceBuilder.AppendField("public static readonly", "string", linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"VirtualPathProcessor.Process(\"{GetRelativePath(root, subRoute, file.FullName)}\")");
+                sourceBuilder.AppendField("public static readonly", nameof(G4mvcContentLink), linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\", {_vppClassName}.{_vppMethodName}, {configuration.JsonConfig.UseProcessedPathForContentLink})");
             }
             else
             {
-                sourceBuilder.AppendConst("public", "string", linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), SourceCode.String(GetRelativePath(root, subRoute, file.FullName)));
+                sourceBuilder.AppendField("public static readonly", nameof(G4mvcContentLink), linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\")");
             }
         }
 

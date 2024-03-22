@@ -49,6 +49,7 @@ internal partial class Configuration
         public string LinksClassName { get; set; } = null!;
         public string StaticFilesPath { get; set; } = null!;
         public bool UseVirtualPathProcessor { get; set; }
+        public bool UseProcessedPathForContentLink { get; set; }
         public bool MakeGeneratedClassesInternal { get; set; }
         public List<string>? ExcludedStaticFileExtensions { get; set; }
         public List<string>? ExcludedStaticFileDirectories { get; set; }
