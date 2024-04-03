@@ -6,5 +6,6 @@ internal static class GlobalOptionConstant
         private const string _name = "build_property";
 
         internal const string ProjectDir = $"{_name}.projectdir";
+        internal const string RootNamespace = $"{_name}.rootnamespace";
     }
 }
