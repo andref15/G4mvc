@@ -1,66 +1,96 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace G4mvc.Generator;
-internal partial class Configuration
+internal struct Configuration(LanguageVersion languageVersion, bool globalNullable, string? configFile, AnalyzerConfigValues analyzerConfigValues)
 {
-    public const string FileName = "G4mvc.json";
+    private enum ClassNamespaceIdentifier
+    {
+        global,
+        project
+    }
+
+    public const string FileName = "g4mvc.json";
     public const string RoutesNameSpace = $"{nameof(G4mvc)}.Routes";
+    private string? _generatedClassNamespace;
+    private string? _generatedClassModifier;
 
-    public LanguageVersion LanguageVersion { get; private set; }
-    public JsonConfigClass JsonConfig { get; private set; } = null!;
-    public List<string> GlobalUsings { get; private set; } = [];
-    public bool GlobalNullable { get; private set; }
-    public string GeneratedClassModifier => JsonConfig.MakeGeneratedClassesInternal ? "internal" : "public";
-
-    internal static Configuration CreateConfig(CSharpCompilation compilation, string? configFile)
+    public LanguageVersion LanguageVersion { get; } = languageVersion;
+    public AnalyzerConfigValues AnalyzerConfigValues { get; } = analyzerConfigValues;
+    public JsonConfigClass JsonConfig { get; } = string.IsNullOrWhiteSpace(configFile) ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile!);
+    public bool GlobalNullable { get; } = globalNullable;
+    public string? GeneratedClassNamespace
     {
-        Configuration configuration = new()
+        get
         {
-            LanguageVersion = compilation.LanguageVersion,
-            GlobalNullable = compilation.IsNullableEnabled(),
-            JsonConfig = configFile is null ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile) ?? new()
-        };
+            if (_generatedClassNamespace is not null)
+            {
+                return _generatedClassNamespace;
+            }
 
-        configuration.JsonConfig.SetDefaults();
+            var @namespace = JsonConfig.GeneratedClassNamespace;
 
-        return configuration;
+            if (Enum.TryParse<ClassNamespaceIdentifier>(@namespace, true, out var identifier))
+            {
+                @namespace = identifier switch
+                {
+                    ClassNamespaceIdentifier.global => null,
+                    ClassNamespaceIdentifier.project => AnalyzerConfigValues.RootNamespace,
+                    _ => null
+                };
+            }
+
+            return _generatedClassNamespace = @namespace;
+        }
     }
 
-    internal static Configuration CreateConfig(CSharpParseOptions parseOptions, string? configFile)
-    {
-        Configuration configuration = new()
-        {
-            LanguageVersion = parseOptions.LanguageVersion,
-            GlobalNullable = true,
-            JsonConfig = configFile is null ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile) ?? new()
-        };
+    public string GeneratedClassModifier => _generatedClassModifier ??= JsonConfig.MakeGeneratedClassesInternal ? "internal" : "public";
 
-        configuration.JsonConfig.SetDefaults();
+    internal static Configuration CreateConfig(CSharpCompilation compilation, string? configFile, AnalyzerConfigValues analyzerConfigValues)
+        => new(compilation.LanguageVersion, compilation.IsNullableEnabled(), configFile, analyzerConfigValues);
 
-        return configuration;
-    }
+    internal static Configuration CreateConfig(CSharpParseOptions parseOptions, string? configFile, AnalyzerConfigValues analyzerConfigValues)
+        => new(parseOptions.LanguageVersion, true, configFile, analyzerConfigValues);
 
-    internal SourceBuilder CreateSourceBuilder()
+    internal readonly SourceBuilder CreateSourceBuilder()
         => new(LanguageVersion);
 
-    internal class JsonConfigClass
+    internal readonly struct JsonConfigClass
     {
-        public string HelperClassName { get; set; } = null!;
-        public string LinksClassName { get; set; } = null!;
-        public string StaticFilesPath { get; set; } = null!;
-        public bool UseVirtualPathProcessor { get; set; }
-        public bool UseProcessedPathForContentLink { get; set; }
-        public bool MakeGeneratedClassesInternal { get; set; }
-        public List<string>? ExcludedStaticFileExtensions { get; set; }
-        public List<string>? ExcludedStaticFileDirectories { get; set; }
-        public Dictionary<string, string>? AdditionalStaticFilesPaths { get; set; }
-        public Dictionary<string, string>? CustomStaticFileDirectoryAlias { get; set; }
+        public string HelperClassName { get; }
+        public string LinksClassName { get; }
+        public string StaticFilesPath { get; }
+        public bool UseVirtualPathProcessor { get; }
+        public bool UseProcessedPathForContentLink { get; }
+        public bool MakeGeneratedClassesInternal { get; }
+        public string GeneratedClassNamespace { get; }
+        public string[]? ExcludedStaticFileExtensions { get; }
+        public string[]? ExcludedStaticFileDirectories { get; }
+        public IReadOnlyDictionary<string, string>? AdditionalStaticFilesPaths { get; }
+        public IReadOnlyDictionary<string, string>? CustomStaticFileDirectoryAlias { get; }
 
-        internal void SetDefaults()
+        public JsonConfigClass()
         {
-            HelperClassName ??= "MVC";
-            LinksClassName ??= "Links";
-            StaticFilesPath ??= "wwwroot";
+            HelperClassName = "MVC";
+            LinksClassName = "Links";
+            StaticFilesPath = "wwwroot";
+            GeneratedClassNamespace = "global";
+        }
+
+        [JsonConstructor]
+        public JsonConfigClass(string? helperClassName, string? linksClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool useProcessedPathForContentLink, bool makeGeneratedClassesInternal, string? generatedClassNamespace, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
+        {
+            HelperClassName = helperClassName ?? "MVC";
+            LinksClassName = linksClassName ?? "Links";
+            StaticFilesPath = staticFilesPath ?? "wwwroot";
+            UseVirtualPathProcessor = useVirtualPathProcessor;
+            UseProcessedPathForContentLink = useProcessedPathForContentLink;
+            MakeGeneratedClassesInternal = makeGeneratedClassesInternal;
+            GeneratedClassNamespace = generatedClassNamespace ?? nameof(ClassNamespaceIdentifier.global);
+            ExcludedStaticFileExtensions = excludedStaticFileExtensions;
+            ExcludedStaticFileDirectories = excludedStaticFileDirectories;
+            AdditionalStaticFilesPaths = additionalStaticFilesPaths;
+            CustomStaticFileDirectoryAlias = customStaticFileDirectoryAlias;
         }
     }
 }
