@@ -1,5 +1,5 @@
 ﻿namespace G4mvc.TestBase;
-public abstract class ExpectedOutputsBase(string? mvcClassName, string? linksClassName, bool altRoot, bool additionalStatic, bool withVpp, bool classesInternal, bool excludeIco, bool excludeCss, bool customJsName)
+public abstract class ExpectedOutputsBase(string? mvcClassName, string? linksClassName, bool altRoot, bool additionalStatic, bool withVpp, bool vppForContent, bool classesInternal, bool excludeIco, bool excludeCss, bool customJsName)
 {
     private const string _mvcDefault = "MVC";
     private const string _linksDefault = "Links";
@@ -7,6 +7,8 @@ public abstract class ExpectedOutputsBase(string? mvcClassName, string? linksCla
     protected readonly bool AltRoot = altRoot;
     protected readonly bool AdditionalStatic = additionalStatic;
     protected readonly bool WithVpp = withVpp;
+    protected readonly bool VppForContent = vppForContent;
+    protected readonly string VppForContentStr = vppForContent ? "true" : "false";
     protected readonly bool ClassesInternal = classesInternal;
     protected readonly bool ExcludeIco = excludeIco;
     protected readonly bool ExcludeCss = excludeCss;
