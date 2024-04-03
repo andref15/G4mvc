@@ -58,18 +58,15 @@ public class G4mvcGenerator : IIncrementalGenerator
             return;
         }
 
-        var configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText);
+        var analyzerConfigValues = GetAnalyzerConfigValues(analyzerConfigOptions);
 
-        if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out var projectDir) || string.IsNullOrWhiteSpace(projectDir))
-        {
-            return;
-        }
+        var configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText, analyzerConfigValues);
 
         Dictionary<string, Dictionary<string, string>> controllerRouteClassNames = [];
 
         ControllerRouteClassGenerator controllerRouteClassGenerator = new(configuration);
 
-        controllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
+        controllerRouteClassGenerator.AddSharedController(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames);
 
         foreach (var controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {
@@ -77,7 +74,7 @@ public class G4mvcGenerator : IIncrementalGenerator
 
             var controllerContextImplementations = controllerContextGroup.ToList();
 
-            controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContextImplementations);
+            controllerRouteClassGenerator.AddControllerRouteClass(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames, controllerContextImplementations);
             ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContextImplementations[0], configuration);
         }
 
@@ -93,20 +90,29 @@ public class G4mvcGenerator : IIncrementalGenerator
     private static void ExecuteLinksGeneration(SourceProductionContext context, string? configFileText, AnalyzerConfigOptions analyzerConfigOptions, CSharpParseOptions parseOptions)
     {
 #if DEBUG
-        _linksVersion++; 
+        _linksVersion++;
 #endif
 
-        var configuration = Configuration.CreateConfig(parseOptions, configFileText);
+        var analyzerConfigValues = GetAnalyzerConfigValues(analyzerConfigOptions);
 
-        if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out var projectDir) || string.IsNullOrWhiteSpace(projectDir))
-        {
-            return;
-        }
+        var configuration = Configuration.CreateConfig(parseOptions, configFileText, analyzerConfigValues);
 
-        LinksGenerator.AddLinksClass(context, configuration, projectDir
+        LinksGenerator.AddLinksClass(context, configuration
 #if DEBUG
         , _linksVersion 
 #endif
         );
+    }
+
+    private static AnalyzerConfigValues GetAnalyzerConfigValues(AnalyzerConfigOptions analyzerConfigOptions)
+    {
+        if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out var projectDir) || string.IsNullOrWhiteSpace(projectDir))
+        {
+            throw new InvalidOperationException($"No AnalyzerConfigOption for {GlobalOptionConstant.BuildProperty.ProjectDir} could be found! This should not happen.");
+        }
+
+        _ = analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.RootNamespace, out var rootNamespace);
+
+        return new AnalyzerConfigValues(projectDir, rootNamespace);
     }
 }
