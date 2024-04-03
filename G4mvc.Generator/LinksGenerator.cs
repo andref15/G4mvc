@@ -47,6 +47,7 @@ internal class LinksGenerator
             LinkIdentifierParser linkIdentifierParser = new(configuration, projectDir);
             var root = Path.Combine(projectDir, configuration.JsonConfig.StaticFilesPath);
             var classPath = "";
+            _existingLinksClasses.Clear();
 
             CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, linksClassNameSpan, configuration, linkIdentifierParser, classPath, context.CancellationToken);
 
