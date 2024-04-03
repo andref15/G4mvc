@@ -16,8 +16,17 @@ internal class LinksGenerator
 
         sourceBuilder
             .Using(nameof(G4mvc))
-            .AppendLine()
-            .Nullable(configuration.GlobalNullable);
+            .AppendLine();
+
+        IDisposable? namespaceDisposable = null;
+
+        if (configuration.GeneratedClassNamespace is not null)
+        {
+            namespaceDisposable = sourceBuilder.BeginNamespace(configuration.GeneratedClassNamespace, true);
+            sourceBuilder.AppendLine();
+        }
+
+        sourceBuilder.Nullable(configuration.GlobalNullable);
 
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
@@ -58,6 +67,8 @@ internal class LinksGenerator
         }
 
         context.CancellationToken.ThrowIfCancellationRequested();
+
+        namespaceDisposable?.Dispose();
 
         context.AddGeneratedSource(configuration.JsonConfig.LinksClassName, sourceBuilder);
     }

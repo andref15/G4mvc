@@ -10,8 +10,15 @@ internal static class ControllerPartialClassGenerator
 
         var sourceBuilder = configuration.CreateSourceBuilder();
 
+        sourceBuilder.Using(nameof(G4mvc), Namespaces.MicrosoftAspNetCoreMvc);
+
+        if (configuration.GeneratedClassNamespace is not null)
+        {
+            sourceBuilder.Using(configuration.GeneratedClassNamespace);
+        }
+
         sourceBuilder
-            .Using(nameof(G4mvc), Namespaces.MicrosoftAspNetCoreMvc).AppendLine()
+            .AppendLine()
             .Nullable(controllerContext.NullableEnabled);
 
         using (sourceBuilder.BeginNamespace(controllerContext.TypeSymbol.ContainingNamespace.ToDisplayString(), true))

@@ -22,6 +22,13 @@ internal static class MvcClassGenerator
 
         sourceBuilder.Using(Configuration.RoutesNameSpace).AppendLine();
 
+        IDisposable? namespaceDisposable = null;
+
+        if (configuration.GeneratedClassNamespace is not null)
+        {
+            namespaceDisposable = sourceBuilder.BeginNamespace(configuration.GeneratedClassNamespace, true);
+        }
+
         sourceBuilder.Nullable(configuration.GlobalNullable);
 
         using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, configuration.JsonConfig.HelperClassName))
@@ -44,6 +51,8 @@ internal static class MvcClassGenerator
         }
 
         context.CancellationToken.ThrowIfCancellationRequested();
+
+        namespaceDisposable?.Dispose();
 
         context.AddGeneratedSource(configuration.JsonConfig.HelperClassName, sourceBuilder);
     }
