@@ -22,6 +22,13 @@ public class G4mvcContentLink(string path, Func<string, string>? processor = nul
     public string ToString(bool processed)
         => processed ? _processedPath : _path;
 
+    /// <summary>
+    /// Wrapper for <see cref="IUrlHelper.Content(string?)"/>.
+    /// If <see cref="useProcessedPathForContentUrl"/> is set to true in the ctor, uses processed path for content url generation,
+    /// otherwise the raw path is used.
+    /// </summary>
+    /// <param name="urlHelper">The <see cref="IUrlHelper"/> instance.</param>
+    /// <returns>The application absolute path.</returns>
     public string ToContentUrl(IUrlHelper urlHelper)
         => urlHelper.Content(_useProcessedPathForContentUrl ? _processedPath : _path);
 }
