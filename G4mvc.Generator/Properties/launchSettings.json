@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Run": {
-      "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\Test60\\Test60.csproj"
-    }
-  }
-}
