@@ -208,7 +208,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
         foreach (var file in directory.EnumerateFiles("*.cshtml").OrderBy(f => f.Name))
         {
-            yield return new KeyValuePair<string, string>(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, "~/").Replace("\\", "/"));
+            yield return new KeyValuePair<string, string>(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, "~").Replace("\\", "/"));
         }
     }
 }
