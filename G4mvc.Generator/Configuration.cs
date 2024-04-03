@@ -92,5 +92,11 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
             AdditionalStaticFilesPaths = additionalStaticFilesPaths;
             CustomStaticFileDirectoryAlias = customStaticFileDirectoryAlias;
         }
+
+        /// <summary>
+        /// Only use this for tests!
+        /// </summary>
+        internal static JsonConfigClass Create(string? helperClassName = null, string? linksClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool useProcessedPathForContentLink = false, bool makeGeneratedClassesInternal = false, string? generatedClassNamespace = null, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
+            => new(helperClassName, linksClassName, staticFilesPath, useVirtualPathProcessor, useProcessedPathForContentLink, makeGeneratedClassesInternal, generatedClassNamespace, excludedStaticFileExtensions, excludedStaticFileDirectories, additionalStaticFilesPaths, customStaticFileDirectoryAlias);
     }
 }
