@@ -40,19 +40,16 @@ public class G4ContentTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
 
         var urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
 
-        switch (output.TagName)
+        var sourceAttributeName = output.TagName switch
         {
-            case _embed or _iframe or _img or _script or _source or _track or _video:
-                output.Attributes.SetAttribute("src", Content.ToContentUrl(urlHelper));
-                break;
-            case _link:
-                output.Attributes.SetAttribute("href", Content.ToContentUrl(urlHelper));
-                break;
-            case _object:
-                output.Attributes.SetAttribute("data", Content.ToContentUrl(urlHelper));
-                break;
-            default:
-                break;
+            _embed or _iframe or _img or _script or _source or _track or _video => "src",
+            _link => "href",
+            _ => null
+        };
+
+        if (sourceAttributeName is not null)
+        {
+            output.Attributes.SetAttribute(sourceAttributeName, Content.ToContentUrl(urlHelper)); 
         }
 
         return base.ProcessAsync(context, output);
