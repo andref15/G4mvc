@@ -74,6 +74,15 @@ public class G4mvcTests : G4mvcTestBase
         var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(generatedClassNamespace: classNamespace));
 
         var expectedOutputs = new ExpectedOutputs(classNamespace: classNamespace);
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
+    }
+
+    [TestMethod]
+    public void CustomOptions_EnableSubfoldersInViews()
+    {
+        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(enableSubfoldersInViews: true));
+
+        var expectedOutputs = new ExpectedOutputs(enumerateSubDirectories: true);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }

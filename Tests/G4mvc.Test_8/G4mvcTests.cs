@@ -81,6 +81,16 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
+    public void CustomOptions_EnableSubfoldersInViews()
+    {
+        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(enableSubfoldersInViews: true));
+
+        var expectedOutputs = new ExpectedOutputs(enumerateSubDirectories: true);
+
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
+    }
+
+    [TestMethod]
     public void CustomOptions_StaticFilesPath()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(staticFilesPath: "wwwrootAlt"));

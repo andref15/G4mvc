@@ -4,11 +4,10 @@ namespace G4mvc.Test_7;
 
 internal class ExpectedOutputs : ExpectedOutputsBase
 {
-    public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool vppForContent = false, bool classesInternal = false, string? classNamespace = null, bool excludeIco = false, bool excludeCss = false, bool customJsName = false)
-        : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, vppForContent, classesInternal, classNamespace, excludeIco, excludeCss, customJsName)
+    public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool vppForContent = false, bool classesInternal = false, string? classNamespace = null, bool enumerateSubDirectories = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false)
+        : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, vppForContent, classesInternal, classNamespace, enumerateSubDirectories, excludeIco, excludeCss, customJsName)
     {
     }
-
     public override string SharedClass => $$"""
         #nullable enable
 
@@ -108,6 +107,19 @@ internal class ExpectedOutputs : ExpectedOutputsBase
                     public string Index { get; } = nameof(Index);
                     public string Privacy { get; } = nameof(Privacy);
                 }
+
+                {{(EnumerateSubDirectories ? """
+                public class SubDirViews
+                {
+                    public SubDirViewNames ViewNames { get; } = new();
+                    public string SubItem { get; } = "~/Views/Test/SubDir/SubItem.cshtml";
+
+                    public class SubDirViewNames
+                    {
+                        public string SubItem { get; } = nameof(SubItem);
+                    }
+                }
+                """ : null)}}
             }
         }
         """;
@@ -178,11 +190,6 @@ internal class ExpectedOutputs : ExpectedOutputsBase
 
             public class TestPartialViews
             {
-                public TestPartialViewNames ViewNames { get; } = new();
-
-                public class TestPartialViewNames
-                {
-                }
             }
         }
         """;
@@ -555,6 +562,5 @@ internal class ExpectedOutputs : ExpectedOutputsBase
                 }
             """ : "")}}
         }
-
         """;
 }

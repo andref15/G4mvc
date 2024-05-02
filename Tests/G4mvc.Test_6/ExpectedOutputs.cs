@@ -4,10 +4,9 @@ namespace G4mvc.Test_6;
 
 internal class ExpectedOutputs : ExpectedOutputsBase
 {
-    public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool vppForContent = false, bool classesInternal = false, string? classNamespace = null, bool excludeIco = false, bool excludeCss = false, bool customJsName = false)
-        : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, vppForContent, classesInternal, classNamespace, excludeIco, excludeCss, customJsName)
+    public ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool vppForContent = false, bool classesInternal = false, string? classNamespace = null, bool enumerateSubDirectories = false, bool excludeIco = false, bool excludeCss = false, bool customJsName = false)
+        : base(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, vppForContent, classesInternal, classNamespace, enumerateSubDirectories, excludeIco, excludeCss, customJsName)
     {
-
     }
 
     public override string SharedClass => @$"
@@ -31,8 +30,8 @@ namespace G4mvc.Routes;
             public string Error {{ get; }} = nameof(Error);
         }}
     }}
-}}";
-
+}}
+";
     public override string TestRoutesClass => @$"
 using G4mvc;
 
@@ -108,12 +107,24 @@ namespace G4mvc.Routes;
             public string Index {{ get; }} = nameof(Index);
             public string Privacy {{ get; }} = nameof(Privacy);
         }}
+
+        {(EnumerateSubDirectories ? @"
+        public class SubDirViews
+        {
+            public SubDirViewNames ViewNames { get; } = new();
+            public string SubItem { get; } = ""~/Views/Test/SubDir/SubItem.cshtml"";
+
+            public class SubDirViewNames
+            {
+                public string SubItem { get; } = nameof(SubItem);
+            }
+        }
+        " : null)}
     }}
-}}";
+}}
+";
 
-    public override string TestPartialRoutesClass => @$"
-using G4mvc;
-
+    public override string TestPartialRoutesClass => @$"using G4mvc;
 #nullable enable
 
 namespace G4mvc.Routes;
@@ -177,11 +188,6 @@ namespace G4mvc.Routes;
 
     public class TestPartialViews
     {{
-        public TestPartialViewNames ViewNames {{ get; }} = new();
-
-        public class TestPartialViewNames
-        {{
-        }}
     }}
 }}";
 
@@ -250,6 +256,7 @@ internal static partial class VirtualPathProcessor
     {{
         public const string UrlPath = ""~/js"";
         public static readonly G4mvcContentLink @site_js = new(""~/js/site.js"", VirtualPathProcessor.Process, {VppForContentStr});
+
     }}
 
     public static partial class @lib
