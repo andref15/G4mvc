@@ -41,13 +41,15 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_UseVirtualPathProcessor()
     {
-        const string vppImplementation = @"internal static partial class VirtualPathProcessor
-{
-    public static partial string Process(string path)
-    {
-        return path;
-    }
-}";
+        const string vppImplementation = """
+            internal static partial class VirtualPathProcessor
+            {
+                public static partial string Process(string path)
+                {
+                    return path;
+                }
+            }
+            """;
 
         var vppSyntaxTree = SyntaxUtils.ToSyntaxTree(vppImplementation, ParseOptions);
 
@@ -70,6 +72,19 @@ public class G4mvcTests : G4mvcTestBase
         });
 
         var expectedOutputs = new ExpectedOutputs(classesInternal: true);
+
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
+    }
+
+    [TestMethod]
+    public void CustomOptions_EnableSubfoldersInViews()
+    {
+        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
+        {
+            EnableSubfoldersInViews = true
+        });
+
+        var expectedOutputs = new ExpectedOutputs(enumerateSubDirectories: true);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }

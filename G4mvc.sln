@@ -20,7 +20,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "G4mvc.Test_8", "Tests\G4mvc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "G4mvc.Test_6", "Tests\G4mvc.Test_6\G4mvc.Test_6.csproj", "{2B2F3C24-3176-4376-96DF-DB0CEA52526A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "G4mvc.TestBase", "Tests\G4mvc.TestBase\G4mvc.TestBase.csproj", "{E4706F2F-9DC0-4626-9347-75B4D04B542A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "G4mvc.TestBase", "Tests\G4mvc.TestBase\G4mvc.TestBase.csproj", "{E4706F2F-9DC0-4626-9347-75B4D04B542A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Json", "Json", "{2F26231D-F42B-4F4A-958C-A9FBEA6315BD}"
+	ProjectSection(SolutionItems) = preProject
+		Json\schema.json = Json\schema.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workloads", "Workloads", "{D94D38C3-3E03-4C7B-84F5-1B29A3ED4BB4}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\nuget.yml = .github\workflows\nuget.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

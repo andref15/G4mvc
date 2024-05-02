@@ -15,7 +15,13 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, "SharedRoutes"))
         {
             sourceBuilder.AppendProperty("public", "SharedViews", "Views", "get", null, SourceCode.NewCtor);
-            AddViewsClass(sourceBuilder, projectDir, null, "Shared");
+
+            var directory = new DirectoryInfo(Path.Combine(projectDir, "Views", "Shared"));
+
+            if (directory.Exists)
+            {
+                AddViewsClass(sourceBuilder, projectDir, directory, "Shared", _configuration.JsonConfig.EnableSubfoldersInViews); 
+            }
         }
 
         context.AddGeneratedSource("SharedRoutes", sourceBuilder);
@@ -61,65 +67,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             sourceBuilder.AppendLine();
 
-            Dictionary<string, HashSet<string>> actionParameterGroups = [];
-
-            foreach (var httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
-            {
-                context.CancellationToken.ThrowIfCancellationRequested();
-
-                var actionName = httpMethodsGroup.Key;
-
-                HashSet<string> methodsGroupParameterNames = [];
-                actionParameterGroups.Add(actionName, methodsGroupParameterNames);
-
-                using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName))
-                {
-                    sourceBuilder.AppendReturnCtor(nameof(G4mvcRouteValues), SourceCode.String(mainControllerContext.ControllerArea), SourceCode.String(mainControllerContext.ControllerNameWithoutSuffix), SourceCode.String(actionName));
-                }
-
-                sourceBuilder.AppendLine();
-
-                foreach (var httpMethodContext in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
-                {
-                    context.CancellationToken.ThrowIfCancellationRequested();
-
-                    var relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, httpMethodContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
-
-                    if (relevantParameters.Count is 0)
-                    {
-                        continue;
-                    }
-
-                    foreach (var paramName in relevantParameters.Select(p => p.Symbol.Name))
-                    {
-                        methodsGroupParameterNames.Add(paramName);
-                    }
-
-                    SourceBuilder.NullableBlock? nullableBlock = null;
-
-                    if (mainControllerContext.NullableEnabled != httpMethodContext.NullableEnabled)
-                    {
-                        nullableBlock = sourceBuilder.BeginNullable(httpMethodContext.NullableEnabled);
-                    }
-
-                    using (nullableBlock)
-                    using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
-                    {
-                        sourceBuilder.AppendLine($"{nameof(G4mvcRouteValues)} route = {actionName}()").AppendLine();
-
-                        foreach (var parameter in relevantParameters)
-                        {
-                            context.CancellationToken.ThrowIfCancellationRequested();
-
-                            sourceBuilder.AppendLine($"route[{SourceCode.String(parameter.Symbol.Name)}] = {parameter.Symbol.Name}");
-                        }
-
-                        sourceBuilder.AppendLine().AppendLine("return route");
-                    }
-
-                    sourceBuilder.AppendLine();
-                }
-            }
+            var actionParameterGroups = AddActionMethodsAndGetParameterGroups(context, mainControllerContext, sourceBuilder, httpMethods);
 
             using (sourceBuilder.BeginClass("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames"))
             {
@@ -146,10 +94,84 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             sourceBuilder.AppendLine();
 
-            AddViewsClass(sourceBuilder, projectDir, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix);
+            var viewsDirectory = GetViewsDirectoryForController(projectDir, mainControllerContext);
+
+            AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.ControllerNameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
         }
 
         context.AddGeneratedSource($"{mainControllerContext.ControllerNameWithoutSuffix}Routes", sourceBuilder);
+    }
+
+    private static Dictionary<string, HashSet<string>> AddActionMethodsAndGetParameterGroups(SourceProductionContext context, ControllerDeclarationContext mainControllerContext, SourceBuilder sourceBuilder, List<MethodDeclarationContext> httpMethods)
+    {
+        Dictionary<string, HashSet<string>> actionParameterGroups = [];
+
+        foreach (var httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
+        {
+            context.CancellationToken.ThrowIfCancellationRequested();
+
+            var actionName = httpMethodsGroup.Key;
+
+            HashSet<string> methodsGroupParameterNames = [];
+            actionParameterGroups.Add(actionName, methodsGroupParameterNames);
+
+            using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName))
+            {
+                sourceBuilder.AppendReturnCtor(nameof(G4mvcRouteValues), SourceCode.String(mainControllerContext.ControllerArea), SourceCode.String(mainControllerContext.ControllerNameWithoutSuffix), SourceCode.String(actionName));
+            }
+
+            sourceBuilder.AppendLine();
+
+            foreach (var httpMethodContext in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
+            {
+                context.CancellationToken.ThrowIfCancellationRequested();
+
+                var relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, httpMethodContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
+
+                if (relevantParameters.Count is 0)
+                {
+                    continue;
+                }
+
+                foreach (var paramName in relevantParameters.Select(p => p.Symbol.Name))
+                {
+                    methodsGroupParameterNames.Add(paramName);
+                }
+
+                SourceBuilder.NullableBlock? nullableBlock = null;
+
+                if (mainControllerContext.NullableEnabled != httpMethodContext.NullableEnabled)
+                {
+                    nullableBlock = sourceBuilder.BeginNullable(httpMethodContext.NullableEnabled);
+                }
+
+                using (nullableBlock)
+                using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
+                {
+                    sourceBuilder.AppendLine($"{nameof(G4mvcRouteValues)} route = {actionName}()").AppendLine();
+
+                    foreach (var parameter in relevantParameters)
+                    {
+                        context.CancellationToken.ThrowIfCancellationRequested();
+
+                        sourceBuilder.AppendLine($"route[{SourceCode.String(parameter.Symbol.Name)}] = {parameter.Symbol.Name}");
+                    }
+
+                    sourceBuilder.AppendLine().AppendLine("return route");
+                }
+
+                sourceBuilder.AppendLine();
+            }
+        }
+
+        return actionParameterGroups;
+    }
+
+    private static DirectoryInfo GetViewsDirectoryForController(string projectDir, ControllerDeclarationContext mainControllerContext)
+    {
+        var root = mainControllerContext.ControllerArea is null ? Path.Combine(projectDir, "Views", mainControllerContext.ControllerNameWithoutSuffix) : Path.Combine(projectDir, "Areas", mainControllerContext.ControllerArea, "Views", mainControllerContext.ControllerNameWithoutSuffix);
+        var directory = new DirectoryInfo(root);
+        return directory;
     }
 
     private static string? GetDefaultValue(ParameterSyntax syntax)
@@ -171,14 +193,19 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         controllerRouteClassNames[controllerArea ?? string.Empty].Add(controllerRouteClassName, controllerNameWithoutSuffix);
     }
 
-    private static void AddViewsClass(SourceBuilder sourceBuilder, string projectDir, string? controllerArea, string controllerNameWithoutSuffix)
+    private static void AddViewsClass(SourceBuilder sourceBuilder, string projectDir, DirectoryInfo directoryInfo, string className, bool enumerateSubDirectories)
     {
-        using (sourceBuilder.BeginClass("public", $"{controllerNameWithoutSuffix}Views"))
+        using (sourceBuilder.BeginClass("public", $"{className}Views"))
         {
-            sourceBuilder.AppendProperty("public", $"{controllerNameWithoutSuffix}ViewNames", "ViewNames", "get", null, SourceCode.NewCtor);
+            if (!directoryInfo.Exists)
+            {
+                return;
+            }
+
+            sourceBuilder.AppendProperty("public", $"{className}ViewNames", "ViewNames", "get", null, SourceCode.NewCtor);
 
             List<string> viewNames = [];
-            foreach (var view in GetViewsForController(projectDir, controllerArea, controllerNameWithoutSuffix))
+            foreach (var view in GetViewsForController(projectDir, directoryInfo))
             {
                 viewNames.Add(view.Key);
                 sourceBuilder.AppendProperty("public", "string", view.Key, "get", null, SourceCode.String(view.Value));
@@ -186,29 +213,29 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             sourceBuilder.AppendLine();
 
-            using (sourceBuilder.BeginClass("public", $"{controllerNameWithoutSuffix}ViewNames"))
+            using (sourceBuilder.BeginClass("public", $"{className}ViewNames"))
             {
                 foreach (var viewName in viewNames)
                 {
                     sourceBuilder.AppendProperty("public", "string", viewName, "get", null, SourceCode.Nameof(viewName));
                 }
             }
+
+            if (enumerateSubDirectories)
+            {
+                foreach (var subDir in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+                {
+                    AddViewsClass(sourceBuilder, projectDir, subDir, subDir.Name, enumerateSubDirectories);
+                }
+            }
         }
     }
 
-    private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, string? area, string controller)
+    private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, DirectoryInfo directoryInfo)
     {
-        var root = area is null ? Path.Combine(projectDir, "Views", controller) : Path.Combine(projectDir, "Areas", area, "Views", controller);
-        DirectoryInfo directory = new(root);
-
-        if (!directory.Exists)
+        foreach (var file in directoryInfo.EnumerateFiles("*.cshtml").OrderBy(f => f.Name))
         {
-            yield break;
-        }
-
-        foreach (var file in directory.EnumerateFiles("*.cshtml").OrderBy(f => f.Name))
-        {
-            yield return new KeyValuePair<string, string>(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, "~/").Replace("\\", "/"));
+            yield return new KeyValuePair<string, string>(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, "~").Replace("\\", "/"));
         }
     }
 }

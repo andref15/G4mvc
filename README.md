@@ -48,6 +48,7 @@ You can provide a JSON config file called g4mvc.json to change some of the defau
       "StaticFilesPath": "wwwroot",
       "UseVirtualPathProcessor": false,
       "MakeGeneratedClassesInternal": false,
+      "EnableSubfoldersInViews": false,
       "ExcludedStaticFileExtensions": [],
       "ExcludedStaticFileDirectories": [],
       "AdditionalStaticFilesPaths": {}
@@ -77,6 +78,9 @@ An example of this can be seen here:
 
 #### MakeGeneratedClassesInternal
 Defines if the generated route classes and the MVC and Links class will be public or internal
+
+#### EnableSubfoldersInViews
+Defines if subfolders in the controller's Views folder should be supported
 
 #### ExcludedStaticFileExtensions
 A list of file extensions that will be excluded from link generation

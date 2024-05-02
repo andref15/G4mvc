@@ -50,6 +50,7 @@ internal partial class Configuration
         public string StaticFilesPath { get; set; } = null!;
         public bool UseVirtualPathProcessor { get; set; }
         public bool MakeGeneratedClassesInternal { get; set; }
+        public bool EnableSubfoldersInViews {  get; set; }
         public List<string>? ExcludedStaticFileExtensions { get; set; }
         public List<string>? ExcludedStaticFileDirectories { get; set; }
         public Dictionary<string, string>? AdditionalStaticFilesPaths { get; set; }
