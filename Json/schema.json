@@ -4,6 +4,11 @@
   "title": "G4mvc",
   "type": "object",
   "properties": {
+    "$schema": {
+      "description": "The URI of the JSON schema corresponding to the version.",
+      "type": "string",
+      "format": "uri"
+    },
     "HelperClassName": {
       "type": "string",
       "description": "Allows you to change the MVC prefix (e.g. MVC.Home.Index())"
