@@ -243,109 +243,109 @@ internal class ExpectedOutputs : ExpectedOutputsBase
         
         internal static partial class VirtualPathProcessor
         {
-        	public static partial string Process(string path);
+            public static partial string Process(string path);
         }
         
         {{(ClassesInternal ? "internal" : "public")}} static partial class {{LinksClassName}}
         {
-        	//v1;
-        	public const string UrlPath = "~";
-        	public static readonly G4mvcContentLink @favicon_ico = new("~/favicon.ico", VirtualPathProcessor.Process, {{VppForContentStr}});
+            //v1;
+            public const string UrlPath = "~";
+            public static readonly G4mvcContentLink @favicon_ico = new("~/favicon.ico", VirtualPathProcessor.Process, {{VppForContentStr}});
 
-        	public static partial class @css
-        	{
-        		public const string UrlPath = "~/css";
-        		public static readonly G4mvcContentLink @site_css = new("~/css/site.css", VirtualPathProcessor.Process, {{VppForContentStr}});
-        	}
+            public static partial class @css
+            {
+                public const string UrlPath = "~/css";
+                public static readonly G4mvcContentLink @site_css = new("~/css/site.css", VirtualPathProcessor.Process, {{VppForContentStr}});
+            }
 
-        	public static partial class @js
-        	{
-        		public const string UrlPath = "~/js";
-        		public static readonly G4mvcContentLink @site_js = new("~/js/site.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        	}
+            public static partial class @js
+            {
+                public const string UrlPath = "~/js";
+                public static readonly G4mvcContentLink @site_js = new("~/js/site.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+            }
 
-        	public static partial class @lib
-        	{
-        		public const string UrlPath = "~/lib";
+            public static partial class @lib
+            {
+                public const string UrlPath = "~/lib";
 
-        		public static partial class @bootstrap
-        		{
-        			public const string UrlPath = "~/lib/bootstrap";
-        			public static readonly G4mvcContentLink @LICENSE = new("~/lib/bootstrap/LICENSE", VirtualPathProcessor.Process, {{VppForContentStr}});
+                public static partial class @bootstrap
+                {
+                    public const string UrlPath = "~/lib/bootstrap";
+                    public static readonly G4mvcContentLink @LICENSE = new("~/lib/bootstrap/LICENSE", VirtualPathProcessor.Process, {{VppForContentStr}});
 
-        			public static partial class @dist
-        			{
-        				public const string UrlPath = "~/lib/bootstrap/dist";
+                    public static partial class @dist
+                    {
+                        public const string UrlPath = "~/lib/bootstrap/dist";
 
-        				public static partial class @css
-        				{
-        					public const string UrlPath = "~/lib/bootstrap/dist/css";
-        					public static readonly G4mvcContentLink @bootstrap_grid_css = new("~/lib/bootstrap/dist/css/bootstrap-grid.css", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_grid_css_map = new("~/lib/bootstrap/dist/css/bootstrap-grid.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_grid_min_css = new("~/lib/bootstrap/dist/css/bootstrap-grid.min.css", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_grid_min_css_map = new("~/lib/bootstrap/dist/css/bootstrap-grid.min.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_reboot_css = new("~/lib/bootstrap/dist/css/bootstrap-reboot.css", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_reboot_css_map = new("~/lib/bootstrap/dist/css/bootstrap-reboot.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_reboot_min_css = new("~/lib/bootstrap/dist/css/bootstrap-reboot.min.css", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_reboot_min_css_map = new("~/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_css = new("~/lib/bootstrap/dist/css/bootstrap.css", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_css_map = new("~/lib/bootstrap/dist/css/bootstrap.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_min_css = new("~/lib/bootstrap/dist/css/bootstrap.min.css", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_min_css_map = new("~/lib/bootstrap/dist/css/bootstrap.min.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        				}
+                        public static partial class @css
+                        {
+                            public const string UrlPath = "~/lib/bootstrap/dist/css";
+                            public static readonly G4mvcContentLink @bootstrap_grid_css = new("~/lib/bootstrap/dist/css/bootstrap-grid.css", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_grid_css_map = new("~/lib/bootstrap/dist/css/bootstrap-grid.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_grid_min_css = new("~/lib/bootstrap/dist/css/bootstrap-grid.min.css", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_grid_min_css_map = new("~/lib/bootstrap/dist/css/bootstrap-grid.min.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_reboot_css = new("~/lib/bootstrap/dist/css/bootstrap-reboot.css", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_reboot_css_map = new("~/lib/bootstrap/dist/css/bootstrap-reboot.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_reboot_min_css = new("~/lib/bootstrap/dist/css/bootstrap-reboot.min.css", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_reboot_min_css_map = new("~/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_css = new("~/lib/bootstrap/dist/css/bootstrap.css", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_css_map = new("~/lib/bootstrap/dist/css/bootstrap.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_min_css = new("~/lib/bootstrap/dist/css/bootstrap.min.css", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_min_css_map = new("~/lib/bootstrap/dist/css/bootstrap.min.css.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                        }
 
-        				public static partial class @js
-        				{
-        					public const string UrlPath = "~/lib/bootstrap/dist/js";
-        					public static readonly G4mvcContentLink @bootstrap_bundle_js = new("~/lib/bootstrap/dist/js/bootstrap.bundle.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_bundle_js_map = new("~/lib/bootstrap/dist/js/bootstrap.bundle.js.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_bundle_min_js = new("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_bundle_min_js_map = new("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_js = new("~/lib/bootstrap/dist/js/bootstrap.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_js_map = new("~/lib/bootstrap/dist/js/bootstrap.js.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_min_js = new("~/lib/bootstrap/dist/js/bootstrap.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        					public static readonly G4mvcContentLink @bootstrap_min_js_map = new("~/lib/bootstrap/dist/js/bootstrap.min.js.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        				}
-        			}
-        		}
+                        public static partial class @js
+                        {
+                            public const string UrlPath = "~/lib/bootstrap/dist/js";
+                            public static readonly G4mvcContentLink @bootstrap_bundle_js = new("~/lib/bootstrap/dist/js/bootstrap.bundle.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_bundle_js_map = new("~/lib/bootstrap/dist/js/bootstrap.bundle.js.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_bundle_min_js = new("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_bundle_min_js_map = new("~/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_js = new("~/lib/bootstrap/dist/js/bootstrap.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_js_map = new("~/lib/bootstrap/dist/js/bootstrap.js.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_min_js = new("~/lib/bootstrap/dist/js/bootstrap.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                            public static readonly G4mvcContentLink @bootstrap_min_js_map = new("~/lib/bootstrap/dist/js/bootstrap.min.js.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                        }
+                    }
+                }
 
-        		public static partial class @jquery
-        		{
-        			public const string UrlPath = "~/lib/jquery";
-        			public static readonly G4mvcContentLink @LICENSE_txt = new("~/lib/jquery/LICENSE.txt", VirtualPathProcessor.Process, {{VppForContentStr}});
+                public static partial class @jquery
+                {
+                    public const string UrlPath = "~/lib/jquery";
+                    public static readonly G4mvcContentLink @LICENSE_txt = new("~/lib/jquery/LICENSE.txt", VirtualPathProcessor.Process, {{VppForContentStr}});
 
-        			public static partial class @dist
-        			{
-        				public const string UrlPath = "~/lib/jquery/dist";
-        				public static readonly G4mvcContentLink @jquery_js = new("~/lib/jquery/dist/jquery.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        				public static readonly G4mvcContentLink @jquery_min_js = new("~/lib/jquery/dist/jquery.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        				public static readonly G4mvcContentLink @jquery_min_map = new("~/lib/jquery/dist/jquery.min.map", VirtualPathProcessor.Process, {{VppForContentStr}});
-        			}
-        		}
+                    public static partial class @dist
+                    {
+                        public const string UrlPath = "~/lib/jquery/dist";
+                        public static readonly G4mvcContentLink @jquery_js = new("~/lib/jquery/dist/jquery.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                        public static readonly G4mvcContentLink @jquery_min_js = new("~/lib/jquery/dist/jquery.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                        public static readonly G4mvcContentLink @jquery_min_map = new("~/lib/jquery/dist/jquery.min.map", VirtualPathProcessor.Process, {{VppForContentStr}});
+                    }
+                }
 
-        		public static partial class @jquery_validation
-        		{
-        			public const string UrlPath = "~/lib/jquery-validation";
-        			public static readonly G4mvcContentLink @LICENSE_md = new("~/lib/jquery-validation/LICENSE.md", VirtualPathProcessor.Process, {{VppForContentStr}});
+                public static partial class @jquery_validation
+                {
+                    public const string UrlPath = "~/lib/jquery-validation";
+                    public static readonly G4mvcContentLink @LICENSE_md = new("~/lib/jquery-validation/LICENSE.md", VirtualPathProcessor.Process, {{VppForContentStr}});
 
-        			public static partial class @dist
-        			{
-        				public const string UrlPath = "~/lib/jquery-validation/dist";
-        				public static readonly G4mvcContentLink @additional_methods_js = new("~/lib/jquery-validation/dist/additional-methods.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        				public static readonly G4mvcContentLink @additional_methods_min_js = new("~/lib/jquery-validation/dist/additional-methods.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        				public static readonly G4mvcContentLink @jquery_validate_js = new("~/lib/jquery-validation/dist/jquery.validate.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        				public static readonly G4mvcContentLink @jquery_validate_min_js = new("~/lib/jquery-validation/dist/jquery.validate.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        			}
-        		}
+                    public static partial class @dist
+                    {
+                        public const string UrlPath = "~/lib/jquery-validation/dist";
+                        public static readonly G4mvcContentLink @additional_methods_js = new("~/lib/jquery-validation/dist/additional-methods.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                        public static readonly G4mvcContentLink @additional_methods_min_js = new("~/lib/jquery-validation/dist/additional-methods.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                        public static readonly G4mvcContentLink @jquery_validate_js = new("~/lib/jquery-validation/dist/jquery.validate.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                        public static readonly G4mvcContentLink @jquery_validate_min_js = new("~/lib/jquery-validation/dist/jquery.validate.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                    }
+                }
 
-        		public static partial class @jquery_validation_unobtrusive
-        		{
-        			public const string UrlPath = "~/lib/jquery-validation-unobtrusive";
-        			public static readonly G4mvcContentLink @jquery_validate_unobtrusive_js = new("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        			public static readonly G4mvcContentLink @jquery_validate_unobtrusive_min_js = new("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
-        			public static readonly G4mvcContentLink @LICENSE_txt = new("~/lib/jquery-validation-unobtrusive/LICENSE.txt", VirtualPathProcessor.Process, {{VppForContentStr}});
-        		}
-        	}
+                public static partial class @jquery_validation_unobtrusive
+                {
+                    public const string UrlPath = "~/lib/jquery-validation-unobtrusive";
+                    public static readonly G4mvcContentLink @jquery_validate_unobtrusive_js = new("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                    public static readonly G4mvcContentLink @jquery_validate_unobtrusive_min_js = new("~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js", VirtualPathProcessor.Process, {{VppForContentStr}});
+                    public static readonly G4mvcContentLink @LICENSE_txt = new("~/lib/jquery-validation-unobtrusive/LICENSE.txt", VirtualPathProcessor.Process, {{VppForContentStr}});
+                }
+            }
         }
 
         """
