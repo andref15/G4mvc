@@ -41,7 +41,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
         yield return MetadataReference.CreateFromFile(typeof(G4mvcRouteValues).Assembly.Location);
     }
 
-    private protected CSharpCompilation BaseTest(Configuration.JsonConfigClass? jsonConfig = null, IEnumerable<SyntaxTree>? additionalSyntaxTrees = null)
+    private protected CSharpCompilation BaseTest(Configuration.JsonConfigModel? jsonConfig = null, IEnumerable<SyntaxTree>? additionalSyntaxTrees = null)
     {
         var syntaxTrees = GetSyntaxTreesInBuildDirectory();
 

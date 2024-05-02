@@ -17,7 +17,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
     public LanguageVersion LanguageVersion { get; } = languageVersion;
     public AnalyzerConfigValues AnalyzerConfigValues { get; } = analyzerConfigValues;
-    public JsonConfigClass JsonConfig { get; } = string.IsNullOrWhiteSpace(configFile) ? new() : JsonSerializer.Deserialize<JsonConfigClass>(configFile!);
+    public JsonConfigModel JsonConfig { get; } = string.IsNullOrWhiteSpace(configFile) ? new() : JsonSerializer.Deserialize<JsonConfigModel>(configFile!);
     public bool GlobalNullable { get; } = globalNullable;
     public string? GeneratedClassNamespace
     {
@@ -55,7 +55,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     internal readonly SourceBuilder CreateSourceBuilder()
         => new(LanguageVersion);
 
-    internal readonly struct JsonConfigClass
+    internal readonly struct JsonConfigModel
     {
         public string HelperClassName { get; }
         public string LinksClassName { get; }
@@ -70,7 +70,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         public IReadOnlyDictionary<string, string>? AdditionalStaticFilesPaths { get; }
         public IReadOnlyDictionary<string, string>? CustomStaticFileDirectoryAlias { get; }
 
-        public JsonConfigClass()
+        public JsonConfigModel()
         {
             HelperClassName = "MVC";
             LinksClassName = "Links";
@@ -79,7 +79,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         }
 
         [JsonConstructor]
-        public JsonConfigClass(string? helperClassName, string? linksClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool useProcessedPathForContentLink, bool makeGeneratedClassesInternal, bool enableSubfoldersInViews, string? generatedClassNamespace, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
+        public JsonConfigModel(string? helperClassName, string? linksClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool useProcessedPathForContentLink, bool makeGeneratedClassesInternal, bool enableSubfoldersInViews, string? generatedClassNamespace, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
         {
             HelperClassName = helperClassName ?? "MVC";
             LinksClassName = linksClassName ?? "Links";
@@ -98,7 +98,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         /// <summary>
         /// Only use this for tests!
         /// </summary>
-        internal static JsonConfigClass Create(string? helperClassName = null, string? linksClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool useProcessedPathForContentLink = false, bool makeGeneratedClassesInternal = false, bool enableSubfoldersInViews = false, string? generatedClassNamespace = null, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
+        internal static JsonConfigModel Create(string? helperClassName = null, string? linksClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool useProcessedPathForContentLink = false, bool makeGeneratedClassesInternal = false, bool enableSubfoldersInViews = false, string? generatedClassNamespace = null, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
             => new(helperClassName, linksClassName, staticFilesPath, useVirtualPathProcessor, useProcessedPathForContentLink, makeGeneratedClassesInternal, enableSubfoldersInViews, generatedClassNamespace, excludedStaticFileExtensions, excludedStaticFileDirectories, additionalStaticFilesPaths, customStaticFileDirectoryAlias);
     }
 }

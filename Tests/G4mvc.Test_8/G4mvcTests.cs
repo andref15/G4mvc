@@ -27,7 +27,7 @@ public class G4mvcTests : G4mvcTestBase
         const string mvc = "TestMvc";
         const string links = "TestLinks";
 
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(helperClassName: mvc, linksClassName: links));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(helperClassName: mvc, linksClassName: links));
 
         var expectedOutputs = new ExpectedOutputs(mvcClassName: mvc, linksClassName: links);
 
@@ -51,7 +51,7 @@ public class G4mvcTests : G4mvcTestBase
 
         var vppSyntaxTree = SyntaxUtils.ToSyntaxTree(vppImplementation, ParseOptions);
 
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(useVirtualPathProcessor: true, useProcessedPathForContentLink: useProcessedPathForContentLink), EnumerableUtils.Create(vppSyntaxTree));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(useVirtualPathProcessor: true, useProcessedPathForContentLink: useProcessedPathForContentLink), EnumerableUtils.Create(vppSyntaxTree));
 
         var expectedOutputs = new ExpectedOutputs(withVpp: true, vppForContent: useProcessedPathForContentLink);
 
@@ -61,7 +61,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_MakeGeneratedClassesInternal()
     {
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(makeGeneratedClassesInternal: true));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(makeGeneratedClassesInternal: true));
 
         var expectedOutputs = new ExpectedOutputs(classesInternal: true);
 
@@ -73,7 +73,7 @@ public class G4mvcTests : G4mvcTestBase
     {
         const string classNamespace = $"{nameof(G4mvc)}.{nameof(Test_8)}.Routes";
 
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(generatedClassNamespace: classNamespace));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(generatedClassNamespace: classNamespace));
 
         var expectedOutputs = new ExpectedOutputs(classNamespace: classNamespace);
 
@@ -83,7 +83,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_EnableSubfoldersInViews()
     {
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(enableSubfoldersInViews: true));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(enableSubfoldersInViews: true));
 
         var expectedOutputs = new ExpectedOutputs(enumerateSubDirectories: true);
 
@@ -93,7 +93,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_StaticFilesPath()
     {
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(staticFilesPath: "wwwrootAlt"));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(staticFilesPath: "wwwrootAlt"));
 
         var expectedOutputs = new ExpectedOutputs(altRoot: true);
 
@@ -103,7 +103,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_ExcludedStaticFileExtensions()
     {
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(excludedStaticFileExtensions: [".ico"]));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(excludedStaticFileExtensions: [".ico"]));
 
         var expectedOutputs = new ExpectedOutputs(excludeIco: true);
 
@@ -113,7 +113,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_ExcludedStaticFileDirectories()
     {
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(excludedStaticFileDirectories: ["wwwroot/css"]));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(excludedStaticFileDirectories: ["wwwroot/css"]));
 
         var expectedOutputs = new ExpectedOutputs(excludeCss: true);
 
@@ -123,7 +123,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_AdditionalStaticFilesPaths()
     {
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(additionalStaticFilesPaths: new Dictionary<string, string>
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(additionalStaticFilesPaths: new Dictionary<string, string>
         {
             ["wwwrootAlt"] = "alt"
         }));
@@ -136,7 +136,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_CustomStaticFileDirectoryAlias()
     {
-        var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(customStaticFileDirectoryAlias: new Dictionary<string, string>
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(customStaticFileDirectoryAlias: new Dictionary<string, string>
         {
             ["wwwroot/js"] = "otherjs"
         }));

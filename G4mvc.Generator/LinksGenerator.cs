@@ -139,7 +139,7 @@ internal class LinksGenerator
         CreateSubClasses(sourceBuilder, root, subRoute, excludedDirectories, enclosingClass, configuration, linkIdentifierParser, subDirectories, classPath, cancellationToken);
     }
 
-    private static void CreateFileFields(SourceBuilder sourceBuilder, string root, string? subRoute, ReadOnlySpan<char> enclosingClass, Configuration.JsonConfigClass jsonConfig, LinkIdentifierParser linkIdentifierParser, IOrderedEnumerable<FileInfo> files, CancellationToken cancellationToken)
+    private static void CreateFileFields(SourceBuilder sourceBuilder, string root, string? subRoute, ReadOnlySpan<char> enclosingClass, Configuration.JsonConfigModel jsonConfig, LinkIdentifierParser linkIdentifierParser, IOrderedEnumerable<FileInfo> files, CancellationToken cancellationToken)
     {
         foreach (var file in files)
         {
