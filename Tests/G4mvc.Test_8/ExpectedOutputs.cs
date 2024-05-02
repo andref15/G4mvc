@@ -151,7 +151,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
 
                 return route;
             }
-            
+
         #nullable restore
 
 
@@ -219,7 +219,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
     public override string MvcClass => $$"""
         using G4mvc;
         using G4mvc.Routes;
-        
+
         {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
         #nullable enable
 
@@ -234,15 +234,15 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
     public override string LinksClass => WithVpp
         ? $$"""
         using G4mvc;
-        
+
         {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
         #nullable enable
-        
+
         internal static partial class VirtualPathProcessor
         {
             public static partial string Process(string path);
         }
-        
+
         {{(ClassesInternal ? "internal" : "public")}} static partial class {{LinksClassName}}
         {
             //v1;
@@ -348,10 +348,10 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
         """
         : $$"""
         using G4mvc;
-        
+
         {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
         #nullable enable
-        
+
         {{(ClassesInternal ? "internal" : "public")}} static partial class {{LinksClassName}}
         {
             public const string UrlPath = "~";

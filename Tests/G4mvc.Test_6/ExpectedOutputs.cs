@@ -231,7 +231,7 @@ using G4mvc.Routes;
     public override string LinksClass => WithVpp
         ? @$"
 using G4mvc;
-        
+
 {(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}
 #nullable enable
 
@@ -344,7 +344,7 @@ internal static partial class VirtualPathProcessor
 }}"
         : @$"
 using G4mvc;
-        
+
 {(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}
 #nullable enable
 

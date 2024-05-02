@@ -222,10 +222,10 @@ internal class ExpectedOutputs : ExpectedOutputsBase
     public override string MvcClass => $$"""
         using G4mvc;
         using G4mvc.Routes;
-        
+
         {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
         #nullable enable
-        
+
         {{(ClassesInternal ? "internal" : "public")}} class {{MvcClassName}}
         {
             public static SharedRoutes Shared { get; } = new();
@@ -237,15 +237,15 @@ internal class ExpectedOutputs : ExpectedOutputsBase
     public override string LinksClass => WithVpp
         ? $$"""
         using G4mvc;
-        
+
         {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
         #nullable enable
-        
+
         internal static partial class VirtualPathProcessor
         {
             public static partial string Process(string path);
         }
-        
+
         {{(ClassesInternal ? "internal" : "public")}} static partial class {{LinksClassName}}
         {
             //v1;
@@ -351,7 +351,7 @@ internal class ExpectedOutputs : ExpectedOutputsBase
         """
         : $$"""
         using G4mvc;
-        
+
         {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
         #nullable enable
 
