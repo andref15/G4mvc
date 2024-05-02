@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/product.schema.json",
+  "$id": "https://af-styx.com/schemas/g4mvc/schema.json",
   "title": "G4mvc",
   "type": "object",
   "properties": {
