@@ -80,6 +80,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
     
+    [TestMethod]
     public void CustomOptions_EnableSubfoldersInViews()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigClass.Create(enableSubfoldersInViews: true));
