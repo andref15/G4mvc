@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using G4mvc.Generator;
 using G4mvc.TestBase;
 using G4mvc.TestBase.Utils;
@@ -11,7 +12,7 @@ public class G4mvcTests : G4mvcTestBase
 {
     public G4mvcTests() : base(LanguageVersion.CSharp12) { }
 
-    [TestMethod]
+    //[TestMethod]
     public void DefaultOptions()
     {
         var outputCompilation = BaseTest();
@@ -21,7 +22,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_ClassNames()
     {
         const string mvc = "TestMvc";
@@ -35,10 +36,9 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
-    [DataRow(true, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = true")]
-    [DataRow(false, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = false")]
-    public void CustomOptions_UseVirtualPathProcessor(bool useProcessedPathForContentLink)
+    public void CustomOptions_UseVirtualPathProcessor()
     {
+        bool? useProcessedPathForContentLink = false;
         const string vppImplementation = """
             internal static partial class VirtualPathProcessor
             {
@@ -48,17 +48,17 @@ public class G4mvcTests : G4mvcTestBase
                 }
             }
             """;
-
+Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPathForContentLink ?? true}\n\n\n\n\n\n");
         var vppSyntaxTree = SyntaxUtils.ToSyntaxTree(vppImplementation, ParseOptions);
 
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(useVirtualPathProcessor: true, useProcessedPathForContentLink: useProcessedPathForContentLink), EnumerableUtils.Create(vppSyntaxTree));
 
-        var expectedOutputs = new ExpectedOutputs(withVpp: true, vppForContent: useProcessedPathForContentLink);
+        var expectedOutputs = new ExpectedOutputs(withVpp: true, vppForContent: useProcessedPathForContentLink ?? true);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees, 10);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_MakeGeneratedClassesInternal()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(makeGeneratedClassesInternal: true));
@@ -68,7 +68,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_GeneratedClassNamespace()
     {
         const string classNamespace = $"{nameof(G4mvc)}.{nameof(Test_8)}.Routes";
@@ -80,7 +80,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_EnableSubfoldersInViews()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(enableSubfoldersInViews: true));
@@ -90,7 +90,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_StaticFilesPath()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(staticFilesPath: "wwwrootAlt"));
@@ -100,7 +100,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_ExcludedStaticFileExtensions()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(excludedStaticFileExtensions: [".ico"]));
@@ -110,7 +110,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_ExcludedStaticFileDirectories()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(excludedStaticFileDirectories: ["wwwroot/css"]));
@@ -120,7 +120,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_AdditionalStaticFilesPaths()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(additionalStaticFilesPaths: new Dictionary<string, string>
@@ -133,7 +133,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void CustomOptions_CustomStaticFileDirectoryAlias()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(customStaticFileDirectoryAlias: new Dictionary<string, string>

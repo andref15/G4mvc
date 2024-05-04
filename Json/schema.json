@@ -25,6 +25,10 @@
       "type": "boolean",
       "description": "Defines if you want to define a custom VirtualPathProcessor funcion"
     },
+    "UseProcessedPathForContentLink": {
+      "type":"boolean",
+      "description": "Defines if the processed path from the VirtualPathProcessor should be used for UrlHelper.Content methods"
+    },
     "MakeGeneratedClassesInternal": {
       "type": "boolean",
       "description": "Defines if the generated route classes and the MVC and Links class will be public or internal"
