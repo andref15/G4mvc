@@ -33,6 +33,11 @@
       "type": "boolean",
       "description": "Defines if the generated route classes and the MVC and Links class will be public or internal"
     },
+    "GeneratedClassNamespace": {
+      "type": "string",
+      "description": "Defines in which namespace the generated MVC and Links class will exist",
+      "examples": ["global", "project"]
+    },
     "EnableSubfoldersInViews": {
       "type": "boolean",
       "description": "Defines if subfolders in the controller's Views folder should be supported"

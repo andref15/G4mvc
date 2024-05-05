@@ -40,14 +40,18 @@ G4mvc provides a TagHelper that can be used on anchor as well as form tags.
 `<a g4-action="MVC.Home.Index()">Home</a>`
 
 ### Configuration
-You can provide a JSON config file called g4mvc.json to change some of the defaults G4mvc uses.
+You can provide a JSON config file called g4mvc.json to change some of the defaults G4mvc uses.\
+The json schema is available under https://raw.githubusercontent.com/andref15/G4mvc/main/Json/schema.json
 
     {
+      "$schema": "https://raw.githubusercontent.com/andref15/G4mvc/main/Json/schema.json"
       "HelperClassName": "MVC",
       "LinksClassName":  "Links",
       "StaticFilesPath": "wwwroot",
       "UseVirtualPathProcessor": false,
+      "UseProcessedPathForContentLink": false,
       "MakeGeneratedClassesInternal": false,
+      "GeneratedClassNamespace": "global",
       "EnableSubfoldersInViews": false,
       "ExcludedStaticFileExtensions": [],
       "ExcludedStaticFileDirectories": [],
@@ -76,8 +80,19 @@ An example of this can be seen here:
         }
     }
 
+#### UseProcessedPathForContentLink
+Defines if the processed path from the VirtualPathProcessor should be used for UrlHelper.Content methods.\
+If this value is undefined and `UseVirtualPathProcessor` is set to true, this defaults to `true`.
+
 #### MakeGeneratedClassesInternal
 Defines if the generated route classes and the MVC and Links class will be public or internal
+
+#### GeneratedClassNamespace
+Defines in which namespace the generated MVC and Links class will exist. If this value is undefined, this defaults to `global`
+- `global` defines that the files will exist in the global namespace (aka no namespace)'
+- `project` defines that the files will exist in the root namespace of the web project
+- any other value will be set as the namespace (eg. `G4mvc.SampleMVC`)
+  - If the value starts with a `.` the namespace will be relative to the project root namespace (e.g. `.Generated`)
 
 #### EnableSubfoldersInViews
 Defines if subfolders in the controller's Views folder should be supported
@@ -90,12 +105,13 @@ A list of directories (relative to project dir) that will be excluded from link 
 
 #### AdditionalStaticFilesPaths
 A dictionary of additional static file paths for which links will be generated
-This is useful when you use the UseStaticFiles method serve files that are outside of the wwwroot folder. The key of this dictionary is the request path and the value is the physical path relative to the project root.
+This is useful when you use the UseStaticFiles method serve files that are outside of the wwwroot folder. 
+The key of this dictionary is the physical path relative to the project root and the value is the request path.
 
 For the example provided in the [Microsoft Documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-7.0#serve-files-outside-of-web-root) the AdditionalStaticFilesPaths configuration would look like this:
 
     "AdditionalStaticFilesPaths": {
-        "StaticFiles": "MyStaticFiles"
+        "MyStaticFiles": "StaticFiles"
     }
 
 #### CustomStaticFileDirectoryAlias
