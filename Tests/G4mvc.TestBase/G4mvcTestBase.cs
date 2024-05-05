@@ -41,7 +41,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
         yield return MetadataReference.CreateFromFile(typeof(G4mvcRouteValues).Assembly.Location);
     }
 
-    private protected CSharpCompilation BaseTest(Configuration.JsonConfigClass? jsonConfig = null, IEnumerable<SyntaxTree>? additionalSyntaxTrees = null)
+    private protected CSharpCompilation BaseTest(Configuration.JsonConfigModel? jsonConfig = null, IEnumerable<SyntaxTree>? additionalSyntaxTrees = null)
     {
         var syntaxTrees = GetSyntaxTreesInBuildDirectory();
 
@@ -56,13 +56,13 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 
         var generatorDriver = CSharpGeneratorDriver.Create(g4mvcGenerator).WithUpdatedParseOptions(ParseOptions).WithUpdatedAnalyzerConfigOptions(new G4mvcAnalyzerConfigOptionsProvider());
 
-        if (jsonConfig is not null)
+        if (jsonConfig.HasValue)
         {
             generatorDriver = generatorDriver.AddAdditionalTexts(
 #if NET8_0_OR_GREATER
-        [new ConfigAdditionalText(jsonConfig)]
+        [new ConfigAdditionalText(jsonConfig.Value)]
 #else
-        ImmutableArray.Create<AdditionalText>(new ConfigAdditionalText(jsonConfig)) 
+        ImmutableArray.Create<AdditionalText>(new ConfigAdditionalText(jsonConfig.Value)) 
 #endif
                 );
         }
@@ -92,21 +92,23 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
         }
         catch
         {
-            Console.WriteLine("EXPECTED:");
+            Console.WriteLine("EXPECTED:\n");
             Console.WriteLine(expectedOutputs.SharedClass);
             Console.WriteLine(expectedOutputs.TestRoutesClass);
             Console.WriteLine(expectedOutputs.TestPartialRoutesClass);
             Console.WriteLine(expectedOutputs.TestPartialClass);
             Console.WriteLine(expectedOutputs.MvcClass);
             Console.WriteLine(expectedOutputs.LinksClass);
-            Console.WriteLine("END EXPECTED\n");
+            Console.WriteLine("\nEND EXPECTED\n");
 
             Console.WriteLine("ACTUAL:");
+            
             foreach (var syntaxTree in syntaxTrees)
             {
                 Console.WriteLine(syntaxTree);
             }
-            Console.WriteLine("END ACTUAL\n");
+
+            Console.WriteLine("\nEND ACTUAL\n");
 
             throw;
         }

@@ -27,11 +27,7 @@ public class G4mvcTests : G4mvcTestBase
         const string mvc = "TestMvc";
         const string links = "TestLinks";
 
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
-        {
-            HelperClassName = mvc,
-            LinksClassName = links
-        });
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(helperClassName: mvc, linksClassName: links));
 
         var expectedOutputs = new ExpectedOutputs(mvcClassName: mvc, linksClassName: links);
 
@@ -39,7 +35,10 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
-    public void CustomOptions_UseVirtualPathProcessor()
+    [DataRow(null, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = null")]
+    [DataRow(true, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = true")]
+    [DataRow(false, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = false")]
+    public void CustomOptions_UseVirtualPathProcessor(bool? useProcessedPathForContentLink)
     {
         const string vppImplementation = """
             internal static partial class VirtualPathProcessor
@@ -53,12 +52,9 @@ public class G4mvcTests : G4mvcTestBase
 
         var vppSyntaxTree = SyntaxUtils.ToSyntaxTree(vppImplementation, ParseOptions);
 
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
-        {
-            UseVirtualPathProcessor = true
-        }, EnumerableUtils.Create(vppSyntaxTree));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(useVirtualPathProcessor: true, useProcessedPathForContentLink: useProcessedPathForContentLink), EnumerableUtils.Create(vppSyntaxTree));
 
-        var expectedOutputs = new ExpectedOutputs(withVpp: true);
+        var expectedOutputs = new ExpectedOutputs(withVpp: true, vppForContent: useProcessedPathForContentLink ?? true);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees, 10);
     }
@@ -66,10 +62,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_MakeGeneratedClassesInternal()
     {
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
-        {
-            MakeGeneratedClassesInternal = true
-        });
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(makeGeneratedClassesInternal: true));
 
         var expectedOutputs = new ExpectedOutputs(classesInternal: true);
 
@@ -77,25 +70,31 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
+    public void CustomOptions_GeneratedClassNamespace()
+    {
+        const string classNamespace = $"{nameof(G4mvc)}.{nameof(Test_7)}.Routes";
+
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(generatedClassNamespace: classNamespace));
+
+        var expectedOutputs = new ExpectedOutputs(classNamespace: classNamespace);
+
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
+    }
+    
+    [TestMethod]
     public void CustomOptions_EnableSubfoldersInViews()
     {
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
-        {
-            EnableSubfoldersInViews = true
-        });
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(enableSubfoldersInViews: true));
 
         var expectedOutputs = new ExpectedOutputs(enumerateSubDirectories: true);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
-
+    
     [TestMethod]
     public void CustomOptions_StaticFilesPath()
     {
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
-        {
-            StaticFilesPath = "wwwrootAlt"
-        });
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(staticFilesPath: "wwwrootAlt"));
 
         var expectedOutputs = new ExpectedOutputs(altRoot: true);
 
@@ -105,13 +104,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_ExcludedStaticFileExtensions()
     {
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
-        {
-            ExcludedStaticFileExtensions = new()
-            {
-                ".ico"
-            }
-        });
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(excludedStaticFileExtensions: new[] { ".ico" }));
 
         var expectedOutputs = new ExpectedOutputs(excludeIco: true);
 
@@ -121,13 +114,7 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_ExcludedStaticFileDirectories()
     {
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
-        {
-            ExcludedStaticFileDirectories = new()
-            {
-                "wwwroot/css"
-            }
-        });
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(excludedStaticFileDirectories: new[] { "wwwroot/css" }));
 
         var expectedOutputs = new ExpectedOutputs(excludeCss: true);
 
@@ -137,13 +124,10 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_AdditionalStaticFilesPaths()
     {
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(additionalStaticFilesPaths: new Dictionary<string, string>
         {
-            AdditionalStaticFilesPaths = new()
-            {
-                ["wwwrootAlt"] = "wwwrootAlt"
-            }
-        });
+            ["wwwrootAlt"] = "alt"
+        }));
 
         var expectedOutputs = new ExpectedOutputs(additionalStatic: true);
 
@@ -153,13 +137,10 @@ public class G4mvcTests : G4mvcTestBase
     [TestMethod]
     public void CustomOptions_CustomStaticFileDirectoryAlias()
     {
-        var outputCompilation = BaseTest(new Configuration.JsonConfigClass
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(customStaticFileDirectoryAlias: new Dictionary<string, string>
         {
-            CustomStaticFileDirectoryAlias = new()
-            {
-                ["wwwroot/js"] = "otherjs"
-            }
-        });
+            ["wwwroot/js"] = "otherjs"
+        }));
 
         var expectedOutputs = new ExpectedOutputs(customJsName: true);
 

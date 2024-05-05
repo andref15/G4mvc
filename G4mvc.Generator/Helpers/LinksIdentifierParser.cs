@@ -8,7 +8,7 @@ internal class LinkIdentifierParser(Configuration configuration, string projectD
             ? alias
             : CreateIdentifierFromPath(fileSystemInfo.Name, enclosing);
 
-    private static string CreateIdentifierFromPath(string pathSegment, ReadOnlySpan<char> enclosing)
+    public static string CreateIdentifierFromPath(string pathSegment, ReadOnlySpan<char> enclosing)
     {
         var span = pathSegment.AsSpan();
 

@@ -4,9 +4,9 @@ using Microsoft.CodeAnalysis.Text;
 using System.Text.Json;
 
 namespace G4mvc.TestBase;
-internal class ConfigAdditionalText(Configuration.JsonConfigClass jsonConfig) : AdditionalText
+internal class ConfigAdditionalText(Configuration.JsonConfigModel jsonConfig) : AdditionalText
 {
-    private readonly Configuration.JsonConfigClass _jsonConfig = jsonConfig;
+    private readonly Configuration.JsonConfigModel _jsonConfig = jsonConfig;
 
     public override string Path => Configuration.FileName;
 

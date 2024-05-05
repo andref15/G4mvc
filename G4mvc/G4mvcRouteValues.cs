@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using G4mvc.Extensions;
 
 namespace G4mvc;
 public class G4mvcRouteValues : RouteValueDictionary
@@ -32,6 +34,11 @@ public class G4mvcRouteValues : RouteValueDictionary
         return this;
     }
 
+    /// <summary>
+    /// Formats the route values into a <see cref="string"/> representation.
+    /// Do not use this for navigation purposes! Use <see cref="ToString(IUrlHelper)"/> instead.
+    /// </summary>
+    /// <returns>The route formatted as [Area]/[Controller]/[Action]</returns>
     public override string ToString()
     {
 #if NETCOREAPP
@@ -55,6 +62,9 @@ public class G4mvcRouteValues : RouteValueDictionary
         return $"/{(Area is null ? null : $"{Area}/")}{Controller}/{Action}";
 #endif
     }
+
+    public string? ToString(IUrlHelper urlHelper)
+        => urlHelper.RouteUrl(this);
 
 #if NETCOREAPP
     private static void CopyPathSegmentToSpanAt(Span<char> span, ReadOnlySpan<char> value, ref int idx)
