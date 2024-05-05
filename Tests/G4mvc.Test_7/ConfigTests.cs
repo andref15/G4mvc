@@ -3,7 +3,7 @@ using G4mvc.TestBase.Extensions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace G4mvc.Test_8;
+namespace G4mvc.Test_7;
 
 [TestClass]
 public class ConfigTests

@@ -19,13 +19,13 @@
     <None Update="**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Update="G4mvcTests.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
     <Compile Update="ConfigTests.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
     <Compile Update="ExpectedOutputs.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
+    <Compile Update="G4mvcTests.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>
