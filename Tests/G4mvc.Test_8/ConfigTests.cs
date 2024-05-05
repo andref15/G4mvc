@@ -73,6 +73,11 @@ public class ConfigTests
     """, "MVC", "Links", "wwwroot", false, false, false, "Test.Namespace", false, null, null, null, null, "Test.Namespace", DisplayName = "GeneratedClassNamespace = \"Test.Namespace\"")]
     [DataRow("""
     {
+        "GeneratedClassNamespace": ".TestNamespace"
+    }
+    """, "MVC", "Links", "wwwroot", false, false, false, ".TestNamespace", false, null, null, null, null, $"{_testRootNamespace}.TestNamespace", DisplayName = "GeneratedClassNamespace = \".TestNamespace\"")]
+    [DataRow("""
+    {
         "EnableSubfoldersInViews": true
     }
     """, "MVC", "Links", "wwwroot", false, false, false, "global", true, null, null, null, null, null, DisplayName = "EnableSubfoldersInViews")]

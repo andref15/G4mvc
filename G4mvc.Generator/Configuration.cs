@@ -32,7 +32,11 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
             var @namespace = JsonConfig.GeneratedClassNamespace;
 
-            if (Enum.TryParse<ClassNamespaceIdentifier>(@namespace, true, out var identifier))
+            if (@namespace[0] is '.')
+            {
+                @namespace = $"{AnalyzerConfigValues.RootNamespace}{@namespace}";
+            }
+            else if (Enum.TryParse<ClassNamespaceIdentifier>(@namespace, true, out var identifier))
             {
                 @namespace = identifier switch
                 {
@@ -91,14 +95,22 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         [JsonConstructor]
         public JsonConfigModel(string? helperClassName, string? linksClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool? useProcessedPathForContentLinkNullable, bool makeGeneratedClassesInternal, string? generatedClassNamespace, bool enableSubfoldersInViews, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
         {
-            HelperClassName = helperClassName ?? "MVC";
-            LinksClassName = linksClassName ?? "Links";
-            StaticFilesPath = staticFilesPath ?? "wwwroot";
+            HelperClassName = string.IsNullOrWhiteSpace(helperClassName)
+                ? "MVC"
+                : helperClassName!.Trim();
+            LinksClassName = string.IsNullOrWhiteSpace(linksClassName) 
+                ? "Links"
+                : linksClassName!.Trim();
+            StaticFilesPath = string.IsNullOrWhiteSpace(staticFilesPath)
+                ? "wwwroot"
+                : staticFilesPath!.Trim();
             UseVirtualPathProcessor = useVirtualPathProcessor;
             UseProcessedPathForContentLinkNullable = useProcessedPathForContentLinkNullable;
             UseProcessedPathForContentLink = useVirtualPathProcessor && (useProcessedPathForContentLinkNullable ?? true);
             MakeGeneratedClassesInternal = makeGeneratedClassesInternal;
-            GeneratedClassNamespace = generatedClassNamespace ?? nameof(ClassNamespaceIdentifier.global);
+            GeneratedClassNamespace = string.IsNullOrWhiteSpace(generatedClassNamespace)
+                ? nameof(ClassNamespaceIdentifier.global)
+                : generatedClassNamespace!.Trim();
             EnableSubfoldersInViews = enableSubfoldersInViews;
             ExcludedStaticFileExtensions = excludedStaticFileExtensions;
             ExcludedStaticFileDirectories = excludedStaticFileDirectories;
