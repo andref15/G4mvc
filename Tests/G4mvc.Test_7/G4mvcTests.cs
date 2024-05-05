@@ -35,9 +35,10 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
+    [DataRow(null, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = null")]
     [DataRow(true, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = true")]
     [DataRow(false, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = false")]
-    public void CustomOptions_UseVirtualPathProcessor(bool useProcessedPathForContentLink)
+    public void CustomOptions_UseVirtualPathProcessor(bool? useProcessedPathForContentLink)
     {
         const string vppImplementation = """
             internal static partial class VirtualPathProcessor
@@ -53,7 +54,7 @@ public class G4mvcTests : G4mvcTestBase
 
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(useVirtualPathProcessor: true, useProcessedPathForContentLink: useProcessedPathForContentLink), EnumerableUtils.Create(vppSyntaxTree));
 
-        var expectedOutputs = new ExpectedOutputs(withVpp: true, vppForContent: useProcessedPathForContentLink);
+        var expectedOutputs = new ExpectedOutputs(withVpp: true, vppForContent: useProcessedPathForContentLink ?? true);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees, 10);
     }

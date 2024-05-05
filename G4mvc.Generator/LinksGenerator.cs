@@ -152,8 +152,6 @@ internal class LinksGenerator
 
             if (jsonConfig.UseVirtualPathProcessor)
             {
-                Console.WriteLine($"\n\n\n\n\n\n\n\nUseProcessedPathForContentLink: {jsonConfig.UseProcessedPathForContentLink}\n\n\n\n\n\n\n\n");
-
                 sourceBuilder.AppendField("public static readonly", nameof(G4mvcContentLink), linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\", {_vppClassName}.{_vppMethodName}, {(jsonConfig.UseProcessedPathForContentLink ? "true" : "false")})");
             }
             else

@@ -12,7 +12,7 @@ public class G4mvcTests : G4mvcTestBase
 {
     public G4mvcTests() : base(LanguageVersion.CSharp12) { }
 
-    //[TestMethod]
+    [TestMethod]
     public void DefaultOptions()
     {
         var outputCompilation = BaseTest();
@@ -22,7 +22,7 @@ public class G4mvcTests : G4mvcTestBase
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_ClassNames()
     {
         const string mvc = "TestMvc";
@@ -36,9 +36,11 @@ public class G4mvcTests : G4mvcTestBase
     }
 
     [TestMethod]
-    public void CustomOptions_UseVirtualPathProcessor()
+    [DataRow(null, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = null")]
+    [DataRow(true, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = true")]
+    [DataRow(false, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = false")]
+    public void CustomOptions_UseVirtualPathProcessor(bool? useProcessedPathForContentLink)
     {
-        bool? useProcessedPathForContentLink = false;
         const string vppImplementation = """
             internal static partial class VirtualPathProcessor
             {
@@ -48,7 +50,7 @@ public class G4mvcTests : G4mvcTestBase
                 }
             }
             """;
-Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPathForContentLink ?? true}\n\n\n\n\n\n");
+        
         var vppSyntaxTree = SyntaxUtils.ToSyntaxTree(vppImplementation, ParseOptions);
 
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(useVirtualPathProcessor: true, useProcessedPathForContentLink: useProcessedPathForContentLink), EnumerableUtils.Create(vppSyntaxTree));
@@ -58,7 +60,7 @@ Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPat
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees, 10);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_MakeGeneratedClassesInternal()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(makeGeneratedClassesInternal: true));
@@ -68,7 +70,7 @@ Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPat
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_GeneratedClassNamespace()
     {
         const string classNamespace = $"{nameof(G4mvc)}.{nameof(Test_8)}.Routes";
@@ -80,7 +82,7 @@ Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPat
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_EnableSubfoldersInViews()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(enableSubfoldersInViews: true));
@@ -90,7 +92,7 @@ Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPat
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_StaticFilesPath()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(staticFilesPath: "wwwrootAlt"));
@@ -100,7 +102,7 @@ Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPat
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_ExcludedStaticFileExtensions()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(excludedStaticFileExtensions: [".ico"]));
@@ -110,7 +112,7 @@ Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPat
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_ExcludedStaticFileDirectories()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(excludedStaticFileDirectories: ["wwwroot/css"]));
@@ -120,7 +122,7 @@ Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPat
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_AdditionalStaticFilesPaths()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(additionalStaticFilesPaths: new Dictionary<string, string>
@@ -133,7 +135,7 @@ Console.WriteLine($"\n\n\n\n\n\nuseProcessedPathForContentLink: {useProcessedPat
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
 
-    //[TestMethod]
+    [TestMethod]
     public void CustomOptions_CustomStaticFileDirectoryAlias()
     {
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(customStaticFileDirectoryAlias: new Dictionary<string, string>

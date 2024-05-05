@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace G4mvc.Generator;
@@ -65,7 +66,8 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         public string StaticFilesPath { get; }
         public bool UseVirtualPathProcessor { get; }
         
-        [JsonInclude, JsonPropertyName(nameof(UseProcessedPathForContentLink))] 
+        [JsonInclude, JsonPropertyName(nameof(UseProcessedPathForContentLink))]
+        [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Used for json")]
         private bool? UseProcessedPathForContentLinkNullable { get; }
         
         [JsonIgnore]
@@ -92,11 +94,9 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
             HelperClassName = helperClassName ?? "MVC";
             LinksClassName = linksClassName ?? "Links";
             StaticFilesPath = staticFilesPath ?? "wwwroot";
-            Console.WriteLine($"\n\n\n\n\nuseVirtualPathProcessor: {useVirtualPathProcessor}");
-            Console.WriteLine($"useProcessedPathForContentLinkNullable: {useProcessedPathForContentLinkNullable}");
             UseVirtualPathProcessor = useVirtualPathProcessor;
+            UseProcessedPathForContentLinkNullable = useProcessedPathForContentLinkNullable;
             UseProcessedPathForContentLink = useVirtualPathProcessor && (useProcessedPathForContentLinkNullable ?? true);
-            Console.WriteLine($"UseProcessedPathForContentLink: {UseProcessedPathForContentLink}\n\n\n\n\n");
             MakeGeneratedClassesInternal = makeGeneratedClassesInternal;
             GeneratedClassNamespace = generatedClassNamespace ?? nameof(ClassNamespaceIdentifier.global);
             EnableSubfoldersInViews = enableSubfoldersInViews;
