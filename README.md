@@ -41,10 +41,10 @@ G4mvc provides a TagHelper that can be used on anchor as well as form tags.
 
 ### Configuration
 You can provide a JSON config file called g4mvc.json to change some of the defaults G4mvc uses.\
-The json schema is available under https://raw.githubusercontent.com/andref15/G4mvc/main/Json/schema.json
+The json schema is available under https://schemastore.af-styx.com/Schema/G4mvc.json (alternative: https://raw.githubusercontent.com/andref15/G4mvc/main/Json/schema.json)
 
     {
-      "$schema": "https://raw.githubusercontent.com/andref15/G4mvc/main/Json/schema.json"
+      "$schema": "https://schemastore.af-styx.com/Schema/G4mvc.json",
       "HelperClassName": "MVC",
       "LinksClassName":  "Links",
       "StaticFilesPath": "wwwroot",
@@ -55,7 +55,7 @@ The json schema is available under https://raw.githubusercontent.com/andref15/G4
       "EnableSubfoldersInViews": false,
       "ExcludedStaticFileExtensions": [],
       "ExcludedStaticFileDirectories": [],
-      "AdditionalStaticFilesPaths": {}
+      "AdditionalStaticFilesPaths": {},
       "CustomStaticFileDirectoryAlias": {}
     }
 
