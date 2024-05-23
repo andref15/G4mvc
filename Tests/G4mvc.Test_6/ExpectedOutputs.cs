@@ -109,6 +109,7 @@ namespace G4mvc.Routes;
         }}
 
         {(EnumerateSubDirectories ? @"
+        public SubDirViews SubDir { get; } = new();
         public class SubDirViews
         {
             public SubDirViewNames ViewNames { get; } = new();
