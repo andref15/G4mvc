@@ -223,9 +223,14 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             if (enumerateSubDirectories)
             {
-                foreach (var subDir in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+                var classNameSpan = className.AsSpan();
+
+                foreach (var subDir in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).OrderBy(d => d.Name))
                 {
-                    AddViewsClass(sourceBuilder, projectDir, subDir, subDir.Name, enumerateSubDirectories);
+                    var subClassName = IdentifierParser.CreateIdentifierFromPath(subDir.Name, classNameSpan);
+                    
+                    sourceBuilder.AppendProperty("public", $"{subClassName}Views", subClassName, "get", null, SourceCode.NewCtor);
+                    AddViewsClass(sourceBuilder, projectDir, subDir, subClassName, enumerateSubDirectories);
                 }
             }
         }
