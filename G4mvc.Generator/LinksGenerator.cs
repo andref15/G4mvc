@@ -53,7 +53,7 @@ internal class LinksGenerator
             sourceBuilder.AppendLine($"//v{linksVersion}");
 #endif
 
-            LinkIdentifierParser linkIdentifierParser = new(configuration, projectDir);
+            IdentifierParser linkIdentifierParser = new(configuration, projectDir);
             var root = Path.Combine(projectDir, configuration.JsonConfig.StaticFilesPath);
             var classPath = "";
             _existingLinksClasses.Clear();
@@ -73,7 +73,7 @@ internal class LinksGenerator
         context.AddGeneratedSource(configuration.JsonConfig.LinksClassName, sourceBuilder);
     }
 
-    private static void CreateAdditionalStaticFilesLinks(SourceProductionContext context, Configuration configuration, string projectDir, SourceBuilder sourceBuilder, List<string> excludedDirectories, IReadOnlyDictionary<string, string> additionalStaticFilesPaths, ReadOnlySpan<char> linksClassNameSpan, LinkIdentifierParser linkIdentifierParser)
+    private static void CreateAdditionalStaticFilesLinks(SourceProductionContext context, Configuration configuration, string projectDir, SourceBuilder sourceBuilder, List<string> excludedDirectories, IReadOnlyDictionary<string, string> additionalStaticFilesPaths, ReadOnlySpan<char> linksClassNameSpan, IdentifierParser linkIdentifierParser)
     {
         sourceBuilder.AppendLine();
 
@@ -95,7 +95,7 @@ internal class LinksGenerator
 
             foreach (var segment in additionalVirtualPathRootSegments)
             {
-                var segmentClassName = LinkIdentifierParser.CreateIdentifierFromPath(segment, enclosing);
+                var segmentClassName = IdentifierParser.CreateIdentifierFromPath(segment, enclosing);
 
                 classPath = $"{classPath}-{segmentClassName}";
 
@@ -123,7 +123,7 @@ internal class LinksGenerator
         }
     }
 
-    private static void CreateLinksClass(SourceBuilder sourceBuilder, DirectoryInfo directory, string root, string? subRoute, List<string> excludedDirectories, ReadOnlySpan<char> enclosingClass, Configuration configuration, LinkIdentifierParser linkIdentifierParser, string classPath, CancellationToken cancellationToken)
+    private static void CreateLinksClass(SourceBuilder sourceBuilder, DirectoryInfo directory, string root, string? subRoute, List<string> excludedDirectories, ReadOnlySpan<char> enclosingClass, Configuration configuration, IdentifierParser linkIdentifierParser, string classPath, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -139,7 +139,7 @@ internal class LinksGenerator
         CreateSubClasses(sourceBuilder, root, subRoute, excludedDirectories, enclosingClass, configuration, linkIdentifierParser, subDirectories, classPath, cancellationToken);
     }
 
-    private static void CreateFileFields(SourceBuilder sourceBuilder, string root, string? subRoute, ReadOnlySpan<char> enclosingClass, Configuration.JsonConfigModel jsonConfig, LinkIdentifierParser linkIdentifierParser, IOrderedEnumerable<FileInfo> files, CancellationToken cancellationToken)
+    private static void CreateFileFields(SourceBuilder sourceBuilder, string root, string? subRoute, ReadOnlySpan<char> enclosingClass, Configuration.JsonConfigModel jsonConfig, IdentifierParser linkIdentifierParser, IOrderedEnumerable<FileInfo> files, CancellationToken cancellationToken)
     {
         foreach (var file in files)
         {
@@ -161,7 +161,7 @@ internal class LinksGenerator
         }
     }
 
-    private static void CreateSubClasses(SourceBuilder sourceBuilder, string root, string? subRoute, List<string> excludedDirectories, ReadOnlySpan<char> enclosingClass, Configuration configuration, LinkIdentifierParser linkIdentifierParser, IOrderedEnumerable<DirectoryInfo> subDirectories, string parentClassPath, CancellationToken cancellationToken)
+    private static void CreateSubClasses(SourceBuilder sourceBuilder, string root, string? subRoute, List<string> excludedDirectories, ReadOnlySpan<char> enclosingClass, Configuration configuration, IdentifierParser linkIdentifierParser, IOrderedEnumerable<DirectoryInfo> subDirectories, string parentClassPath, CancellationToken cancellationToken)
     {
 
         foreach (var subDirectory in subDirectories)

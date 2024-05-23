@@ -109,6 +109,7 @@ internal class ExpectedOutputs : ExpectedOutputsBase
                 }
 
                 {{(EnumerateSubDirectories ? """
+                public SubDirViews SubDir { get; } = new();
                 public class SubDirViews
                 {
                     public SubDirViewNames ViewNames { get; } = new();
