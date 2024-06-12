@@ -25,7 +25,8 @@ jobs:
     - name: Set Prerelease version tag
       id: set-prerelease-version-tag
       shell: pwsh
-      run: ($versionTag = ($branchNameSegments = $env:GITHUB_REF_NAME.Split('/'))[$branchNameSegments.Length - 1].ToLower() -replace '[^a-z]') && echo "VERSIONTAG=beta.$versionTag" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      run: |
+        ($versionTag = $env:GITHUB_REF_NAME -eq 'main' ? 'preview' : ($branchNameSegments = $env:GITHUB_REF_NAME.Split('/'))[$branchNameSegments.Length - 1].ToLower() -replace '[^a-z]') && echo "VERSIONTAG=beta.$versionTag" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append\
       if: ${{ github.ref_name != 'main' }}
 
     - name: Set Prerelease version tag main
