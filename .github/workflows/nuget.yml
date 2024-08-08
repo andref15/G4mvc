@@ -9,7 +9,7 @@ on:
 env:
   Major: 4
   Minor: 1
-  Patch: 1
+  Patch: 2
 
 jobs:
   Create:
