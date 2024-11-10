@@ -58,7 +58,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 
         if (jsonConfig.HasValue)
         {
-            generatorDriver = generatorDriver.AddAdditionalTexts(
+            generatorDriver = generatorDriver.AddAdditionalTexts([new ConfigAdditionalText(jsonConfig.Value)]);
 #if NET8_0_OR_GREATER
         [new ConfigAdditionalText(jsonConfig.Value)]
 #else
