@@ -12,6 +12,10 @@ jobs:
   Windows:
     runs-on: windows-latest
     steps:
+    - uses: actions/setup-dotnet@v4
+      with:
+       dotnet-version: '9.x.x'
+
     - uses: actions/checkout@v3
     
     - name: Restore dependencies
@@ -26,6 +30,10 @@ jobs:
   Linux:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/setup-dotnet@v4
+      with:
+       dotnet-version: '9.x.x'
+
     - uses: actions/checkout@v3
     
     - name: Restore dependencies
