@@ -59,12 +59,6 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
         if (jsonConfig.HasValue)
         {
             generatorDriver = generatorDriver.AddAdditionalTexts([new ConfigAdditionalText(jsonConfig.Value)]);
-#if NET8_0_OR_GREATER
-        [new ConfigAdditionalText(jsonConfig.Value)]
-#else
-        ImmutableArray.Create<AdditionalText>(new ConfigAdditionalText(jsonConfig.Value)) 
-#endif
-                );
         }
 
         generatorDriver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilationBase, out _);
