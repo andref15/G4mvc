@@ -30,7 +30,7 @@ jobs:
       id: set-prerelease-version-tag
       shell: pwsh
       run: |
-        ($versionTag = $env:GITHUB_REF_NAME -eq 'main' ? 'preview' : ($branchNameSegments = $env:GITHUB_REF_NAME.Split('/'))[$branchNameSegments.Length - 1].ToLower() -replace '[^a-z]') && echo "VERSIONTAG=beta.$versionTag" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        ($versionTag = $env:GITHUB_REF_NAME -eq 'main' ? 'preview' : "beta.$(($branchNameSegments = $env:GITHUB_REF_NAME.Split('/'))[$branchNameSegments.Length - 1].ToLower() -replace '[^a-z]')") && echo "VERSIONTAG=$versionTag" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
       if: ${{ github.ref_name != 'main' || github.event_name != 'workflow_dispatch' }}
 
     - name: Pack Release
