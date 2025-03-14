@@ -7,8 +7,6 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/G4mvc.TestBase/G4mvc.TestBase.csproj" />
-    <Project Path="Tests/G4mvc.Test_6/G4mvc.Test_6.csproj" />
-    <Project Path="Tests/G4mvc.Test_7/G4mvc.Test_7.csproj" />
     <Project Path="Tests/G4mvc.Test_8/G4mvc.Test_8.csproj" />
   </Folder>
   <Folder Name="/Workloads/">
