@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿#if NETCOREAPP
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -48,3 +49,5 @@ public class G4ActionTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
         return base.ProcessAsync(context, output);
     }
 }
+
+#endif

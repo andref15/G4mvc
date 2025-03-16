@@ -1,9 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿#if NETCOREAPP
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using G4mvc.Extensions;
+using G4mvc.Extensions; 
+#endif
 
 namespace G4mvc;
-public class G4mvcRouteValues : RouteValueDictionary
+public class G4mvcRouteValues
+#if NETCOREAPP
+        : RouteValueDictionary 
+#endif
 {
     public string? Area { get; set; }
     public string Controller { get; set; }
@@ -15,14 +20,17 @@ public class G4mvcRouteValues : RouteValueDictionary
         Controller = controller;
         Action = action;
 
+#if NETCOREAPP
         if (area is not null)
         {
             this[nameof(area)] = area;
         }
 
         this[nameof(controller)] = controller;
-        this[nameof(action)] = action;
+        this[nameof(action)] = action; 
+#endif
     }
+#if NETCOREAPP
 
     public RouteValueDictionary AsRouteValueDictionary()
         => this;
@@ -32,7 +40,8 @@ public class G4mvcRouteValues : RouteValueDictionary
         this[key] = value;
 
         return this;
-    }
+    } 
+#endif
 
     /// <summary>
     /// Formats the route values into a <see cref="string"/> representation.
@@ -63,10 +72,10 @@ public class G4mvcRouteValues : RouteValueDictionary
 #endif
     }
 
+#if NETCOREAPP
     public string? ToString(IUrlHelper urlHelper)
         => urlHelper.RouteUrl(this);
 
-#if NETCOREAPP
     private static void CopyPathSegmentToSpanAt(Span<char> span, ReadOnlySpan<char> value, ref int idx)
     {
         value.CopyTo(span[idx..]);

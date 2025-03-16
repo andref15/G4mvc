@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿#if NETCOREAPP
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
 namespace G4mvc.Extensions;
@@ -25,3 +26,5 @@ public static class UrlHelperExtensions
     public static string? Content(this IUrlHelper urlHelper, G4mvcContentLink contentLink)
         => contentLink.ToContentUrl(urlHelper);
 }
+
+#endif

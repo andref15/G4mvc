@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿#if NETCOREAPP
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.AspNetCore.Razor.TagHelpers; 
 
 namespace G4mvc.TagHelpers;
 [HtmlTargetElement(_embed, Attributes = _attributeName)]
@@ -12,7 +13,7 @@ namespace G4mvc.TagHelpers;
 [HtmlTargetElement(_source, Attributes = _attributeName)]
 [HtmlTargetElement(_link, Attributes = _attributeName)]
 [HtmlTargetElement(_track, Attributes = _attributeName)]
-[HtmlTargetElement(_video, Attributes = _attributeName)]
+[HtmlTargetElement(_video, Attributes = _attributeName)] 
 public class G4ContentTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
 {
     private const string _embed = "embed";
@@ -55,3 +56,5 @@ public class G4ContentTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
         return base.ProcessAsync(context, output);
     }
 }
+
+#endif
