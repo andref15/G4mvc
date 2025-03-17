@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Html;
+﻿#if NETCOREAPP
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc.ViewFeatures; 
+#endif
 
 namespace G4mvc.Extensions;
 public static class HtmlHelperExtensions
 {
+#if NETCOREAPP
     public static IHtmlContent ActionLink(this IHtmlHelper htmlHelper, string linkText, G4mvcRouteValues route, object? htmlAttributes = null, string? protocol = null, string? hostName = null, string? fragment = null)
-        => RouteLink(htmlHelper, linkText, null, route, htmlAttributes, protocol, hostName, fragment);
+    => RouteLink(htmlHelper, linkText, null, route, htmlAttributes, protocol, hostName, fragment);
 
     public static IHtmlContent ActionLink(this IHtmlHelper htmlHelper, string linkText, G4mvcRouteValues route, IDictionary<string, object> htmlAttributes, string? protocol = null, string? hostName = null, string? fragment = null)
         => RouteLink(htmlHelper, linkText, null, route, htmlAttributes, protocol, hostName, fragment);
@@ -39,5 +42,6 @@ public static class HtmlHelperExtensions
         => BeginRouteForm(htmlHelper, routeName, route, formMethod, HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
 
     public static MvcForm BeginRouteForm(this IHtmlHelper htmlHelper, string? routeName, G4mvcRouteValues route, FormMethod formMethod, IDictionary<string, object> htmlAttributes)
-        => htmlHelper.BeginRouteForm(routeName, route, formMethod, null, htmlAttributes);
+        => htmlHelper.BeginRouteForm(routeName, route, formMethod, null, htmlAttributes); 
+#endif
 }
