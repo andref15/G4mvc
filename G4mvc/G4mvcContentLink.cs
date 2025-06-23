@@ -1,11 +1,11 @@
 ﻿#if NETCOREAPP
-using Microsoft.AspNetCore.Mvc; 
+using Microsoft.AspNetCore.Mvc;
 #endif
 
 namespace G4mvc;
 public class G4mvcContentLink(
 #if NETCOREAPP
-        string path, Func<string, string>? processor = null, bool useProcessedPathForContentUrl = false 
+        string path, Func<string, string>? processor = null, bool useProcessedPathForContentUrl = false
 #endif
     )
 {
@@ -37,6 +37,6 @@ public class G4mvcContentLink(
     /// <param name="urlHelper">The <see cref="IUrlHelper"/> instance.</param>
     /// <returns>The application absolute path.</returns>
     public string ToContentUrl(IUrlHelper urlHelper)
-        => urlHelper.Content(_useProcessedPathForContentUrl ? _processedPath : _path); 
+        => urlHelper.Content(_useProcessedPathForContentUrl ? _processedPath : _path);
 #endif
 }

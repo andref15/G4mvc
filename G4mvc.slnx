@@ -3,6 +3,7 @@
     <File Path="Json/schema.json" />
   </Folder>
   <Folder Name="/Solution Items/">
+    <File Path="NuGet.Build.props" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/Tests/">

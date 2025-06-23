@@ -11,24 +11,16 @@
     <DevelopmentDependency>true</DevelopmentDependency>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
-  
-  <PropertyGroup>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/andref15/G4mvc.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <PackageProjectUrl>https://github.com/andref15/G4mvc</PackageProjectUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Description>A source generator for ASP.NET Core MVC apps that creates strongly typed helpers that eliminate the use of literal strings for routing</Description>
-  </PropertyGroup>
-  
+
+  <Import Project="../NuGet.Build.props" />
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.13.0" PrivateAssets="all" />
-    
+
     <PackageReference Include="System.Text.Json" Version="9.0.3" GeneratePathProperty="true" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="9.0.3" GeneratePathProperty="true" PrivateAssets="all" />
     <PackageReference Include="System.Text.Encodings.Web" Version="9.0.3" GeneratePathProperty="true" PrivateAssets="all" />
@@ -36,6 +28,7 @@
 
   <PropertyGroup>
     <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <Target Name="GetDependencyTargetPaths" AfterTargets="ResolvePackageDependenciesForBuild">
@@ -49,11 +42,11 @@
       <None Include="$(PKGSystem_Text_Encodings_Web)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup>
   </Target>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\G4mvc\G4mvc.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Using Include="G4mvc.Generator.Contexts" />
     <Using Include="G4mvc.Generator.CSharp" />

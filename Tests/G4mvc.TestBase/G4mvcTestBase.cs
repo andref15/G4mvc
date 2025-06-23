@@ -11,7 +11,7 @@ namespace G4mvc.TestBase;
 public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 {
     protected readonly CSharpCompilationOptions CompilationOptions = new(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release, warningLevel: 0, nullableContextOptions: NullableContextOptions.Enable);
-    
+
     protected readonly CSharpParseOptions ParseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion).WithDocumentationMode(DocumentationMode.None);
 
     protected static void AssertDiagnostics(CSharpCompilation compilation, string type)
@@ -96,7 +96,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
             Console.WriteLine("\nEND EXPECTED\n");
 
             Console.WriteLine("ACTUAL:");
-            
+
             foreach (var syntaxTree in syntaxTrees)
             {
                 Console.WriteLine(syntaxTree);

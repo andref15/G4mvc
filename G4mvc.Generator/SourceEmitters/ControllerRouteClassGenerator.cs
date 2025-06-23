@@ -1,4 +1,6 @@
-﻿namespace G4mvc.Generator;
+﻿using G4mvc.Generator.Compilation;
+
+namespace G4mvc.Generator.SourceEmitters;
 internal class ControllerRouteClassGenerator(Configuration configuration)
 {
     private readonly Configuration _configuration = configuration;
@@ -14,13 +16,12 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, "SharedRoutes"))
         {
-            sourceBuilder.AppendProperty("public", "SharedViews", "Views", "get", null, SourceCode.NewCtor);
-
             var directory = new DirectoryInfo(Path.Combine(projectDir, "Views", "Shared"));
 
             if (directory.Exists)
             {
-                AddViewsClass(sourceBuilder, projectDir, directory, "Shared", _configuration.JsonConfig.EnableSubfoldersInViews); 
+                sourceBuilder.AppendProperty("public", "SharedViews", "Views", "get", null, SourceCode.NewCtor);
+                AddViewsClass(sourceBuilder, projectDir, directory, "Shared", _configuration.JsonConfig.EnableSubfoldersInViews);
             }
         }
 
@@ -42,21 +43,21 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
             .AppendLine()
             .Nullable(mainControllerContext.NullableEnabled);
 
-        var controllerRouteClassName = $"{mainControllerContext.ControllerNameWithoutSuffix}Routes";
-        AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
+        var controllerRouteClassName = $"{mainControllerContext.NameWithoutSuffix}Routes";
+        AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.Area, mainControllerContext.NameWithoutSuffix, controllerRouteClassName);
 
         using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, controllerRouteClassName))
         {
-            if (mainControllerContext.ControllerArea is not null)
+            if (mainControllerContext.Area is not null)
             {
-                sourceBuilder.AppendProperty("public", "string", "Area", "get", null, SourceCode.String(mainControllerContext.ControllerArea));
+                sourceBuilder.AppendProperty("public", "string", "Area", "get", null, SourceCode.String(mainControllerContext.Area));
             }
 
             sourceBuilder
-                .AppendProperty("public", "string", "Name", "get", null, SourceCode.String(mainControllerContext.ControllerNameWithoutSuffix))
-                .AppendProperty("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames", "ActionNames", "get", null, SourceCode.NewCtor)
-                .AppendProperty("public", $"{mainControllerContext.ControllerNameWithoutSuffix}Views", "Views", "get", null, SourceCode.NewCtor);
+                .AppendProperty("public", "string", "Name", "get", null, SourceCode.String(mainControllerContext.NameWithoutSuffix))
+                .AppendProperty("public", $"{mainControllerContext.NameWithoutSuffix}ActionNames", "ActionNames", "get", null, SourceCode.NewCtor)
+                .AppendProperty("public", $"{mainControllerContext.NameWithoutSuffix}Views", "Views", "get", null, SourceCode.NewCtor);
 
             var httpMethodGroups = httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
@@ -69,7 +70,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             var actionParameterGroups = AddActionMethodsAndGetParameterGroups(context, mainControllerContext, sourceBuilder, httpMethods);
 
-            using (sourceBuilder.BeginClass("public", $"{mainControllerContext.ControllerNameWithoutSuffix}ActionNames"))
+            using (sourceBuilder.BeginClass("public", $"{mainControllerContext.NameWithoutSuffix}ActionNames"))
             {
                 foreach (var actionName in httpMethodGroups.Keys)
                 {
@@ -96,10 +97,10 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             var viewsDirectory = GetViewsDirectoryForController(projectDir, mainControllerContext);
 
-            AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.ControllerNameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
+            AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.NameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
         }
 
-        context.AddGeneratedSource($"{mainControllerContext.ControllerNameWithoutSuffix}Routes", sourceBuilder);
+        context.AddGeneratedSource($"{mainControllerContext.NameWithoutSuffix}Routes", sourceBuilder);
     }
 
     private static Dictionary<string, HashSet<string>> AddActionMethodsAndGetParameterGroups(SourceProductionContext context, ControllerDeclarationContext mainControllerContext, SourceBuilder sourceBuilder, List<MethodDeclarationContext> httpMethods)
@@ -117,7 +118,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName))
             {
-                sourceBuilder.AppendReturnCtor(nameof(G4mvcRouteValues), SourceCode.String(mainControllerContext.ControllerArea), SourceCode.String(mainControllerContext.ControllerNameWithoutSuffix), SourceCode.String(actionName));
+                sourceBuilder.AppendReturnCtor(nameof(G4mvcRouteValues), SourceCode.String(mainControllerContext.Area), SourceCode.String(mainControllerContext.NameWithoutSuffix), SourceCode.String(actionName));
             }
 
             sourceBuilder.AppendLine();
@@ -169,7 +170,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
     private static DirectoryInfo GetViewsDirectoryForController(string projectDir, ControllerDeclarationContext mainControllerContext)
     {
-        var root = mainControllerContext.ControllerArea is null ? Path.Combine(projectDir, "Views", mainControllerContext.ControllerNameWithoutSuffix) : Path.Combine(projectDir, "Areas", mainControllerContext.ControllerArea, "Views", mainControllerContext.ControllerNameWithoutSuffix);
+        var root = mainControllerContext.Area is null ? Path.Combine(projectDir, "Views", mainControllerContext.NameWithoutSuffix) : Path.Combine(projectDir, "Areas", mainControllerContext.Area, "Views", mainControllerContext.NameWithoutSuffix);
         var directory = new DirectoryInfo(root);
         return directory;
     }
@@ -178,7 +179,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         => syntax.Default is null ? null : $" {syntax.Default}";
 
     private static bool IsActionResult(ITypeSymbol returnType)
-        => IsOrImplementsActionResultIInterfaces(returnType) || (returnType is INamedTypeSymbol namedReturnType && namedReturnType.DerrivesFromType(TypeNames.Task) && namedReturnType.IsGenericType && IsOrImplementsActionResultIInterfaces(namedReturnType.TypeArguments[0]));
+        => IsOrImplementsActionResultIInterfaces(returnType) || returnType is INamedTypeSymbol namedReturnType && namedReturnType.DerrivesFromType(TypeNames.Task) && namedReturnType.IsGenericType && IsOrImplementsActionResultIInterfaces(namedReturnType.TypeArguments[0]);
 
     private static bool IsOrImplementsActionResultIInterfaces(ITypeSymbol type)
         => type.IsOrImplementsInterface(TypeNames.IActionResult) || type.IsOrImplementsInterface(TypeNames.IConvertToActionResult);
@@ -228,7 +229,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                 foreach (var subDir in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).OrderBy(d => d.Name))
                 {
                     var subClassName = IdentifierParser.CreateIdentifierFromPath(subDir.Name, classNameSpan);
-                    
+
                     sourceBuilder.AppendProperty("public", $"{subClassName}Views", subClassName, "get", null, SourceCode.NewCtor);
                     AddViewsClass(sourceBuilder, projectDir, subDir, subClassName, enumerateSubDirectories);
                 }

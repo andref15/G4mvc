@@ -1,20 +1,15 @@
 ﻿namespace G4mvc.Generator.Contexts;
-internal class ControllerDeclarationContext : BaseDeclarationContext
+internal class ControllerDeclarationContext : ClassDeclarationContext
 {
-    public ClassDeclarationSyntax Syntax { get; }
-    public INamedTypeSymbol TypeSymbol { get; }
-    public string? ControllerArea { get; }
-    public string ControllerName { get; }
-    public string ControllerNameWithoutSuffix { get; }
+    public string? Area { get; }
+    public string Name { get; }
+    public string NameWithoutSuffix { get; }
 
-    private ControllerDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, syntax.SpanStart, globalNullable)
+    private ControllerDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, syntax, typeSymbol, globalNullable)
     {
-        Syntax = syntax;
-        TypeSymbol = typeSymbol;
-
-        ControllerArea = GetControllerArea(typeSymbol);
-        ControllerName = Syntax.Identifier.Text;
-        ControllerNameWithoutSuffix = ControllerName.RemoveEnd("Controller");
+        Area = GetControllerArea(typeSymbol);
+        Name = Syntax.Identifier.Text;
+        NameWithoutSuffix = Name.RemoveEnd("Controller");
     }
 
     public static ControllerDeclarationContext Create(GeneratorSyntaxContext context, CancellationToken cancellationToken)

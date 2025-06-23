@@ -1,5 +1,4 @@
-﻿using G4mvc.Generator;
-using G4mvc.TestBase.Extensions;
+﻿using G4mvc.TestBase.Extensions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

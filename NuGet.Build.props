@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/andref15/G4mvc.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageProjectUrl>https://github.com/andref15/G4mvc</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Description>A source generator for ASP.NET Core MVC apps that creates strongly typed helpers that eliminate the use of literal strings for routing</Description>
+    <PackageTags>g4mvc;aspnetcore;aspnetcoremvc;cshtml;razor;r4mvc</PackageTags>
+  </PropertyGroup>
+</Project>

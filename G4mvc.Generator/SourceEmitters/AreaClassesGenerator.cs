@@ -1,4 +1,6 @@
-﻿namespace G4mvc.Generator;
+﻿using G4mvc.Generator.Compilation;
+
+namespace G4mvc.Generator.SourceEmitters;
 internal static class AreaClassesGenerator
 {
     internal static void AddAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, Configuration configuration)

@@ -1,107 +1,30 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
+﻿using G4mvc.Generator.Compilation;
+using G4mvc.Generator.SourceEmitters;
+using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace G4mvc.Generator;
 
 [Generator(LanguageNames.CSharp)]
 public class G4mvcGenerator : IIncrementalGenerator
 {
-#if DEBUG
-    private static int _version = 0;
-    private static int _linksVersion = 0;
-#endif
+    private readonly LinksGenerator _linksGenerator = new();
+    private readonly ControllerGenerator _controllerGenerator = new();
+    private readonly PagesGenerator _pagesGenerator = new();
+
+    public delegate void RegisterSourceOutputDelegate<TSource>(SourceProductionContext context, TSource source);
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var configFile = context.AdditionalTextsProvider
             .Where(static f => Path.GetFileName(f.Path).Equals(Configuration.FileName, StringComparison.OrdinalIgnoreCase))
-            .Select(static (at, ct) => at.GetText(ct)?.ToString());
+            .Select(static (at, ct) => at.GetText(ct)?.ToString()).Collect().Select(static (a, _) => a.FirstOrDefault());
 
-        var classes = context.SyntaxProvider
-            .CreateSyntaxProvider(IsPossibleControllerDeclaration, ControllerDeclarationContext.Create)
-            .Where(cs => !cs.TypeSymbol.IsAbstract && cs.TypeSymbol.DerrivesFromType(TypeNames.Controller));
+        var analyzerConfigValues = context.AnalyzerConfigOptionsProvider
+                .Select(static (a, ct) => GetAnalyzerConfigValues(a.GlobalOptions));
 
-        IncrementalValueProvider<(ImmutableArray<ControllerDeclarationContext> ControllerContexts, ImmutableArray<string?> Configs)> configAndClasses = classes.Collect().Combine(configFile.Collect());
-
-        var analyzerOptionsCompilationConfigAndClasses = configAndClasses
-            .Combine(context.AnalyzerConfigOptionsProvider
-                .Select(static (a, ct) => a.GlobalOptions))
-            .Select(static (c, ct) => (Config: c.Left.Configs.FirstOrDefault(), c.Left.ControllerContexts, AnalyzerConfigOptions: c.Right));
-        
-        context.RegisterSourceOutput(analyzerOptionsCompilationConfigAndClasses, static (c, a) => ExecuteClassGeneration(c, a.Config, a.ControllerContexts, a.AnalyzerConfigOptions));
-
-        IncrementalValueProvider<((AnalyzerConfigOptions AnalyzerConfigOptions, ImmutableArray<string?> ConfigFiles) Left, ParseOptions ParseOptions)> configFileAnalyzerConfigOptionsAndParseProvider = context.AnalyzerConfigOptionsProvider.Select(static (a, ct) => a.GlobalOptions).Combine(configFile.Collect()).Combine(context.ParseOptionsProvider);
-
-        context.RegisterSourceOutput(configFileAnalyzerConfigOptionsAndParseProvider, static (c, a) => ExecuteLinksGeneration(c, a.Left.ConfigFiles.FirstOrDefault(), a.Left.AnalyzerConfigOptions, (CSharpParseOptions)a.ParseOptions));
-    }
-
-    private static bool IsPossibleControllerDeclaration(SyntaxNode syntaxNode, CancellationToken cancellationToken)
-    {
-        if (!syntaxNode.IsKind(SyntaxKind.ClassDeclaration))
-        {
-            return false;
-        }
-
-        var classDeclaration = (ClassDeclarationSyntax)syntaxNode;
-
-        return classDeclaration.Identifier.Text.EndsWith("Controller");
-    }
-
-    private static void ExecuteClassGeneration(SourceProductionContext context, string? configFileText, ImmutableArray<ControllerDeclarationContext> controllerContexts, AnalyzerConfigOptions analyzerConfigOptions)
-    {
-#if DEBUG
-        _version++; 
-#endif
-
-        if (controllerContexts.Length is 0)
-        {
-            return;
-        }
-
-        var analyzerConfigValues = GetAnalyzerConfigValues(analyzerConfigOptions);
-
-        var configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText, analyzerConfigValues);
-
-        Dictionary<string, Dictionary<string, string>> controllerRouteClassNames = [];
-
-        ControllerRouteClassGenerator controllerRouteClassGenerator = new(configuration);
-
-        controllerRouteClassGenerator.AddSharedController(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames);
-
-        foreach (var controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
-        {
-            context.CancellationToken.ThrowIfCancellationRequested();
-
-            var controllerContextImplementations = controllerContextGroup.ToList();
-
-            controllerRouteClassGenerator.AddControllerRouteClass(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames, controllerContextImplementations);
-            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContextImplementations[0], configuration);
-        }
-
-        AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);
-
-        MvcClassGenerator.AddMvcClass(context, controllerRouteClassNames, configuration
-#if DEBUG
-        , _version 
-#endif
-        );
-    }
-
-    private static void ExecuteLinksGeneration(SourceProductionContext context, string? configFileText, AnalyzerConfigOptions analyzerConfigOptions, CSharpParseOptions parseOptions)
-    {
-#if DEBUG
-        _linksVersion++;
-#endif
-
-        var analyzerConfigValues = GetAnalyzerConfigValues(analyzerConfigOptions);
-
-        var configuration = Configuration.CreateConfig(parseOptions, configFileText, analyzerConfigValues);
-
-        LinksGenerator.AddLinksClass(context, configuration
-#if DEBUG
-        , _linksVersion 
-#endif
-        );
+        _linksGenerator.Initialize(context, configFile, analyzerConfigValues, context.ParseOptionsProvider);
+        _controllerGenerator.Initialize(context, configFile, analyzerConfigValues, context.SyntaxProvider);
+        _pagesGenerator.Initialize(context, configFile, analyzerConfigValues, context.SyntaxProvider);
     }
 
     private static AnalyzerConfigValues GetAnalyzerConfigValues(AnalyzerConfigOptions analyzerConfigOptions)

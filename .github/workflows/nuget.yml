@@ -7,9 +7,9 @@ on:
       - '*'
   
 env:
-  Major: 5
+  Major: 6
   Minor: 0
-  Patch: 2
+  Patch: 0
 
 jobs:
   Create:

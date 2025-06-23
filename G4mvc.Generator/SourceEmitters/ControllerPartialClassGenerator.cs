@@ -1,4 +1,6 @@
-﻿namespace G4mvc.Generator;
+﻿using G4mvc.Generator.Compilation;
+
+namespace G4mvc.Generator.SourceEmitters;
 internal static class ControllerPartialClassGenerator
 {
     internal static void AddControllerPartialClass(SourceProductionContext context, ControllerDeclarationContext controllerContext, Configuration configuration)
@@ -24,7 +26,7 @@ internal static class ControllerPartialClassGenerator
         using (sourceBuilder.BeginNamespace(controllerContext.TypeSymbol.ContainingNamespace.ToDisplayString(), true))
         using (sourceBuilder.BeginClass(controllerContext.Syntax.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
         {
-            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"{Configuration.RoutesNameSpace}.{controllerContext.ControllerNameWithoutSuffix}Routes.{controllerContext.ControllerNameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.HelperClassName}.{(controllerContext.ControllerArea is null ? null : $"{controllerContext.ControllerArea}.")}{controllerContext.ControllerNameWithoutSuffix}.Views");
+            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"{Configuration.RoutesNameSpace}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.HelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
             sourceBuilder.AppendLine();
 
             using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToAction", "G4mvcRouteValues route"))
@@ -40,6 +42,6 @@ internal static class ControllerPartialClassGenerator
             }
         }
 
-        context.AddGeneratedSource($"{controllerContext.ControllerName}", sourceBuilder);
+        context.AddGeneratedSource($"{controllerContext.Name}", sourceBuilder);
     }
 }
