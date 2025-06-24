@@ -3,9 +3,9 @@
 namespace G4mvc.Generator.SourceEmitters;
 internal static class AreaClassesGenerator
 {
-    internal static void AddAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, Configuration configuration)
+    internal static void AddAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration)
     {
-        foreach (var area in controllerRouteClassNames.Where(kvp => kvp.Key != string.Empty))
+        foreach (var area in routeClassNames.Where(kvp => kvp.Key != string.Empty))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -15,7 +15,7 @@ internal static class AreaClassesGenerator
                 .Using(Configuration.RoutesNameSpace)
                 .Nullable(configuration.GlobalNullable);
 
-            using (sourceBuilder.BeginNamespace($"{nameof(G4mvc)}.Areas", true))
+            using (sourceBuilder.BeginNamespace(Configuration.AreasNameSpace, true))
             using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, $"{area.Key}Area"))
             {
                 sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(area.Key));

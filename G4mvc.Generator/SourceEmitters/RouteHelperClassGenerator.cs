@@ -1,9 +1,9 @@
 ﻿using G4mvc.Generator.Compilation;
 
 namespace G4mvc.Generator.SourceEmitters;
-internal static class MvcClassGenerator
+internal static class RouteHelperClassGenerator
 {
-    public static void AddMvcClass(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, Configuration configuration
+    public static void AddRouteClassClass(SourceProductionContext context, string helperClassName, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
 #if DEBUG
         , int version
 #endif
@@ -15,16 +15,16 @@ internal static class MvcClassGenerator
 
         sourceBuilder.Using(nameof(G4mvc));
 
-        var areaNames = controllerRouteClassNames.Keys.Where(k => k != string.Empty).ToList();
+        var areaNames = routeClassNames.Keys.Where(static k => !string.IsNullOrEmpty(k)).ToList();
 
         if (areaNames.Count > 0)
         {
-            sourceBuilder.Using($"{nameof(G4mvc)}.Areas");
+            sourceBuilder.Using(Configuration.AreasNameSpace);
         }
 
         sourceBuilder.Using(Configuration.RoutesNameSpace).AppendLine();
 
-        IDisposable? namespaceDisposable = null;
+        var namespaceDisposable = (IDisposable?) null;
 
         if (configuration.GeneratedClassNamespace is not null)
         {
@@ -33,15 +33,15 @@ internal static class MvcClassGenerator
 
         sourceBuilder.Nullable(configuration.GlobalNullable);
 
-        using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, configuration.JsonConfig.HelperClassName))
+        using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, helperClassName))
         {
 #if DEBUG
             sourceBuilder.AppendLine($"//v{version}");
 #endif
 
-            if (controllerRouteClassNames.TryGetValue(string.Empty, out var classNames))
+            if (routeClassNames.TryGetValue(string.Empty, out var classNames))
             {
-                sourceBuilder.AppendProperties("public static", classNames, "get", null, SourceCode.NewCtor);
+                sourceBuilder.AppendProperties("public static", classNames, "get", null, SourceCode.NewCtor, context.CancellationToken);
             }
 
             foreach (var areaName in areaNames)
@@ -56,6 +56,6 @@ internal static class MvcClassGenerator
 
         namespaceDisposable?.Dispose();
 
-        context.AddGeneratedSource(configuration.JsonConfig.HelperClassName, sourceBuilder);
+        context.AddGeneratedSource(helperClassName, sourceBuilder);
     }
 }

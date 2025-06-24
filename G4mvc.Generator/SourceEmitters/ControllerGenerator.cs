@@ -18,21 +18,17 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
 
         var classDeclaration = (ClassDeclarationSyntax)syntaxNode;
 
-        return classDeclaration.Identifier.Text.EndsWith("Controller");
+        return classDeclaration.Identifier.Text.EndsWith(ControllerDeclarationContext.Suffix);
     }
+
+    protected override bool DeclatationPredicate(ControllerDeclarationContext classContext)
+        => !classContext.TypeSymbol.IsAbstract && classContext.TypeSymbol.DerrivesFromType(TypeNames.Controller);
 
     protected override ControllerDeclarationContext Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => ControllerDeclarationContext.Create(context, cancellationToken);
 
-    protected override void Execute(SourceProductionContext context, string? configFileText, ImmutableArray<ControllerDeclarationContext> controllerContexts, AnalyzerConfigValues analyzerConfigValues)
+    protected override void Execute(SourceProductionContext context, ImmutableArray<ControllerDeclarationContext> controllerContexts, Configuration configuration)
     {
-        var asd = (CSharpCompilation)controllerContexts[0].Model.Compilation;
-
-        var indexModel = asd.GetSemanticModel(asd.SyntaxTrees[0]);
-
-        var symbol = indexModel.GetDeclaredSymbol(asd.SyntaxTrees[0].GetRoot().DescendantNodes().Where(n => n.IsKind(SyntaxKind.ClassDeclaration)).First());
-
-
 #if DEBUG
         _version++;
 #endif
@@ -42,27 +38,31 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
             return;
         }
 
-        var configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText, analyzerConfigValues);
+        var controllerRouteClassNames = new Dictionary<string, Dictionary<string, string>>();
 
-        Dictionary<string, Dictionary<string, string>> controllerRouteClassNames = [];
+        var controllerRouteClassGenerator = new ControllerRouteClassGenerator(configuration);
 
-        ControllerRouteClassGenerator controllerRouteClassGenerator = new(configuration);
+        var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
-        controllerRouteClassGenerator.AddSharedController(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames);
+        controllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
 
         foreach (var controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
             var controllerContextImplementations = controllerContextGroup.ToList();
+            controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContextImplementations);
 
-            controllerRouteClassGenerator.AddControllerRouteClass(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames, controllerContextImplementations);
-            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContextImplementations[0], configuration);
+            var firstContext = controllerContextImplementations[0];
+            if (!firstContext.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword))
+            {
+            ControllerPartialClassGenerator.AddControllerPartialClass(context, firstContext, configuration);
+            }
         }
 
         AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);
 
-        MvcClassGenerator.AddMvcClass(context, controllerRouteClassNames, configuration
+        RouteHelperClassGenerator.AddRouteClassClass(context, configuration.JsonConfig.RouteHelperClassName, controllerRouteClassNames, configuration
 #if DEBUG
         , _version
 #endif

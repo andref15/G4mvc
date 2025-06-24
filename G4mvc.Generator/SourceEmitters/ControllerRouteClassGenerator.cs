@@ -105,7 +105,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
     private static Dictionary<string, HashSet<string>> AddActionMethodsAndGetParameterGroups(SourceProductionContext context, ControllerDeclarationContext mainControllerContext, SourceBuilder sourceBuilder, List<MethodDeclarationContext> httpMethods)
     {
-        Dictionary<string, HashSet<string>> actionParameterGroups = [];
+        var actionParameterGroups = new Dictionary<string, HashSet<string>>();
 
         foreach (var httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
         {
@@ -113,12 +113,12 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             var actionName = httpMethodsGroup.Key;
 
-            HashSet<string> methodsGroupParameterNames = [];
+            var methodsGroupParameterNames = new HashSet<string>();
             actionParameterGroups.Add(actionName, methodsGroupParameterNames);
 
-            using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName))
+            using (sourceBuilder.BeginMethod("public", nameof(G4mvcActionRouteValues), actionName))
             {
-                sourceBuilder.AppendReturnCtor(nameof(G4mvcRouteValues), SourceCode.String(mainControllerContext.Area), SourceCode.String(mainControllerContext.NameWithoutSuffix), SourceCode.String(actionName));
+                sourceBuilder.AppendReturnCtor(nameof(G4mvcActionRouteValues), SourceCode.String(mainControllerContext.Area), SourceCode.String(mainControllerContext.NameWithoutSuffix), SourceCode.String(actionName));
             }
 
             sourceBuilder.AppendLine();
@@ -139,7 +139,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                     methodsGroupParameterNames.Add(paramName);
                 }
 
-                SourceBuilder.NullableBlock? nullableBlock = null;
+                var nullableBlock = (SourceBuilder.NullableBlock?)null;
 
                 if (mainControllerContext.NullableEnabled != httpMethodContext.NullableEnabled)
                 {
@@ -147,9 +147,9 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                 }
 
                 using (nullableBlock)
-                using (sourceBuilder.BeginMethod("public", nameof(G4mvcRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
+                using (sourceBuilder.BeginMethod("public", nameof(G4mvcActionRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
                 {
-                    sourceBuilder.AppendLine($"{nameof(G4mvcRouteValues)} route = {actionName}()").AppendLine();
+                    sourceBuilder.AppendLine($"{nameof(G4mvcActionRouteValues)} route = {actionName}()").AppendLine();
 
                     foreach (var parameter in relevantParameters)
                     {

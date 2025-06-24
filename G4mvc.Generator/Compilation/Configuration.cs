@@ -3,6 +3,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace G4mvc.Generator.Compilation;
+class MyClass
+{
+
+}
 internal struct Configuration(LanguageVersion languageVersion, bool globalNullable, string? configFile, AnalyzerConfigValues analyzerConfigValues)
 {
     private enum ClassNamespaceIdentifier
@@ -13,6 +17,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
     public const string FileName = "g4mvc.json";
     public const string RoutesNameSpace = $"{nameof(G4mvc)}.Routes";
+    public const string AreasNameSpace = $"{nameof(G4mvc)}.Areas";
     private string? _generatedClassNamespace;
     private bool _generatedClassNamespaceInitialized = false;
     private string? _generatedClassModifier;
@@ -65,8 +70,16 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
     internal readonly struct JsonConfigModel
     {
-        public string HelperClassName { get; }
-        public string LinksClassName { get; }
+
+        private const string _defaultRouteHelperClassName = "MVC";
+        private const string _defaultPageHelperClassName = "Pages";
+        private const string _defaultLinksHelperClassName = "Links";
+        private const string _defaultStaticFilesPath = "wwwroot";
+        private const string _defaultGeneratedClassNamespace = "global";
+
+        public string RouteHelperClassName { get; }
+        public string PageHelperClassName { get; }
+        public string LinksHelperClassName { get; }
         public string StaticFilesPath { get; }
         public bool UseVirtualPathProcessor { get; }
 
@@ -86,23 +99,27 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
         public JsonConfigModel()
         {
-            HelperClassName = "MVC";
-            LinksClassName = "Links";
-            StaticFilesPath = "wwwroot";
-            GeneratedClassNamespace = "global";
+            RouteHelperClassName = _defaultRouteHelperClassName;
+            PageHelperClassName = _defaultPageHelperClassName;
+            LinksHelperClassName = _defaultLinksHelperClassName;
+            StaticFilesPath = _defaultStaticFilesPath;
+            GeneratedClassNamespace = _defaultGeneratedClassNamespace;
         }
 
         [JsonConstructor]
-        public JsonConfigModel(string? helperClassName, string? linksClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool? useProcessedPathForContentLinkNullable, bool makeGeneratedClassesInternal, string? generatedClassNamespace, bool enableSubfoldersInViews, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
+        public JsonConfigModel(string? routeHelperClassName, string? pageHelperClassName, string? linksClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool? useProcessedPathForContentLinkNullable, bool makeGeneratedClassesInternal, string? generatedClassNamespace, bool enableSubfoldersInViews, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
         {
-            HelperClassName = string.IsNullOrWhiteSpace(helperClassName)
-                ? "MVC"
-                : helperClassName!.Trim();
-            LinksClassName = string.IsNullOrWhiteSpace(linksClassName)
-                ? "Links"
+            RouteHelperClassName = string.IsNullOrWhiteSpace(routeHelperClassName)
+                ? _defaultRouteHelperClassName
+                : routeHelperClassName!.Trim();
+            PageHelperClassName = string.IsNullOrWhiteSpace(routeHelperClassName)
+                ? _defaultPageHelperClassName
+                : pageHelperClassName!.Trim();
+            LinksHelperClassName = string.IsNullOrWhiteSpace(linksClassName)
+                ? _defaultLinksHelperClassName
                 : linksClassName!.Trim();
             StaticFilesPath = string.IsNullOrWhiteSpace(staticFilesPath)
-                ? "wwwroot"
+                ? _defaultStaticFilesPath
                 : staticFilesPath!.Trim();
             UseVirtualPathProcessor = useVirtualPathProcessor;
             UseProcessedPathForContentLinkNullable = useProcessedPathForContentLinkNullable;
@@ -121,7 +138,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         /// <summary>
         /// Only use this for tests!
         /// </summary>
-        internal static JsonConfigModel Create(string? helperClassName = null, string? linksClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool? useProcessedPathForContentLink = null, bool makeGeneratedClassesInternal = false, string? generatedClassNamespace = null, bool enableSubfoldersInViews = false, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
-            => new(helperClassName, linksClassName, staticFilesPath, useVirtualPathProcessor, useProcessedPathForContentLink, makeGeneratedClassesInternal, generatedClassNamespace, enableSubfoldersInViews, excludedStaticFileExtensions, excludedStaticFileDirectories, additionalStaticFilesPaths, customStaticFileDirectoryAlias);
+        internal static JsonConfigModel Create(string? routeHelperClassName = null, string? pageHelperClassName = null, string ? linksClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool? useProcessedPathForContentLink = null, bool makeGeneratedClassesInternal = false, string? generatedClassNamespace = null, bool enableSubfoldersInViews = false, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
+            => new(routeHelperClassName, pageHelperClassName, linksClassName, staticFilesPath, useVirtualPathProcessor, useProcessedPathForContentLink, makeGeneratedClassesInternal, generatedClassNamespace, enableSubfoldersInViews, excludedStaticFileExtensions, excludedStaticFileDirectories, additionalStaticFilesPaths, customStaticFileDirectoryAlias);
     }
 }

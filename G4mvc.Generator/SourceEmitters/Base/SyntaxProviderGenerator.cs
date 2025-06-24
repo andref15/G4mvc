@@ -5,23 +5,20 @@ namespace G4mvc.Generator.SourceEmitters.Base;
 internal abstract class SyntaxProviderGenerator<T>
     where T : ClassDeclarationContext
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context, IncrementalValueProvider<string?> configFile, IncrementalValueProvider<AnalyzerConfigValues> analyzerConfigOptions, SyntaxValueProvider syntaxProvider)
+    public void Initialize(IncrementalGeneratorInitializationContext context, IncrementalValueProvider<Configuration> configurationProvider, SyntaxValueProvider syntaxProvider)
     {
         var classes = syntaxProvider
             .CreateSyntaxProvider(IsPossibleDeclaration, Transform)
-            .Where(static cs => !cs.TypeSymbol.IsAbstract && cs.TypeSymbol.DerrivesFromType(TypeNames.Controller));
+            .Where(DeclatationPredicate);
 
-        IncrementalValueProvider<(ImmutableArray<T> ControllerContexts, string? Config)> configAndClasses = classes.Collect().Combine(configFile);
+        var configAndClasses = classes.Collect().Combine(configurationProvider);
 
-        var analyzerOptionsCompilationConfigAndClasses = configAndClasses
-            .Combine(analyzerConfigOptions)
-            .Select(static (c, ct) => (c.Left.Config, c.Left.ControllerContexts, AnalyzerConfigValues: c.Right));
-
-        context.RegisterSourceOutput(analyzerOptionsCompilationConfigAndClasses, (c, a) => Execute(c, a.Config, a.ControllerContexts, a.AnalyzerConfigValues));
+        context.RegisterSourceOutput(configAndClasses, (c, a) => Execute(c, a.Left, a.Right));
 
     }
 
     protected abstract bool IsPossibleDeclaration(SyntaxNode syntaxNode, CancellationToken cancellationToken);
+    protected abstract bool DeclatationPredicate(T classContext);
     protected abstract T Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken);
-    protected abstract void Execute(SourceProductionContext context, string? configFileText, ImmutableArray<T> controllerContexts, AnalyzerConfigValues analyzerConfigValues);
+    protected abstract void Execute(SourceProductionContext context, ImmutableArray<T> classContexts, Configuration configuration);
 }

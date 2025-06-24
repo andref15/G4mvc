@@ -8,16 +8,16 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace G4mvc.TagHelpers;
 [HtmlTargetElement(_anker, Attributes = _attributeName)]
 [HtmlTargetElement(_form, Attributes = _attributeName)]
-public class G4ActionTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
+public class G4PageTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
 {
     private const string _anker = "a";
     private const string _form = "form";
-    private const string _attributeName = "g4-action";
+    private const string _attributeName = "g4-page";
 
     private readonly IUrlHelperFactory _urlHelperFactory = urlHelperFactory;
 
     [HtmlAttributeName(_attributeName)]
-    public G4mvcActionRouteValues Action { get; set; } = null!;
+    public G4mvcPageRouteValues Page { get; set; } = null!;
 
     [HtmlAttributeNotBound, ViewContext]
     public ViewContext ViewContext { get; set; } = null!;
@@ -31,10 +31,10 @@ public class G4ActionTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
         switch (output.TagName)
         {
             case _anker:
-                output.Attributes.SetAttribute("href", urlHelper.RouteUrl(Action));
+                output.Attributes.SetAttribute("href", urlHelper.RouteUrl(Page));
                 break;
             case _form:
-                output.Attributes.SetAttribute("action", urlHelper.RouteUrl(Action));
+                output.Attributes.SetAttribute("action", urlHelper.RouteUrl(Page));
 
                 if (!context.AllAttributes.TryGetAttribute("method", out var attribute) || string.IsNullOrEmpty(attribute.Value?.ToString()))
                 {

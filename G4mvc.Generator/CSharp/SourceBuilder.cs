@@ -73,11 +73,12 @@ internal class SourceBuilder(LanguageVersion languageVersion)
         return this;
     }
 
-    public SourceBuilder AppendProperties(string modifier, Dictionary<string, string> propertyDefinitions, string get, string? set, string? assignmnet = null)
+    public SourceBuilder AppendProperties(string modifier, Dictionary<string, string> propertyDefinitions, string get, string? set, string? assignmnet = null, CancellationToken cancellationToken = default)
     {
-        foreach (var propertyDefinition in propertyDefinitions)
+        foreach (var (type, name) in propertyDefinitions)
         {
-            AppendProperty(modifier, propertyDefinition.Key, propertyDefinition.Value, get, set, assignmnet);
+            cancellationToken.ThrowIfCancellationRequested();
+            AppendProperty(modifier, type, name, get, set, assignmnet);
         }
 
         return this;

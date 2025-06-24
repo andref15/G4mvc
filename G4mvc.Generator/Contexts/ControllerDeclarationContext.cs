@@ -1,6 +1,8 @@
 ﻿namespace G4mvc.Generator.Contexts;
 internal class ControllerDeclarationContext : ClassDeclarationContext
 {
+    public const string Suffix = "Controller";
+
     public string? Area { get; }
     public string Name { get; }
     public string NameWithoutSuffix { get; }
@@ -9,7 +11,7 @@ internal class ControllerDeclarationContext : ClassDeclarationContext
     {
         Area = GetControllerArea(typeSymbol);
         Name = Syntax.Identifier.Text;
-        NameWithoutSuffix = Name.RemoveEnd("Controller");
+        NameWithoutSuffix = Name.RemoveEnd(Suffix);
     }
 
     public static ControllerDeclarationContext Create(GeneratorSyntaxContext context, CancellationToken cancellationToken)

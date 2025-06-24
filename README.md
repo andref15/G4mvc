@@ -1,6 +1,6 @@
 # G4mvc
 
-G4mvc is a source generator for ASP.NET Core MVC apps that creates strongly typed helpers that eliminate the use of literal strings for routing.
+G4mvc is a source generator for ASP.NET Core MVC and Razor Pages apps that creates strongly typed helpers which eliminate the use of literal strings for routing.
 
 It is an improved re-implementation of R4MVC using a C# Source Generator because R4MVC lacks support for many newer language - and MVC features.
 
@@ -65,7 +65,8 @@ The json schema is available under https://schemastore.af-styx.com/Schema/G4mvc.
 
     {
       "$schema": "https://schemastore.af-styx.com/Schema/G4mvc.json",
-      "HelperClassName": "MVC",
+      "RouteHelperClassName": "MVC",
+      "PageHelperClassName": "Razor",
       "LinksClassName":  "Links",
       "StaticFilesPath": "wwwroot",
       "UseVirtualPathProcessor": false,
@@ -79,8 +80,11 @@ The json schema is available under https://schemastore.af-styx.com/Schema/G4mvc.
       "CustomStaticFileDirectoryAlias": {}
     }
 
-#### HelperClassName
-Allows you to change the MVC prefix (e.g. MVC.Home.Index()). Default is `MVC`.
+#### RouteHelperClassName
+Defines the name of the MVC helpers class (e.g. MVC.Home.Index()). Default is `MVC`.
+
+#### RouteHelperClassName
+Defines the name of the Razor Pages helpers class (e.g. Razor.Home.Index()). Default is `Razor`.
 
 #### LinksClassName
 Allows you to chnage the name of the class in which the links for static files are generated in. Default is `Links`.

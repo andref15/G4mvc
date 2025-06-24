@@ -12,34 +12,16 @@ internal class LinksGenerator
 
     private readonly HashSet<string> _existingLinksClasses = [];
 
-    public void Initialize(IncrementalGeneratorInitializationContext context, IncrementalValueProvider<string?> configFile, IncrementalValueProvider<AnalyzerConfigValues> analyzerConfigValues, IncrementalValueProvider<ParseOptions> parseOptionsProvider)
+    public void Initialize(IncrementalGeneratorInitializationContext context, IncrementalValueProvider<Configuration> configuration)
     {
-        IncrementalValueProvider<((AnalyzerConfigValues AnalyzerConfigValues, string? ConfigFile) Left, ParseOptions ParseOptions)> configFileAnalyzerConfigOptionsAndParseProvider = analyzerConfigValues.Combine(configFile).Combine(parseOptionsProvider);
-
-        context.RegisterSourceOutput(configFileAnalyzerConfigOptionsAndParseProvider, (c, a) => ExecuteLinksGeneration(c, a.Left.ConfigFile, a.Left.AnalyzerConfigValues, (CSharpParseOptions)a.ParseOptions));
+        context.RegisterSourceOutput(configuration, ExecuteLinksGeneration);
     }
 
-    private void ExecuteLinksGeneration(SourceProductionContext context, string? configFileText, AnalyzerConfigValues analyzerConfigValues, CSharpParseOptions parseOptions)
+    private void ExecuteLinksGeneration(SourceProductionContext context, Configuration configuration)
     {
 #if DEBUG
         _version++;
 #endif
-
-        var configuration = Configuration.CreateConfig(parseOptions, configFileText, analyzerConfigValues);
-
-        AddLinksClass(context, configuration
-#if DEBUG
-        , _version
-#endif
-        );
-    }
-
-    public void AddLinksClass(SourceProductionContext context, Configuration configuration
-#if DEBUG
-        , int linksVersion
-#endif
-        )
-    {
         var sourceBuilder = configuration.CreateSourceBuilder();
 
         sourceBuilder
@@ -62,7 +44,7 @@ internal class LinksGenerator
 
         var excludedDirectories = configuration.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(projectDir, d)).FullName).ToList() ?? [];
         var additionalStaticFilesPaths = configuration.JsonConfig.AdditionalStaticFilesPaths;
-        var linksClassName = configuration.JsonConfig.LinksClassName;
+        var linksClassName = configuration.JsonConfig.LinksHelperClassName;
         var linksClassNameSpan = linksClassName.AsSpan();
 
         if (configuration.JsonConfig.UseVirtualPathProcessor)
@@ -78,10 +60,10 @@ internal class LinksGenerator
         using (sourceBuilder.BeginClass($"{configuration.GeneratedClassModifier} static partial", linksClassName))
         {
 #if DEBUG
-            sourceBuilder.AppendLine($"//v{linksVersion}");
+            sourceBuilder.AppendLine($"//v{_version}");
 #endif
 
-            IdentifierParser linkIdentifierParser = new(configuration, projectDir);
+            var linkIdentifierParser = new IdentifierParser(configuration, projectDir);
             var root = Path.Combine(projectDir, configuration.JsonConfig.StaticFilesPath);
             var classPath = "";
             _existingLinksClasses.Clear();
@@ -98,7 +80,7 @@ internal class LinksGenerator
 
         namespaceDisposable?.Dispose();
 
-        context.AddGeneratedSource(configuration.JsonConfig.LinksClassName, sourceBuilder);
+        context.AddGeneratedSource(configuration.JsonConfig.LinksHelperClassName, sourceBuilder);
     }
 
     private void CreateAdditionalStaticFilesLinks(SourceProductionContext context, Configuration configuration, string projectDir, SourceBuilder sourceBuilder, List<string> excludedDirectories, IReadOnlyDictionary<string, string> additionalStaticFilesPaths, ReadOnlySpan<char> linksClassNameSpan, IdentifierParser linkIdentifierParser)
@@ -109,7 +91,7 @@ internal class LinksGenerator
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            DirectoryInfo additionalRoot = new(Path.Combine(projectDir, additionalStaticFilesPath.Key));
+            var additionalRoot = new DirectoryInfo(Path.Combine(projectDir, additionalStaticFilesPath.Key));
             var additionalVirtualPathRoot = additionalStaticFilesPath.Value.Trim('/');
             var additionalVirtualPathRootSegments = additionalVirtualPathRoot.Split('/');
 
@@ -217,6 +199,4 @@ internal class LinksGenerator
 
     private static string GetRelativePath(string root, string? subRoute, string path)
         => path.Replace(root, subRoute is null ? "~" : $"~/{subRoute}").Replace('\\', '/').TrimEnd('/');
-
-
 }
