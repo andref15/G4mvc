@@ -3,9 +3,6 @@
 namespace G4mvc.Generator.SourceEmitters;
 internal class LinksGenerator
 {
-    private const string _vppClassName = "VirtualPathProcessor";
-    private const string _vppMethodName = "Process";
-
 #if DEBUG
     private int _version = 0;
 #endif
@@ -49,9 +46,9 @@ internal class LinksGenerator
 
         if (configuration.JsonConfig.UseVirtualPathProcessor)
         {
-            using (sourceBuilder.BeginClass("internal static partial", _vppClassName))
+            using (sourceBuilder.BeginClass("internal static partial", Configuration.VppClassName))
             {
-                sourceBuilder.AppendPartialMethod("public static", "string", _vppMethodName, "string path");
+                sourceBuilder.AppendPartialMethod("public static", "string", Configuration.VppMethodName, "string path");
             }
 
             sourceBuilder.AppendLine();
@@ -162,7 +159,7 @@ internal class LinksGenerator
 
             if (jsonConfig.UseVirtualPathProcessor)
             {
-                sourceBuilder.AppendField("public static readonly", nameof(G4mvcContentLink), linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\", {_vppClassName}.{_vppMethodName}, {(jsonConfig.UseProcessedPathForContentLink ? "true" : "false")})");
+                sourceBuilder.AppendField("public static readonly", nameof(G4mvcContentLink), linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\", {Configuration.VppClassName}.{Configuration.VppMethodName}, {(jsonConfig.UseProcessedPathForContentLink ? "true" : "false")})");
             }
             else
             {

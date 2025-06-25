@@ -18,6 +18,8 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     public const string FileName = "g4mvc.json";
     public const string RoutesNameSpace = $"{nameof(G4mvc)}.Routes";
     public const string AreasNameSpace = $"{nameof(G4mvc)}.Areas";
+    public const string VppClassName = "VirtualPathProcessor";
+    public const string VppMethodName = "Process";
     private string? _generatedClassNamespace;
     private bool _generatedClassNamespaceInitialized = false;
     private string? _generatedClassModifier;
@@ -138,7 +140,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         /// <summary>
         /// Only use this for tests!
         /// </summary>
-        internal static JsonConfigModel Create(string? mvcHelperClassName = null, string? pageHelperClassName = null, string ? linksHelperClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool? useProcessedPathForContentLink = null, bool makeGeneratedClassesInternal = false, string? generatedClassNamespace = null, bool enableSubfoldersInViews = false, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
+        internal static JsonConfigModel Create(string? mvcHelperClassName = null, string? pageHelperClassName = null, string? linksHelperClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool? useProcessedPathForContentLink = null, bool makeGeneratedClassesInternal = false, string? generatedClassNamespace = null, bool enableSubfoldersInViews = false, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
             => new(mvcHelperClassName, pageHelperClassName, linksHelperClassName, staticFilesPath, useVirtualPathProcessor, useProcessedPathForContentLink, makeGeneratedClassesInternal, generatedClassNamespace, enableSubfoldersInViews, excludedStaticFileExtensions, excludedStaticFileDirectories, additionalStaticFilesPaths, customStaticFileDirectoryAlias);
     }
 }

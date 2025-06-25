@@ -1,6 +1,5 @@
 ﻿using G4mvc.Generator.Compilation;
 using G4mvc.Generator.SourceEmitters;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace G4mvc.Generator;
 
@@ -20,7 +19,7 @@ public class G4mvcGenerator : IIncrementalGenerator
             .Select(static (at, ct) => at.GetText(ct)?.ToString()).Collect().Select(static (a, _) => a.FirstOrDefault());
 
         var configuration = context.AnalyzerConfigOptionsProvider
-                .Select(static (a, ct) => GetAnalyzerConfigValues(a.GlobalOptions))
+                .Select(static (a, ct) => AnalyzerConfigValues.FromAnalyzerConfigOptions(a.GlobalOptions))
                 .Combine(context.CompilationProvider)
                 .Combine(configFile)
                 .Select(static (tup, ct) => Configuration.CreateConfig((CSharpCompilation)tup.Left.Right, tup.Right, tup.Left.Left));
@@ -28,17 +27,5 @@ public class G4mvcGenerator : IIncrementalGenerator
         _linksGenerator.Initialize(context, configuration);
         _controllerGenerator.Initialize(context, configuration, context.SyntaxProvider);
         _pagesGenerator.Initialize(context, configuration, context.SyntaxProvider);
-    }
-
-    private static AnalyzerConfigValues GetAnalyzerConfigValues(AnalyzerConfigOptions analyzerConfigOptions)
-    {
-        if (!analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.ProjectDir, out var projectDir) || string.IsNullOrWhiteSpace(projectDir))
-        {
-            throw new InvalidOperationException($"No AnalyzerConfigOption for {GlobalOptionConstant.BuildProperty.ProjectDir} could be found! This should not happen.");
-        }
-
-        _ = analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.RootNamespace, out var rootNamespace);
-
-        return new AnalyzerConfigValues(projectDir, rootNamespace);
     }
 }

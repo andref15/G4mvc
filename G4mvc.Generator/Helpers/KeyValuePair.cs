@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace G4mvc.Generator.Helpers;
+﻿namespace G4mvc.Generator.Helpers;
 internal static class KeyValuePair
 {
     public static KeyValuePair<TKey, TValue> Create<TKey, TValue>(TKey key, TValue value)

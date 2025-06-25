@@ -24,7 +24,7 @@ internal static class RouteHelperClassGenerator
 
         sourceBuilder.Using(Configuration.RoutesNameSpace).AppendLine();
 
-        var namespaceDisposable = (IDisposable?) null;
+        var namespaceDisposable = (IDisposable?)null;
 
         if (configuration.GeneratedClassNamespace is not null)
         {
