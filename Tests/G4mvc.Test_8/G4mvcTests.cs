@@ -1,3 +1,4 @@
+using G4mvc.Generator.Compilation;
 using G4mvc.TestBase;
 using G4mvc.TestBase.Utils;
 using Microsoft.CodeAnalysis.CSharp;
@@ -26,9 +27,9 @@ public class G4mvcTests : G4mvcTestBase
         const string mvc = "TestMvc";
         const string links = "TestLinks";
 
-        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(helperClassName: mvc, linksClassName: links));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(mvcHelperClassName: mvc, linksHelperClassName: links));
 
-        var expectedOutputs = new ExpectedOutputs(mvcClassName: mvc, linksClassName: links);
+        var expectedOutputs = new ExpectedOutputs(mvcClassName: mvc, linksHelperClassName: links);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }

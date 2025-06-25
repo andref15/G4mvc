@@ -179,7 +179,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         => syntax.Default is null ? null : $" {syntax.Default}";
 
     private static bool IsActionResult(ITypeSymbol returnType)
-        => IsOrImplementsActionResultIInterfaces(returnType) || returnType is INamedTypeSymbol namedReturnType && namedReturnType.DerrivesFromType(TypeNames.Task) && namedReturnType.IsGenericType && IsOrImplementsActionResultIInterfaces(namedReturnType.TypeArguments[0]);
+        => IsOrImplementsActionResultIInterfaces(returnType) || (returnType is INamedTypeSymbol namedReturnType && namedReturnType.DerrivesFromType(TypeNames.Task) && namedReturnType.IsGenericType && IsOrImplementsActionResultIInterfaces(namedReturnType.TypeArguments[0]));
 
     private static bool IsOrImplementsActionResultIInterfaces(ITypeSymbol type)
         => type.IsOrImplementsInterface(TypeNames.IActionResult) || type.IsOrImplementsInterface(TypeNames.IConvertToActionResult);

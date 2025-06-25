@@ -32,7 +32,7 @@ Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would 
 
 ### Extensions
 The [G4mvc](https://www.nuget.org/packages/G4mvc/) package provides a number of extension methods that can make using the generated route helpers a bit easier.
-You do however not have to rely on these because the `G4mvcRouteValues` class derives from the standard `Microsoft.AspNetCore.Routing.RouteValueDictionary`, 
+You do however not have to rely on these because the `G4mvcActionRouteValues` and `G4mvcPageRouteValues` classes derive from the standard `Microsoft.AspNetCore.Routing.RouteValueDictionary`, 
 so you can use any of the methods provided by ASP.NET Core, that have an `object routeValues` parameter. An example would be the [HtmlHelper.RouteLink Method](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.viewfeatures.htmlhelper.routelink?view=aspnetcore-6.0).
 The provided extension methods are just wrappers for these methods.\
 For the generated `G4mvcContentLink` fields, you can use the `IUrlHelper.Content` extension method to get the virtual path.
@@ -65,9 +65,9 @@ The json schema is available under https://schemastore.af-styx.com/Schema/G4mvc.
 
     {
       "$schema": "https://schemastore.af-styx.com/Schema/G4mvc.json",
-      "RouteHelperClassName": "MVC",
+      "MvcHelperClassName": "MVC",
       "PageHelperClassName": "Razor",
-      "LinksClassName":  "Links",
+      "LinksHelperClassName":  "Links",
       "StaticFilesPath": "wwwroot",
       "UseVirtualPathProcessor": false,
       "UseProcessedPathForContentLink": false,
@@ -80,14 +80,14 @@ The json schema is available under https://schemastore.af-styx.com/Schema/G4mvc.
       "CustomStaticFileDirectoryAlias": {}
     }
 
-#### RouteHelperClassName
+#### MvcHelperClassName
 Defines the name of the MVC helpers class (e.g. MVC.Home.Index()). Default is `MVC`.
 
-#### RouteHelperClassName
+#### PageHelperClassName
 Defines the name of the Razor Pages helpers class (e.g. Razor.Home.Index()). Default is `Razor`.
 
-#### LinksClassName
-Allows you to chnage the name of the class in which the links for static files are generated in. Default is `Links`.
+#### LinksHelperClassName
+Allows you to chnage the name of the helper class in which the links for static files are generated in. Default is `Links`.
 
 #### StaticFilesPath
 The root path (relative to project dir) for which links will be generated. Default is `wwwroot`.

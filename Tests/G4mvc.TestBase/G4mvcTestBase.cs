@@ -1,4 +1,5 @@
 ﻿using G4mvc.Generator;
+using G4mvc.Generator.Compilation;
 using G4mvc.TestBase.Providers;
 using G4mvc.TestBase.Utils;
 using Microsoft.CodeAnalysis;
@@ -38,7 +39,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
         yield return MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Mvc.IActionResult).Assembly.Location);
         yield return MetadataReference.CreateFromFile(typeof(System.Diagnostics.Activity).Assembly.Location);
         yield return MetadataReference.CreateFromFile(typeof(System.Text.Json.JsonSerializer).Assembly.Location);
-        yield return MetadataReference.CreateFromFile(typeof(G4mvcRouteValues).Assembly.Location);
+        yield return MetadataReference.CreateFromFile(typeof(G4mvcActionRouteValues).Assembly.Location);
     }
 
     private protected CSharpCompilation BaseTest(Configuration.JsonConfigModel? jsonConfig = null, IEnumerable<SyntaxTree>? additionalSyntaxTrees = null)

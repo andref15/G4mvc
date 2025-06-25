@@ -21,17 +21,17 @@ internal static class ControllerPartialClassGenerator
         using (sourceBuilder.BeginNamespace(controllerContext.TypeSymbol.ContainingNamespace.ToDisplayString(), true))
         using (sourceBuilder.BeginClass(controllerContext.Syntax.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
         {
-            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"{Configuration.RoutesNameSpace}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.RouteHelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
+            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"{Configuration.RoutesNameSpace}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.MvcHelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
             sourceBuilder.AppendLine();
 
-            using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToAction", "G4mvcRouteValues route"))
+            using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToAction", $"{nameof(G4mvcActionRouteValues)} route"))
             {
                 sourceBuilder.AppendReturn("RedirectToRoute(route)");
             }
 
             sourceBuilder.AppendLine();
 
-            using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToActionPermanent", "G4mvcRouteValues route"))
+            using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToActionPermanent", $"{nameof(G4mvcActionRouteValues)} route"))
             {
                 sourceBuilder.AppendReturn("RedirectToRoutePermanent(route)");
             }

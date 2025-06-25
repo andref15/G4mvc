@@ -9,13 +9,17 @@
       "type": "string",
       "format": "uri"
     },
-    "HelperClassName": {
+    "MvcHelperClassName": {
       "type": "string",
-      "description": "Allows you to change the MVC prefix (e.g. MVC.Home.Index())"
+      "description": "Defines the name of the MVC helpers class (e.g. MVC.Home.Index())"
     },
-    "LinksClassName": {
+    "PageHelperClassName": {
       "type": "string",
-      "description": "The class in which the links for static files are generated in"
+      "description": "Defines the name of the Razor Pages helpers class (e.g. Razor.Home.Index())"
+    },
+    "LinksHelperClassName": {
+      "type": "string",
+      "description": "Allows you to chnage the name of the helper class in which the links for static files are generated in"
     },
     "StaticFilesPath": {
       "type": "string",
@@ -26,7 +30,7 @@
       "description": "Defines if you want to define a custom VirtualPathProcessor funcion"
     },
     "UseProcessedPathForContentLink": {
-      "type":"boolean",
+      "type": "boolean",
       "description": "Defines if the processed path from the VirtualPathProcessor should be used for UrlHelper.Content methods"
     },
     "MakeGeneratedClassesInternal": {
@@ -36,7 +40,7 @@
     "GeneratedClassNamespace": {
       "type": "string",
       "description": "Defines in which namespace the generated MVC and Links class will exist",
-      "examples": ["global", "project"]
+      "examples": [ "global", "project" ]
     },
     "EnableSubfoldersInViews": {
       "type": "boolean",

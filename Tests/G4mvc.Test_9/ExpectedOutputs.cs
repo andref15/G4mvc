@@ -2,8 +2,8 @@
 
 namespace G4mvc.Test_9;
 
-internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool vppForContent = false, bool classesInternal = false, bool enumerateSubDirectories = false, string? classNamespace = null, bool excludeIco = false, bool excludeCss = false, bool customJsName = false)
-    : ExpectedOutputsBase(mvcClassName, linksClassName, altRoot, additionalStatic, withVpp, vppForContent, classesInternal, classNamespace, enumerateSubDirectories, excludeIco, excludeCss, customJsName)
+internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperClassName = null, bool altRoot = false, bool additionalStatic = false, bool withVpp = false, bool vppForContent = false, bool classesInternal = false, bool enumerateSubDirectories = false, string? classNamespace = null, bool excludeIco = false, bool excludeCss = false, bool customJsName = false)
+    : ExpectedOutputsBase(mvcClassName, linksHelperClassName, altRoot, additionalStatic, withVpp, vppForContent, classesInternal, classNamespace, enumerateSubDirectories, excludeIco, excludeCss, customJsName)
 {
     public override string SharedClass => $$"""
         #nullable enable
@@ -44,16 +44,16 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
             public PrivacyParamsClass PrivacyParams { get; } = new();
             public ErrorParamsClass ErrorParams { get; } = new();
 
-            public G4mvcRouteValues Index()
+            public G4mvcActionRouteValues Index()
             {
                 return new(null, "Test", "Index");
             }
 
         #nullable disable
 
-            public G4mvcRouteValues Index(string test)
+            public G4mvcActionRouteValues Index(string test)
             {
-                G4mvcRouteValues route = Index();
+                G4mvcActionRouteValues route = Index();
 
                 route["test"] = test;
 
@@ -63,12 +63,12 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
         #nullable restore
 
 
-            public G4mvcRouteValues Privacy()
+            public G4mvcActionRouteValues Privacy()
             {
                 return new(null, "Test", "Privacy");
             }
 
-            public G4mvcRouteValues Error()
+            public G4mvcActionRouteValues Error()
             {
                 return new(null, "Test", "Error");
             }
@@ -137,16 +137,16 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
             public PrivacyParamsClass PrivacyParams { get; } = new();
             public ErrorParamsClass ErrorParams { get; } = new();
 
-            public G4mvcRouteValues Index()
+            public G4mvcActionRouteValues Index()
             {
                 return new(null, "TestPartial", "Index");
             }
 
         #nullable disable
 
-            public G4mvcRouteValues Index(string test)
+            public G4mvcActionRouteValues Index(string test)
             {
-                G4mvcRouteValues route = Index();
+                G4mvcActionRouteValues route = Index();
 
                 route["test"] = test;
 
@@ -156,12 +156,12 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
         #nullable restore
 
 
-            public G4mvcRouteValues Privacy()
+            public G4mvcActionRouteValues Privacy()
             {
                 return new(null, "TestPartial", "Privacy");
             }
 
-            public G4mvcRouteValues Error()
+            public G4mvcActionRouteValues Error()
             {
                 return new(null, "TestPartial", "Error");
             }
@@ -204,12 +204,12 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
         {
             {{(ClassesInternal ? "private " : "")}}protected G4mvc.Routes.TestPartialRoutes.TestPartialViews Views { get; } = {{MvcClassName}}.TestPartial.Views;
 
-            protected RedirectToRouteResult RedirectToAction(G4mvcRouteValues route)
+            protected RedirectToRouteResult RedirectToAction(G4mvcActionRouteValues route)
             {
                 return RedirectToRoute(route);
             }
 
-            protected RedirectToRouteResult RedirectToActionPermanent(G4mvcRouteValues route)
+            protected RedirectToRouteResult RedirectToActionPermanent(G4mvcActionRouteValues route)
             {
                 return RedirectToRoutePermanent(route);
             }
@@ -244,7 +244,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
             public static partial string Process(string path);
         }
 
-        {{(ClassesInternal ? "internal" : "public")}} static partial class {{LinksClassName}}
+        {{(ClassesInternal ? "internal" : "public")}} static partial class {{LinksHelperClassName}}
         {
             //v1;
             public const string UrlPath = "~";
@@ -353,7 +353,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
         {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
         #nullable enable
 
-        {{(ClassesInternal ? "internal" : "public")}} static partial class {{LinksClassName}}
+        {{(ClassesInternal ? "internal" : "public")}} static partial class {{LinksHelperClassName}}
         {
             public const string UrlPath = "~";
             {{(ExcludeIco ? "" : $"""

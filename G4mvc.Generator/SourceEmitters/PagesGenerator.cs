@@ -46,13 +46,9 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
 
         controllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
 
-        foreach (var controllerContextGroup in pageContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
+        foreach (var pageContextGroup in pageContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
-
-            var controllerContextImplementations = controllerContextGroup.ToList();
-            controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContextImplementations);
-
         }
 
         AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);

@@ -44,8 +44,8 @@ internal class LinksGenerator
 
         var excludedDirectories = configuration.JsonConfig.ExcludedStaticFileDirectories?.Select(d => new DirectoryInfo(Path.Combine(projectDir, d)).FullName).ToList() ?? [];
         var additionalStaticFilesPaths = configuration.JsonConfig.AdditionalStaticFilesPaths;
-        var linksClassName = configuration.JsonConfig.LinksHelperClassName;
-        var linksClassNameSpan = linksClassName.AsSpan();
+        var linksHelperClassName = configuration.JsonConfig.LinksHelperClassName;
+        var linksHelperClassNameSpan = linksHelperClassName.AsSpan();
 
         if (configuration.JsonConfig.UseVirtualPathProcessor)
         {
@@ -57,7 +57,7 @@ internal class LinksGenerator
             sourceBuilder.AppendLine();
         }
 
-        using (sourceBuilder.BeginClass($"{configuration.GeneratedClassModifier} static partial", linksClassName))
+        using (sourceBuilder.BeginClass($"{configuration.GeneratedClassModifier} static partial", linksHelperClassName))
         {
 #if DEBUG
             sourceBuilder.AppendLine($"//v{_version}");
@@ -68,11 +68,11 @@ internal class LinksGenerator
             var classPath = "";
             _existingLinksClasses.Clear();
 
-            CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, linksClassNameSpan, configuration, linkIdentifierParser, classPath, context.CancellationToken);
+            CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, linksHelperClassNameSpan, configuration, linkIdentifierParser, classPath, context.CancellationToken);
 
             if (additionalStaticFilesPaths is not null)
             {
-                CreateAdditionalStaticFilesLinks(context, configuration, projectDir, sourceBuilder, excludedDirectories, additionalStaticFilesPaths, linksClassNameSpan, linkIdentifierParser);
+                CreateAdditionalStaticFilesLinks(context, configuration, projectDir, sourceBuilder, excludedDirectories, additionalStaticFilesPaths, linksHelperClassNameSpan, linkIdentifierParser);
             }
         }
 
@@ -83,7 +83,7 @@ internal class LinksGenerator
         context.AddGeneratedSource(configuration.JsonConfig.LinksHelperClassName, sourceBuilder);
     }
 
-    private void CreateAdditionalStaticFilesLinks(SourceProductionContext context, Configuration configuration, string projectDir, SourceBuilder sourceBuilder, List<string> excludedDirectories, IReadOnlyDictionary<string, string> additionalStaticFilesPaths, ReadOnlySpan<char> linksClassNameSpan, IdentifierParser linkIdentifierParser)
+    private void CreateAdditionalStaticFilesLinks(SourceProductionContext context, Configuration configuration, string projectDir, SourceBuilder sourceBuilder, List<string> excludedDirectories, IReadOnlyDictionary<string, string> additionalStaticFilesPaths, ReadOnlySpan<char> linksHelperClassNameSpan, IdentifierParser linkIdentifierParser)
     {
         sourceBuilder.AppendLine();
 
@@ -96,7 +96,7 @@ internal class LinksGenerator
             var additionalVirtualPathRootSegments = additionalVirtualPathRoot.Split('/');
 
             var parentSegmentClasses = new Queue<IDisposable>();
-            var enclosing = linksClassNameSpan;
+            var enclosing = linksHelperClassNameSpan;
             var classPath = "";
 
             parentSegmentClasses = [];
