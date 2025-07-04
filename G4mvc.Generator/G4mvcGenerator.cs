@@ -59,7 +59,6 @@ public class G4mvcGenerator : IIncrementalGenerator
         }
 
         var analyzerConfigValues = GetAnalyzerConfigValues(analyzerConfigOptions);
-
         var configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText, analyzerConfigValues);
 
         Dictionary<string, Dictionary<string, string>> controllerRouteClassNames = [];
@@ -113,6 +112,6 @@ public class G4mvcGenerator : IIncrementalGenerator
 
         _ = analyzerConfigOptions.TryGetValue(GlobalOptionConstant.BuildProperty.RootNamespace, out var rootNamespace);
 
-        return new AnalyzerConfigValues(projectDir, rootNamespace);
+        return new AnalyzerConfigValues(projectDir.Trim(), rootNamespace?.Trim());
     }
 }
