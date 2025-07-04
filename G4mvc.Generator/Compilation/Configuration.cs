@@ -11,8 +11,8 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 {
     private enum ClassNamespaceIdentifier
     {
-        global,
-        project
+        Global,
+        Project
     }
 
     public const string FileName = "g4mvc.json";
@@ -47,8 +47,8 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
             {
                 @namespace = identifier switch
                 {
-                    ClassNamespaceIdentifier.global => null,
-                    ClassNamespaceIdentifier.project => AnalyzerConfigValues.RootNamespace,
+                    ClassNamespaceIdentifier.Global => null,
+                    ClassNamespaceIdentifier.Project => AnalyzerConfigValues.RootNamespace,
                     _ => null
                 };
             }
@@ -128,7 +128,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
             UseProcessedPathForContentLink = useVirtualPathProcessor && (useProcessedPathForContentLinkNullable ?? true);
             MakeGeneratedClassesInternal = makeGeneratedClassesInternal;
             GeneratedClassNamespace = string.IsNullOrWhiteSpace(generatedClassNamespace)
-                ? nameof(ClassNamespaceIdentifier.global)
+                ? nameof(ClassNamespaceIdentifier.Project)
                 : generatedClassNamespace!.Trim();
             EnableSubfoldersInViews = enableSubfoldersInViews;
             ExcludedStaticFileExtensions = excludedStaticFileExtensions;

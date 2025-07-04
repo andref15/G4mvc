@@ -113,7 +113,7 @@ If this value is undefined and `UseVirtualPathProcessor` is set to `true`, this 
 Defines if the generated route classes and the MVC and Links class will be public or internal. Default is `false`.
 
 #### GeneratedClassNamespace
-Defines in which namespace the generated MVC and Links class will exist. If this value is undefined, this defaults to `global`
+Defines in which namespace the generated MVC and Links class will exist. If this value is undefined, this defaults to `project`
 - `global` defines that the files will exist in the global namespace (aka no namespace)'
 - `project` defines that the files will exist in the root namespace of the web project
 - any other value will be set as the namespace (eg. `G4mvc.SampleMVC`)
