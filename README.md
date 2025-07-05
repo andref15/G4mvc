@@ -34,7 +34,7 @@ Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would 
 
 #### Links
 To trigger the generation of the links class, it is necessary to manually build or rebuild the ASP.net core project or make change in the config file.\
-If you are using a `StaticFilesPath` different from the default `wwwroot` or add AdditionalStaticFilesPaths, you also have to add that path to te project file as AdditionalFiles.
+If you are using a `StaticFilesPath` different from the default `wwwroot` or add AdditionalStaticFilesPaths, you also have to add that path to the project file as AdditionalFiles.
 
     <ItemGroup>
       <AdditionalFiles Include="mystaticfiles\**" />
