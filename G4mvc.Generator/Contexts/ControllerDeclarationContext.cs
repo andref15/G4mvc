@@ -26,7 +26,7 @@ internal class ControllerDeclarationContext : BaseDeclarationContext
 
     private static string? GetControllerArea(INamedTypeSymbol typeSymbol)
     {
-        var areaAttribute = typeSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
+        var areaAttribute = typeSymbol.GetAttributes(true).FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
 
         return areaAttribute?.ConstructorArguments[0].Value as string;
     }
