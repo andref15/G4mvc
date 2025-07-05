@@ -226,9 +226,9 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksClassNa
 
         {{(ClassesInternal ? "internal" : "public")}} class {{MvcClassName}}
         {
-            public static SharedRoutes Shared { get; } = new();
             public static TestRoutes Test { get; } = new();
             public static TestPartialRoutes TestPartial { get; } = new();
+            public static SharedRoutes Shared { get; } = new();
         }
         """;
 

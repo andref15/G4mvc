@@ -77,27 +77,27 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 
         try
         {
-            SyntaxAssert.AreAnyEquivalent(expectedOutputs.SharedClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestRoutesClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialRoutesClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialClass, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.SharedClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.MvcClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.LinksClass, syntaxTrees, ParseOptions);
         }
         catch
         {
             Console.WriteLine("EXPECTED:\n");
-            Console.WriteLine(expectedOutputs.SharedClass);
             Console.WriteLine(expectedOutputs.TestRoutesClass);
             Console.WriteLine(expectedOutputs.TestPartialRoutesClass);
             Console.WriteLine(expectedOutputs.TestPartialClass);
+            Console.WriteLine(expectedOutputs.SharedClass);
             Console.WriteLine(expectedOutputs.MvcClass);
             Console.WriteLine(expectedOutputs.LinksClass);
             Console.WriteLine("\nEND EXPECTED\n");
 
             Console.WriteLine("ACTUAL:");
             
-            foreach (var syntaxTree in syntaxTrees)
+            foreach (var syntaxTree in syntaxTrees.Where(s => s.FilePath.Length > 0))
             {
                 Console.WriteLine(syntaxTree);
             }
