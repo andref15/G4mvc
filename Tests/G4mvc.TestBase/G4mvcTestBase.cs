@@ -51,7 +51,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 
         var g4mvcGenerator = new G4mvcGenerator();
 
-        var compilation = CSharpCompilation.Create("TestWeb6", syntaxTrees, GetMetadataReferences(), options: CompilationOptions);
+        var compilation = CSharpCompilation.Create("TestWeb", syntaxTrees, GetMetadataReferences(), options: CompilationOptions);
 
         var generatorDriver = CSharpGeneratorDriver.Create(g4mvcGenerator).WithUpdatedParseOptions(ParseOptions).WithUpdatedAnalyzerConfigOptions(new G4mvcAnalyzerConfigOptionsProvider());
 
