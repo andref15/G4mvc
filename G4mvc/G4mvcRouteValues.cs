@@ -41,12 +41,22 @@ public class G4mvcRouteValues
         return this;
     }
 
-    public G4mvcRouteValues AddRouteValues(object routeValues)
-        => AddRouteValues(new RouteValueDictionary(routeValues));
-
-    public G4mvcRouteValues AddRouteValues(RouteValueDictionary routeValues)
+    public G4mvcRouteValues AddRouteValues(object values)
     {
-        foreach (var (key, value) in routeValues)
+        if (values is not IEnumerable<KeyValuePair<string, object>>)
+        {
+            values = new RouteValueDictionary(values);
+        }
+
+        return AddRouteValues((IEnumerable<KeyValuePair<string, object>>)values);
+    }
+
+    public G4mvcRouteValues AddRouteValues(RouteValueDictionary dictionary)
+        => AddRouteValues((IEnumerable<KeyValuePair<string, object>>)dictionary);
+
+    public G4mvcRouteValues AddRouteValues(IEnumerable<KeyValuePair<string, object>> values)
+    {
+        foreach (var (key, value) in values)
         {
             this[key] = value;
         }
