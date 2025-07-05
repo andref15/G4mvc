@@ -38,9 +38,22 @@ public class G4mvcRouteValues
     public G4mvcRouteValues AddRouteValue(string key, object value)
     {
         this[key] = value;
+        return this;
+    }
+
+    public G4mvcRouteValues AddRouteValues(object routeValues)
+        => AddRouteValues(new RouteValueDictionary(routeValues));
+
+    public G4mvcRouteValues AddRouteValues(RouteValueDictionary routeValues)
+    {
+        foreach (var (key, value) in routeValues)
+        {
+            this[key] = value;
+        }
 
         return this;
     }
+
 #endif
 
     /// <summary>
