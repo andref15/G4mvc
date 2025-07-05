@@ -1,6 +1,5 @@
-﻿using System.Diagnostics;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 
 namespace G4mvc.TestBase.Extensions;
 

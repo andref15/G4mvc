@@ -8,7 +8,7 @@ internal class LinksGenerator
 
     public static void AddLinksClass(SourceProductionContext context, Configuration configuration
 #if DEBUG
-        , int linksVersion 
+        , int linksVersion
 #endif
         )
     {
@@ -104,9 +104,9 @@ internal class LinksGenerator
 
                 if (!_existingLinksClasses.Contains(classPath))
                 {
-                    sourceBuilder.AppendConst("public", "string", "UrlPath", SourceCode.String(urlPath)); 
+                    sourceBuilder.AppendConst("public", "string", "UrlPath", SourceCode.String(urlPath));
                 }
-                    
+
                 _existingLinksClasses.Add(classPath);
 
                 parentSegmentClasses.Enqueue(@class);
@@ -115,7 +115,7 @@ internal class LinksGenerator
 
             CreateFileFields(sourceBuilder, additionalRoot.FullName, additionalVirtualPathRoot, enclosing, configuration.JsonConfig, linkIdentifierParser, additionalRoot.EnumerateFiles().OrderBy(f => f.Name), context.CancellationToken);
             CreateSubClasses(sourceBuilder, additionalRoot.FullName, additionalVirtualPathRoot, excludedDirectories, enclosing, configuration, linkIdentifierParser, additionalRoot.EnumerateDirectories().OrderBy(d => d.Name), classPath, context.CancellationToken);
-                
+
             while (parentSegmentClasses.Count > 0)
             {
                 parentSegmentClasses.Dequeue().Dispose();
@@ -132,7 +132,7 @@ internal class LinksGenerator
 
         if (!_existingLinksClasses.Contains(classPath))
         {
-            sourceBuilder.AppendConst("public", "string", "UrlPath", SourceCode.String(GetRelativePath(root, subRoute, directory.FullName))); 
+            sourceBuilder.AppendConst("public", "string", "UrlPath", SourceCode.String(GetRelativePath(root, subRoute, directory.FullName)));
         }
 
         CreateFileFields(sourceBuilder, root, subRoute, enclosingClass, configuration.JsonConfig, linkIdentifierParser, files, cancellationToken);
@@ -182,7 +182,7 @@ internal class LinksGenerator
             {
                 CreateLinksClass(sourceBuilder, subDirectory, root, subRoute, excludedDirectories, newClassName.AsSpan(), configuration, linkIdentifierParser, subClassPath, cancellationToken);
             }
-            
+
             _existingLinksClasses.Add(subClassPath);
         }
     }
@@ -190,5 +190,5 @@ internal class LinksGenerator
     private static string GetRelativePath(string root, string? subRoute, string path)
         => path.Replace(root, subRoute is null ? "~" : $"~/{subRoute}").Replace('\\', '/').TrimEnd('/');
 
-    
+
 }

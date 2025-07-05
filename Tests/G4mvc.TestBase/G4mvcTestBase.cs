@@ -3,7 +3,6 @@ using G4mvc.TestBase.Providers;
 using G4mvc.TestBase.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Immutable;
 
@@ -11,7 +10,7 @@ namespace G4mvc.TestBase;
 public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 {
     protected readonly CSharpCompilationOptions CompilationOptions = new(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release, warningLevel: 0, nullableContextOptions: NullableContextOptions.Enable);
-    
+
     protected readonly CSharpParseOptions ParseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion).WithDocumentationMode(DocumentationMode.None);
 
     protected static void AssertDiagnostics(CSharpCompilation compilation, string type)
@@ -96,7 +95,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
             Console.WriteLine("\nEND EXPECTED\n");
 
             Console.WriteLine("ACTUAL:");
-            
+
             foreach (var syntaxTree in syntaxTrees.Where(s => s.FilePath.Length > 0))
             {
                 Console.WriteLine(syntaxTree);
@@ -115,8 +114,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
         foreach (var file in directoryInfo.EnumerateFiles("*.cs", SearchOption.AllDirectories).OrderBy(f => f.Name))
         {
             using var stream = file.OpenRead();
-            var sourceText = SourceText.From(stream);
-            yield return SyntaxFactory.ParseSyntaxTree(sourceText, ParseOptions);
+            yield return SyntaxUtils.ToSyntaxTree(stream, ParseOptions);
         }
     }
 

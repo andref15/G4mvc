@@ -14,7 +14,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     public const string FileName = "g4mvc.json";
     public const string RoutesNameSpace = $"{nameof(G4mvc)}.Routes";
     private string? _generatedClassNamespace;
-    private bool _generatedClassNamespaceInitialized =false;
+    private bool _generatedClassNamespaceInitialized = false;
     private string? _generatedClassModifier;
 
     public LanguageVersion LanguageVersion { get; } = languageVersion;
@@ -69,16 +69,16 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         public string LinksClassName { get; }
         public string StaticFilesPath { get; }
         public bool UseVirtualPathProcessor { get; }
-        
+
         [JsonInclude, JsonPropertyName(nameof(UseProcessedPathForContentLink))]
         [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Used for json")]
         private bool? UseProcessedPathForContentLinkNullable { get; }
-        
+
         [JsonIgnore]
         public bool UseProcessedPathForContentLink { get; }
         public bool MakeGeneratedClassesInternal { get; }
         public string GeneratedClassNamespace { get; }
-        public bool EnableSubfoldersInViews {  get; }
+        public bool EnableSubfoldersInViews { get; }
         public string[]? ExcludedStaticFileExtensions { get; }
         public string[]? ExcludedStaticFileDirectories { get; }
         public IReadOnlyDictionary<string, string>? AdditionalStaticFilesPaths { get; }
@@ -98,7 +98,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
             HelperClassName = string.IsNullOrWhiteSpace(helperClassName)
                 ? "MVC"
                 : helperClassName!.Trim();
-            LinksClassName = string.IsNullOrWhiteSpace(linksClassName) 
+            LinksClassName = string.IsNullOrWhiteSpace(linksClassName)
                 ? "Links"
                 : linksClassName!.Trim();
             StaticFilesPath = string.IsNullOrWhiteSpace(staticFilesPath)

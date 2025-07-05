@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using G4mvc.Generator;
 using G4mvc.TestBase;
 using G4mvc.TestBase.Utils;
@@ -50,7 +49,7 @@ public class G4mvcTests : G4mvcTestBase
                 }
             }
             """;
-        
+
         var vppSyntaxTree = SyntaxUtils.ToSyntaxTree(vppImplementation, ParseOptions);
 
         var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(useVirtualPathProcessor: true, useProcessedPathForContentLink: useProcessedPathForContentLink), EnumerableUtils.Create(vppSyntaxTree));

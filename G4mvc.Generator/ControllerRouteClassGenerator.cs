@@ -17,8 +17,8 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
             AddClassNameToDictionary(controllerRouteClassNames, areaName, sharedControllerName, $"{sharedControllerName}Routes");
 
             AddViewsOnlyRoutesClass(context, projectDir, areaName, sharedControllerName);
-            }
         }
+    }
 
     internal void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, List<ControllerDeclarationContext> controllerContexts)
     {
@@ -28,7 +28,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
         var httpMethods = controllerContexts.SelectMany(cc => cc.Syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
                 .Select(md => new MethodDeclarationContext(md, cc.Model, _configuration.GlobalNullable))
-                .Where(mc => IsActionResult(mc.MethodSymbol.ReturnType))).ToList();
+                .Where(static mc => IsActionResult(mc.MethodSymbol.ReturnType))).ToList();
 
         sourceBuilder
             .Using(nameof(G4mvc))
@@ -242,7 +242,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                 foreach (var subDir in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).OrderBy(d => d.Name))
                 {
                     var subClassName = IdentifierParser.CreateIdentifierFromPath(subDir.Name, classNameSpan);
-                    
+
                     sourceBuilder.AppendProperty("public", $"{subClassName}Views", subClassName, "get", null, SourceCode.NewCtor);
                     AddViewsClass(sourceBuilder, projectDir, subDir, subClassName, enumerateSubDirectories);
                 }

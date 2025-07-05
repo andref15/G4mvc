@@ -1,13 +1,13 @@
 ﻿#if NETCOREAPP
+using G4mvc.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using G4mvc.Extensions; 
 #endif
 
 namespace G4mvc;
 public class G4mvcRouteValues
 #if NETCOREAPP
-        : RouteValueDictionary 
+        : RouteValueDictionary
 #endif
 {
     public string? Area { get; set; }
@@ -27,7 +27,7 @@ public class G4mvcRouteValues
         }
 
         this[nameof(controller)] = controller;
-        this[nameof(action)] = action; 
+        this[nameof(action)] = action;
 #endif
     }
 #if NETCOREAPP
@@ -40,7 +40,7 @@ public class G4mvcRouteValues
         this[key] = value;
 
         return this;
-    } 
+    }
 #endif
 
     /// <summary>
@@ -66,7 +66,7 @@ public class G4mvcRouteValues
             CopyPathSegmentToSpanAt(span: span, routeValues.Controller, ref currentIdx);
 
             routeValues.Action.AsSpan().CopyTo(span[currentIdx..]);
-        }); 
+        });
 #else
         return $"/{(Area is null ? null : $"{Area}/")}{Controller}/{Action}";
 #endif

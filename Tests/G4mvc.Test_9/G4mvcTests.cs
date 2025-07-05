@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using G4mvc.Generator;
 using G4mvc.TestBase;
 using G4mvc.TestBase.Utils;
