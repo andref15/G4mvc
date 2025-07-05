@@ -65,17 +65,17 @@ public class G4mvcGenerator : IIncrementalGenerator
 
         var controllerRouteClassGenerator = new ControllerRouteClassGenerator(configuration);
 
-        foreach (var controllerContextImplementations in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()).Select(static g => g.ToList()))
+        foreach (var controllerDeclarations in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()).Select(static g => g.ToList()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            if (controllerContextImplementations.Any(ci => ci.TypeSymbol.GetAttributes(true).Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonControllerAttribute.FullName)))
+            if (controllerDeclarations[0].TypeSymbol.GetAttributes(true).Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonControllerAttribute.FullName))
             {
                 continue;
             }
 
-            controllerRouteClassGenerator.AddControllerRouteClass(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames, controllerContextImplementations);
-            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContextImplementations[0], configuration);
+            controllerRouteClassGenerator.AddControllerRouteClass(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames, controllerDeclarations);
+            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerDeclarations[0], configuration);
         }
 
         controllerRouteClassGenerator.AddSharedControllers(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames);

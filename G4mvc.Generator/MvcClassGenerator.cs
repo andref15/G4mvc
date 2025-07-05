@@ -11,16 +11,14 @@ internal static class MvcClassGenerator
 
         var sourceBuilder = configuration.CreateSourceBuilder();
 
-        sourceBuilder.Using(nameof(G4mvc));
-
         var areaNames = controllerRouteClassNames.Keys.Where(k => k != string.Empty).ToList();
 
         if (areaNames.Count > 0)
         {
-            sourceBuilder.Using($"{nameof(G4mvc)}.Areas");
+            sourceBuilder.Using(configuration.GetAreasNamespace());
         }
 
-        sourceBuilder.Using(Configuration.RoutesNameSpace).AppendLine();
+        sourceBuilder.Using(configuration.GetControllerRoutesNamespace(null));
 
         IDisposable? namespaceDisposable = null;
 

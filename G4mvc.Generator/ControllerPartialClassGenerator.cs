@@ -3,7 +3,7 @@ internal static class ControllerPartialClassGenerator
 {
     internal static void AddControllerPartialClass(SourceProductionContext context, ControllerDeclarationContext controllerContext, Configuration configuration)
     {
-        if (!controllerContext.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword))
+        if (!controllerContext.DeclarationNode.Modifiers.Any(SyntaxKind.PartialKeyword))
         {
             return;
         }
@@ -17,14 +17,16 @@ internal static class ControllerPartialClassGenerator
             sourceBuilder.Using(configuration.GeneratedClassNamespace);
         }
 
+        sourceBuilder.Using(configuration.GetControllerRoutesNamespace(controllerContext.ControllerArea));
+
         sourceBuilder
             .AppendLine()
             .Nullable(controllerContext.NullableEnabled);
 
         using (sourceBuilder.BeginNamespace(controllerContext.TypeSymbol.ContainingNamespace.ToDisplayString(), true))
-        using (sourceBuilder.BeginClass(controllerContext.Syntax.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
+        using (sourceBuilder.BeginClass(controllerContext.DeclarationNode.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
         {
-            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"{Configuration.RoutesNameSpace}.{controllerContext.ControllerNameWithoutSuffix}Routes.{controllerContext.ControllerNameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.HelperClassName}.{(controllerContext.ControllerArea is null ? null : $"{controllerContext.ControllerArea}.")}{controllerContext.ControllerNameWithoutSuffix}.Views");
+            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"{controllerContext.ControllerNameWithoutSuffix}Routes.{controllerContext.ControllerNameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.HelperClassName}.{(controllerContext.ControllerArea is null ? null : $"{controllerContext.ControllerArea}.")}{controllerContext.ControllerNameWithoutSuffix}.Views");
             sourceBuilder.AppendLine();
 
             using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToAction", "G4mvcRouteValues route"))

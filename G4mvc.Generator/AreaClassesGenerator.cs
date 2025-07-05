@@ -10,10 +10,10 @@ internal static class AreaClassesGenerator
             var sourceBuilder = configuration.CreateSourceBuilder();
 
             sourceBuilder
-                .Using($"{Configuration.RoutesNameSpace}.{areaName}")
+                .Using(configuration.GetControllerRoutesNamespace(areaName))
                 .Nullable(configuration.GlobalNullable);
 
-            using (sourceBuilder.BeginNamespace($"{nameof(G4mvc)}.Areas", true))
+            using (sourceBuilder.BeginNamespace(configuration.GetAreasNamespace(), true))
             using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, $"{areaName}Area"))
             {
                 sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(areaName));

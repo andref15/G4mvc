@@ -22,23 +22,23 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
     internal void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, List<ControllerDeclarationContext> controllerContexts)
     {
-        var mainControllerContext = controllerContexts[0];
-
         var sourceBuilder = _configuration.CreateSourceBuilder();
 
-        var httpMethods = controllerContexts.SelectMany(cc => cc.Syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
-                .Select(md => new MethodDeclarationContext(md, cc.Model, _configuration.GlobalNullable))
-                .Where(static mc => IsActionResult(mc.MethodSymbol.ReturnType))).ToList();
+        var httpMethods = controllerContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<MethodDeclarationSyntax>()
+                    .Select(md => new MethodDeclarationContext(md, c.Model, _configuration.GlobalNullable)))
+                .Where(static (mc) => IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
+
+        var mainControllerContext = controllerContexts[0];
 
         sourceBuilder
             .Using(nameof(G4mvc))
             .AppendLine()
-            .Nullable(mainControllerContext.NullableEnabled);
+            .Nullable(controllerContexts[0].NullableEnabled);
 
         var controllerRouteClassName = $"{mainControllerContext.ControllerNameWithoutSuffix}Routes";
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
 
-        using (sourceBuilder.BeginNamespace(GetControllerRoutesNamespace(mainControllerContext.ControllerArea), true))
+        using (sourceBuilder.BeginNamespace(_configuration.GetControllerRoutesNamespace(mainControllerContext.ControllerArea), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, controllerRouteClassName))
         {
             if (mainControllerContext.ControllerArea is not null)
@@ -101,7 +101,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
         sourceBuilder.Nullable(_configuration.GlobalNullable);
 
-        using (sourceBuilder.BeginNamespace(GetControllerRoutesNamespace(areaName), true))
+        using (sourceBuilder.BeginNamespace(_configuration.GetControllerRoutesNamespace(areaName), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, $"{controllerNameWithoutSuffix}Routes"))
         {
             var directory = new DirectoryInfo(Path.Combine(projectDir, areaName.IfNotNullNullOrEmpty("Areas"), areaName, "Views", controllerNameWithoutSuffix));
@@ -264,9 +264,4 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         => string.IsNullOrEmpty(area)
             ? $"{controllerNameWithoutSuffix}Routes"
             : $"{area}.{controllerNameWithoutSuffix}Routes";
-
-    private static string GetControllerRoutesNamespace(string? area)
-        => string.IsNullOrEmpty(area)
-            ? $"{Configuration.RoutesNameSpace}"
-            : $"{Configuration.RoutesNameSpace}.{area}";
 }

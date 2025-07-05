@@ -189,6 +189,4 @@ internal class LinksGenerator
 
     private static string GetRelativePath(string root, string? subRoute, string path)
         => path.Replace(root, subRoute is null ? "~" : $"~/{subRoute}").Replace('\\', '/').TrimEnd('/');
-
-
 }
