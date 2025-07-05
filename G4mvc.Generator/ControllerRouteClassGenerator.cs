@@ -45,7 +45,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         var controllerRouteClassName = $"{mainControllerContext.ControllerNameWithoutSuffix}Routes";
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
 
-        using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
+        using (sourceBuilder.BeginNamespace(GetControllerRoutesNamespace(mainControllerContext.ControllerArea), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, controllerRouteClassName))
         {
             if (mainControllerContext.ControllerArea is not null)
@@ -99,7 +99,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
             AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.ControllerNameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
         }
 
-        context.AddGeneratedSource($"{mainControllerContext.ControllerNameWithoutSuffix}Routes", sourceBuilder);
+        context.AddGeneratedSource(GetControllerRoutesFileName(mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix), sourceBuilder);
     }
 
     private static Dictionary<string, HashSet<string>> AddActionMethodsAndGetParameterGroups(SourceProductionContext context, ControllerDeclarationContext mainControllerContext, SourceBuilder sourceBuilder, List<MethodDeclarationContext> httpMethods)
@@ -243,4 +243,14 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
             yield return new KeyValuePair<string, string>(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, "~").Replace("\\", "/"));
         }
     }
+
+    private static string GetControllerRoutesFileName(string? area, string controllerNameWithoutSuffix)
+        => string.IsNullOrEmpty(area)
+            ? $"{controllerNameWithoutSuffix}Routes"
+            : $"{area}.{controllerNameWithoutSuffix}Routes";
+
+    private static string GetControllerRoutesNamespace(string? area)
+        => string.IsNullOrEmpty(area)
+            ? $"{Configuration.RoutesNameSpace}"
+            : $"{Configuration.RoutesNameSpace}.{area}";
 }

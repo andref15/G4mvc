@@ -40,6 +40,15 @@ internal static class ControllerPartialClassGenerator
             }
         }
 
-        context.AddGeneratedSource($"{controllerContext.ControllerName}", sourceBuilder);
+        context.AddGeneratedSource(GetPartialClassName(controllerContext), sourceBuilder);
+    }
+
+    private static string GetPartialClassName(ControllerDeclarationContext controllerContext)
+    {
+        var area = controllerContext.ControllerArea;
+
+        return area is null
+            ? $"{controllerContext.ControllerName}"
+            : $"{area}.{controllerContext.ControllerName}";
     }
 }
