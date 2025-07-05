@@ -81,6 +81,8 @@ public class G4mvcGenerator : IIncrementalGenerator
             ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContextImplementations[0], configuration);
         }
 
+        controllerRouteClassGenerator.AddSharedControllers(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames);
+
         AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);
 
         MvcClassGenerator.AddMvcClass(context, controllerRouteClassNames, configuration
