@@ -26,7 +26,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
         var httpMethods = controllerContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<MethodDeclarationSyntax>()
                     .Select(md => new MethodDeclarationContext(md, c.Model, _configuration.GlobalNullable)))
-                .Where(static (mc) => IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
+                .Where(static (mc) => !mc.MethodSymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonActionAttribute.FullName) && IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
 
         var mainControllerContext = controllerContexts[0];
 

@@ -20,4 +20,11 @@ internal static class TypeNames
         public const string ShortName = "NonController";
         public const string FullName = $"{Namespaces.MicrosoftAspNetCoreMvc}.{Name}";
     }
+
+    public static class NonActionAttribute
+    {
+        public const string Name = "NonActionAttribute";
+        public const string ShortName = "NonAttribute";
+        public const string FullName = $"{Namespaces.MicrosoftAspNetCoreMvc}.{Name}";
+    }
 }
