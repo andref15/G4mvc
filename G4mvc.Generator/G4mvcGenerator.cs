@@ -27,7 +27,7 @@ public class G4mvcGenerator : IIncrementalGenerator
             .Combine(context.AnalyzerConfigOptionsProvider
                 .Select(static (a, ct) => a.GlobalOptions))
             .Select(static (c, ct) => (Config: c.Left.Configs.FirstOrDefault(), c.Left.ControllerContexts, AnalyzerConfigOptions: c.Right));
-        
+
         context.RegisterSourceOutput(analyzerOptionsCompilationConfigAndClasses, static (c, a) => ExecuteClassGeneration(c, a.Config, a.ControllerContexts, a.AnalyzerConfigOptions));
 
         IncrementalValueProvider<((AnalyzerConfigOptions AnalyzerConfigOptions, ImmutableArray<string?> ConfigFiles) Left, ParseOptions ParseOptions)> configFileAnalyzerConfigOptionsAndParseProvider = context.AnalyzerConfigOptionsProvider.Select(static (a, ct) => a.GlobalOptions).Combine(configFile.Collect()).Combine(context.ParseOptionsProvider);
@@ -50,7 +50,7 @@ public class G4mvcGenerator : IIncrementalGenerator
     private static void ExecuteClassGeneration(SourceProductionContext context, string? configFileText, ImmutableArray<ControllerDeclarationContext> controllerContexts, AnalyzerConfigOptions analyzerConfigOptions)
     {
 #if DEBUG
-        _version++; 
+        _version++;
 #endif
 
         if (controllerContexts.Length is 0)
@@ -61,27 +61,30 @@ public class G4mvcGenerator : IIncrementalGenerator
         var analyzerConfigValues = GetAnalyzerConfigValues(analyzerConfigOptions);
         var configuration = Configuration.CreateConfig((CSharpCompilation)controllerContexts[0].Model.Compilation, configFileText, analyzerConfigValues);
 
-        Dictionary<string, Dictionary<string, string>> controllerRouteClassNames = [];
+        var controllerRouteClassNames = new Dictionary<string, Dictionary<string, string>>();
 
-        ControllerRouteClassGenerator controllerRouteClassGenerator = new(configuration);
+        var controllerRouteClassGenerator = new ControllerRouteClassGenerator(configuration);
 
-        controllerRouteClassGenerator.AddSharedController(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames);
-
-        foreach (var controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
+        foreach (var controllerDeclarations in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()).Select(static g => g.ToList()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            var controllerContextImplementations = controllerContextGroup.ToList();
+            if (controllerDeclarations[0].TypeSymbol.GetAttributes(true).Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonControllerAttribute.FullName))
+            {
+                continue;
+            }
 
-            controllerRouteClassGenerator.AddControllerRouteClass(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames, controllerContextImplementations);
-            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerContextImplementations[0], configuration);
+            controllerRouteClassGenerator.AddControllerRouteClass(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames, controllerDeclarations);
+            ControllerPartialClassGenerator.AddControllerPartialClass(context, controllerDeclarations[0], configuration);
         }
+
+        controllerRouteClassGenerator.AddSharedControllers(context, analyzerConfigValues.ProjectDir, controllerRouteClassNames);
 
         AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);
 
         MvcClassGenerator.AddMvcClass(context, controllerRouteClassNames, configuration
 #if DEBUG
-        , _version 
+        , _version
 #endif
         );
     }
@@ -98,7 +101,7 @@ public class G4mvcGenerator : IIncrementalGenerator
 
         LinksGenerator.AddLinksClass(context, configuration
 #if DEBUG
-        , _linksVersion 
+        , _linksVersion
 #endif
         );
     }

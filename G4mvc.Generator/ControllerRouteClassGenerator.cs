@@ -3,49 +3,42 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 {
     private readonly Configuration _configuration = configuration;
 
-    internal void AddSharedController(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
+    internal void AddSharedControllers(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
     {
-        var sourceBuilder = _configuration.CreateSourceBuilder();
+        const string sharedControllerName = "Shared";
 
-        AddClassNameToDictionary(controllerRouteClassNames, null, "Shared", $"SharedRoutes");
-
-        sourceBuilder.Nullable(_configuration.GlobalNullable);
-
-        using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
-        using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, "SharedRoutes"))
+        foreach (var (areaName, controllerRouteClasses) in controllerRouteClassNames)
         {
-            sourceBuilder.AppendProperty("public", "SharedViews", "Views", "get", null, SourceCode.NewCtor);
-
-            var directory = new DirectoryInfo(Path.Combine(projectDir, "Views", "Shared"));
-
-            if (directory.Exists)
+            if (controllerRouteClasses.ContainsKey($"{sharedControllerName}Routes"))
             {
-                AddViewsClass(sourceBuilder, projectDir, directory, "Shared", _configuration.JsonConfig.EnableSubfoldersInViews); 
+                continue;
             }
-        }
 
-        context.AddGeneratedSource("SharedRoutes", sourceBuilder);
+            AddClassNameToDictionary(controllerRouteClassNames, areaName, sharedControllerName, $"{sharedControllerName}Routes");
+
+            AddViewsOnlyRoutesClass(context, projectDir, areaName, sharedControllerName);
+        }
     }
 
     internal void AddControllerRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, List<ControllerDeclarationContext> controllerContexts)
     {
-        var mainControllerContext = controllerContexts[0];
-
         var sourceBuilder = _configuration.CreateSourceBuilder();
 
-        var httpMethods = controllerContexts.SelectMany(cc => cc.Syntax.DescendantNodes().OfType<MethodDeclarationSyntax>()
-                .Select(md => new MethodDeclarationContext(md, cc.Model, _configuration.GlobalNullable))
-                .Where(mc => IsActionResult(mc.MethodSymbol.ReturnType))).ToList();
+        var httpMethods = controllerContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<MethodDeclarationSyntax>()
+                    .Select(md => new MethodDeclarationContext(md, c.Model, _configuration.GlobalNullable)))
+                .Where(static (mc) => !mc.MethodSymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonActionAttribute.FullName) && IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
+
+        var mainControllerContext = controllerContexts[0];
 
         sourceBuilder
             .Using(nameof(G4mvc))
             .AppendLine()
-            .Nullable(mainControllerContext.NullableEnabled);
+            .Nullable(controllerContexts[0].NullableEnabled);
 
         var controllerRouteClassName = $"{mainControllerContext.ControllerNameWithoutSuffix}Routes";
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix, controllerRouteClassName);
 
-        using (sourceBuilder.BeginNamespace(Configuration.RoutesNameSpace, true))
+        using (sourceBuilder.BeginNamespace(_configuration.GetControllerRoutesNamespace(mainControllerContext.ControllerArea), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, controllerRouteClassName))
         {
             if (mainControllerContext.ControllerArea is not null)
@@ -99,7 +92,28 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
             AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.ControllerNameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
         }
 
-        context.AddGeneratedSource($"{mainControllerContext.ControllerNameWithoutSuffix}Routes", sourceBuilder);
+        context.AddGeneratedSource(GetControllerRoutesFileName(mainControllerContext.ControllerArea, mainControllerContext.ControllerNameWithoutSuffix), sourceBuilder);
+    }
+
+    private void AddViewsOnlyRoutesClass(SourceProductionContext context, string projectDir, string? areaName, string controllerNameWithoutSuffix)
+    {
+        var sourceBuilder = _configuration.CreateSourceBuilder();
+
+        sourceBuilder.Nullable(_configuration.GlobalNullable);
+
+        using (sourceBuilder.BeginNamespace(_configuration.GetControllerRoutesNamespace(areaName), true))
+        using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, $"{controllerNameWithoutSuffix}Routes"))
+        {
+            var directory = new DirectoryInfo(Path.Combine(projectDir, areaName.IfNotNullNullOrEmpty("Areas"), areaName, "Views", controllerNameWithoutSuffix));
+
+            if (directory.Exists)
+            {
+                sourceBuilder.AppendProperty("public", $"{controllerNameWithoutSuffix}Views", "Views", "get", null, SourceCode.NewCtor);
+                AddViewsClass(sourceBuilder, projectDir, directory, controllerNameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
+            }
+        }
+
+        context.AddGeneratedSource(GetControllerRoutesFileName(areaName, controllerNameWithoutSuffix), sourceBuilder);
     }
 
     private static Dictionary<string, HashSet<string>> AddActionMethodsAndGetParameterGroups(SourceProductionContext context, ControllerDeclarationContext mainControllerContext, SourceBuilder sourceBuilder, List<MethodDeclarationContext> httpMethods)
@@ -228,7 +242,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                 foreach (var subDir in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).OrderBy(d => d.Name))
                 {
                     var subClassName = IdentifierParser.CreateIdentifierFromPath(subDir.Name, classNameSpan);
-                    
+
                     sourceBuilder.AppendProperty("public", $"{subClassName}Views", subClassName, "get", null, SourceCode.NewCtor);
                     AddViewsClass(sourceBuilder, projectDir, subDir, subClassName, enumerateSubDirectories);
                 }
@@ -245,4 +259,9 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
             yield return new KeyValuePair<string, string>(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, appRootPrefix).Replace("\\", "/"));
         }
     }
+
+    private static string GetControllerRoutesFileName(string? area, string controllerNameWithoutSuffix)
+        => string.IsNullOrEmpty(area)
+            ? $"{controllerNameWithoutSuffix}Routes"
+            : $"{area}.{controllerNameWithoutSuffix}Routes";
 }

@@ -17,10 +17,12 @@ It might be necessary to restart Visual Studio for these changes to take affect.
 
 ## Use
 ### Source Generation
-In order for the code generation to work, the controller class has to derive from the `Microsoft.AspNetCore.Mvc.Controller` class. Abstract classes will also be ignored. All Methods for which a routing helper should be generated, have to return `Microsoft.AspNetCore.Mvc.IActionResult`, `Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult` or an implementation of either of these interfaces. For asyncronous controller actions, the task has to return one of these.\
-To trigger the generation of the links class, it is necessary to manually build or rebuild the ASP.net core project or make change in the config file 
+#### Controllers
+In order for the code generation to work, the controller class has to derive from the `Microsoft.AspNetCore.Mvc.Controller` class. Abstract classes will also be ignored.
+All Methods for which a routing helper should be generated, have to return `Microsoft.AspNetCore.Mvc.IActionResult`, `Microsoft.AspNetCore.Mvc.Infrastructure.IConvertToActionResult` or an implementation of either of these interfaces.
+For asyncronous controller actions, the task has to return one of these.
 
-#### Examples:
+##### Examples:
     public IActionResult Edit(EditViewModel viewModel)
     public JsonResult Edit(EditViewModel viewModel)
     public Task<IActionResult> Edit(EditViewModel viewModel)
@@ -29,6 +31,17 @@ To trigger the generation of the links class, it is necessary to manually build 
     public ActionResult<IEnumerable<string>> Edit(EditViewModel viewModel)
 
 Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would be ignored.
+
+#### Links
+To trigger the generation of the links class, it is necessary to manually build or rebuild the ASP.net core project or make change in the config file.\
+If you are using a `StaticFilesPath` different from the default `wwwroot` or add AdditionalStaticFilesPaths, you also have to add that path to the project file as AdditionalFiles.
+
+    <ItemGroup>
+      <AdditionalFiles Include="mystaticfiles\**" />
+    </ItemGroup>
+
+In case of `ExcludedStaticFileExtensions` or `ExcludedStaticFileDirectories` it's recommended to adjust the AdditionalFiles entry accordingly.
+
 
 ### Extensions
 The [G4mvc](https://www.nuget.org/packages/G4mvc/) package provides a number of extension methods that can make using the generated route helpers a bit easier.

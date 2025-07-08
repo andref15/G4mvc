@@ -3,7 +3,7 @@ internal static class MvcClassGenerator
 {
     public static void AddMvcClass(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, Configuration configuration
 #if DEBUG
-        , int version 
+        , int version
 #endif
         )
     {
@@ -11,16 +11,14 @@ internal static class MvcClassGenerator
 
         var sourceBuilder = configuration.CreateSourceBuilder();
 
-        sourceBuilder.Using(nameof(G4mvc));
-
         var areaNames = controllerRouteClassNames.Keys.Where(k => k != string.Empty).ToList();
 
         if (areaNames.Count > 0)
         {
-            sourceBuilder.Using($"{nameof(G4mvc)}.Areas");
+            sourceBuilder.Using(configuration.GetAreasNamespace());
         }
 
-        sourceBuilder.Using(Configuration.RoutesNameSpace).AppendLine();
+        sourceBuilder.Using(configuration.GetControllerRoutesNamespace(null));
 
         IDisposable? namespaceDisposable = null;
 
@@ -34,7 +32,7 @@ internal static class MvcClassGenerator
         using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, configuration.JsonConfig.HelperClassName))
         {
 #if DEBUG
-            sourceBuilder.AppendLine($"//v{version}"); 
+            sourceBuilder.AppendLine($"//v{version}");
 #endif
 
             if (controllerRouteClassNames.TryGetValue(string.Empty, out var classNames))

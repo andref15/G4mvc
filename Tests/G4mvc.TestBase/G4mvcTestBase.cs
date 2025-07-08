@@ -3,16 +3,16 @@ using G4mvc.TestBase.Providers;
 using G4mvc.TestBase.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Immutable;
 
 namespace G4mvc.TestBase;
-public abstract class G4mvcTestBase(LanguageVersion languageVersion)
+public abstract class G4mvcTestBase(LanguageVersion languageVersion, string rootNamespace)
 {
     protected readonly CSharpCompilationOptions CompilationOptions = new(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release, warningLevel: 0, nullableContextOptions: NullableContextOptions.Enable);
-    
+
     protected readonly CSharpParseOptions ParseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion).WithDocumentationMode(DocumentationMode.None);
+    private readonly string _rootNamespace = rootNamespace;
 
     protected static void AssertDiagnostics(CSharpCompilation compilation, string type)
     {
@@ -54,7 +54,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 
         var compilation = CSharpCompilation.Create("TestWeb", syntaxTrees, GetMetadataReferences(), options: CompilationOptions);
 
-        var generatorDriver = CSharpGeneratorDriver.Create(g4mvcGenerator).WithUpdatedParseOptions(ParseOptions).WithUpdatedAnalyzerConfigOptions(new G4mvcAnalyzerConfigOptionsProvider());
+        var generatorDriver = CSharpGeneratorDriver.Create(g4mvcGenerator).WithUpdatedParseOptions(ParseOptions).WithUpdatedAnalyzerConfigOptions(new G4mvcAnalyzerConfigOptionsProvider(_rootNamespace));
 
         if (jsonConfig.HasValue)
         {
@@ -77,27 +77,27 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 
         try
         {
-            SyntaxAssert.AreAnyEquivalent(expectedOutputs.SharedClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestRoutesClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialRoutesClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialClass, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.SharedClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.MvcClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.LinksClass, syntaxTrees, ParseOptions);
         }
         catch
         {
             Console.WriteLine("EXPECTED:\n");
-            Console.WriteLine(expectedOutputs.SharedClass);
             Console.WriteLine(expectedOutputs.TestRoutesClass);
             Console.WriteLine(expectedOutputs.TestPartialRoutesClass);
             Console.WriteLine(expectedOutputs.TestPartialClass);
+            Console.WriteLine(expectedOutputs.SharedClass);
             Console.WriteLine(expectedOutputs.MvcClass);
             Console.WriteLine(expectedOutputs.LinksClass);
             Console.WriteLine("\nEND EXPECTED\n");
 
             Console.WriteLine("ACTUAL:");
-            
-            foreach (var syntaxTree in syntaxTrees)
+
+            foreach (var syntaxTree in syntaxTrees.Where(s => s.FilePath.Length > 0))
             {
                 Console.WriteLine(syntaxTree);
             }
@@ -115,8 +115,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
         foreach (var file in directoryInfo.EnumerateFiles("*.cs", SearchOption.AllDirectories).OrderBy(f => f.Name))
         {
             using var stream = file.OpenRead();
-            var sourceText = SourceText.From(stream);
-            yield return SyntaxFactory.ParseSyntaxTree(sourceText, ParseOptions);
+            yield return SyntaxUtils.ToSyntaxTree(stream, ParseOptions);
         }
     }
 

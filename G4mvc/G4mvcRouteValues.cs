@@ -1,13 +1,13 @@
 ﻿#if NETCOREAPP
+using G4mvc.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using G4mvc.Extensions; 
 #endif
 
 namespace G4mvc;
 public class G4mvcRouteValues
 #if NETCOREAPP
-        : RouteValueDictionary 
+        : RouteValueDictionary
 #endif
 {
     public string? Area { get; set; }
@@ -27,7 +27,7 @@ public class G4mvcRouteValues
         }
 
         this[nameof(controller)] = controller;
-        this[nameof(action)] = action; 
+        this[nameof(action)] = action;
 #endif
     }
 #if NETCOREAPP
@@ -38,9 +38,32 @@ public class G4mvcRouteValues
     public G4mvcRouteValues AddRouteValue(string key, object value)
     {
         this[key] = value;
+        return this;
+    }
+
+    public G4mvcRouteValues AddRouteValues(object values)
+    {
+        if (values is not IEnumerable<KeyValuePair<string, object>>)
+        {
+            values = new RouteValueDictionary(values);
+        }
+
+        return AddRouteValues((IEnumerable<KeyValuePair<string, object>>)values);
+    }
+
+    public G4mvcRouteValues AddRouteValues(RouteValueDictionary dictionary)
+        => AddRouteValues((IEnumerable<KeyValuePair<string, object>>)dictionary);
+
+    public G4mvcRouteValues AddRouteValues(IEnumerable<KeyValuePair<string, object>> values)
+    {
+        foreach (var (key, value) in values)
+        {
+            this[key] = value;
+        }
 
         return this;
-    } 
+    }
+
 #endif
 
     /// <summary>
@@ -66,7 +89,7 @@ public class G4mvcRouteValues
             CopyPathSegmentToSpanAt(span: span, routeValues.Controller, ref currentIdx);
 
             routeValues.Action.AsSpan().CopyTo(span[currentIdx..]);
-        }); 
+        });
 #else
         return $"/{(Area is null ? null : $"{Area}/")}{Controller}/{Action}";
 #endif

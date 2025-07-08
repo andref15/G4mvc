@@ -1,19 +1,19 @@
 ﻿namespace G4mvc.Generator.Contexts;
 internal class ControllerDeclarationContext : BaseDeclarationContext
 {
-    public ClassDeclarationSyntax Syntax { get; }
+    public ClassDeclarationSyntax DeclarationNode { get; }
     public INamedTypeSymbol TypeSymbol { get; }
     public string? ControllerArea { get; }
     public string ControllerName { get; }
     public string ControllerNameWithoutSuffix { get; }
 
-    private ControllerDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, syntax.SpanStart, globalNullable)
+    private ControllerDeclarationContext(SemanticModel model, ClassDeclarationSyntax declarationNode, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, declarationNode.SpanStart, globalNullable)
     {
-        Syntax = syntax;
+        DeclarationNode = declarationNode;
         TypeSymbol = typeSymbol;
 
         ControllerArea = GetControllerArea(typeSymbol);
-        ControllerName = Syntax.Identifier.Text;
+        ControllerName = declarationNode.Identifier.Text;
         ControllerNameWithoutSuffix = ControllerName.RemoveEnd("Controller");
     }
 
@@ -26,7 +26,7 @@ internal class ControllerDeclarationContext : BaseDeclarationContext
 
     private static string? GetControllerArea(INamedTypeSymbol typeSymbol)
     {
-        var areaAttribute = typeSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
+        var areaAttribute = typeSymbol.GetAttributes(true).FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
 
         return areaAttribute?.ConstructorArguments[0].Value as string;
     }

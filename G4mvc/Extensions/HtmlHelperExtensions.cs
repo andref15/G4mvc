@@ -1,7 +1,7 @@
 ﻿#if NETCOREAPP
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.ViewFeatures; 
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 #endif
 
 namespace G4mvc.Extensions;
@@ -42,6 +42,6 @@ public static class HtmlHelperExtensions
         => BeginRouteForm(htmlHelper, routeName, route, formMethod, HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes));
 
     public static MvcForm BeginRouteForm(this IHtmlHelper htmlHelper, string? routeName, G4mvcRouteValues route, FormMethod formMethod, IDictionary<string, object> htmlAttributes)
-        => htmlHelper.BeginRouteForm(routeName, route, formMethod, null, htmlAttributes); 
+        => htmlHelper.BeginRouteForm(routeName, route, formMethod, null, htmlAttributes);
 #endif
 }

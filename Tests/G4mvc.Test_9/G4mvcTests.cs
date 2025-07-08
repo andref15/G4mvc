@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using G4mvc.Generator;
 using G4mvc.TestBase;
 using G4mvc.TestBase.Utils;
@@ -8,10 +7,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace G4mvc.Test_9;
 
 [TestClass]
-public class G4mvcTests : G4mvcTestBase
+public class G4mvcTests() : G4mvcTestBase(LanguageVersion.CSharp13, $"{nameof(G4mvc)}.{nameof(Test_9)}")
 {
-    public G4mvcTests() : base(LanguageVersion.CSharp12) { }
-
     [TestMethod]
     public void DefaultOptions()
     {

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -12,9 +13,11 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     }
 
     public const string FileName = "g4mvc.json";
-    public const string RoutesNameSpace = $"{nameof(G4mvc)}.Routes";
+    private const string _routesNameSpace = $"{nameof(G4mvc)}.Routes";
+    private const string _areasNameSpace = $"{nameof(G4mvc)}.Areas";
+
     private string? _generatedClassNamespace;
-    private bool _generatedClassNamespaceInitialized =false;
+    private bool _generatedClassNamespaceInitialized = false;
     private string? _generatedClassModifier;
 
     public LanguageVersion LanguageVersion { get; } = languageVersion;
@@ -54,6 +57,43 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
     public string GeneratedClassModifier => _generatedClassModifier ??= JsonConfig.MakeGeneratedClassesInternal ? "internal" : "public";
 
+    internal readonly string GetControllerRoutesNamespace(string? area)
+    {
+        var sb = new StringBuilder();
+
+        if (AnalyzerConfigValues.RootNamespace is not null)
+        {
+            sb.Append(AnalyzerConfigValues.RootNamespace);
+            sb.Append('.');
+        }
+
+        sb.Append(_routesNameSpace);
+
+        if (!string.IsNullOrEmpty(area))
+        {
+            sb.Append('.');
+            sb.Append(area);
+        }
+
+        return sb.ToString();
+    }
+
+    internal readonly string GetAreasNamespace()
+    {
+        var sb = new StringBuilder();
+
+        var rootNamespace = AnalyzerConfigValues.RootNamespace;
+        if (rootNamespace is not null)
+        {
+            sb.Append(rootNamespace);
+            sb.Append('.');
+        }
+
+        sb.Append(_areasNameSpace);
+
+        return sb.ToString();
+    }
+
     internal static Configuration CreateConfig(CSharpCompilation compilation, string? configFile, AnalyzerConfigValues analyzerConfigValues)
         => new(compilation.LanguageVersion, compilation.IsNullableEnabled(), configFile, analyzerConfigValues);
 
@@ -69,16 +109,16 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         public string LinksClassName { get; }
         public string StaticFilesPath { get; }
         public bool UseVirtualPathProcessor { get; }
-        
+
         [JsonInclude, JsonPropertyName(nameof(UseProcessedPathForContentLink))]
         [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Used for json")]
         private bool? UseProcessedPathForContentLinkNullable { get; }
-        
+
         [JsonIgnore]
         public bool UseProcessedPathForContentLink { get; }
         public bool MakeGeneratedClassesInternal { get; }
         public string GeneratedClassNamespace { get; }
-        public bool EnableSubfoldersInViews {  get; }
+        public bool EnableSubfoldersInViews { get; }
         public string[]? ExcludedStaticFileExtensions { get; }
         public string[]? ExcludedStaticFileDirectories { get; }
         public IReadOnlyDictionary<string, string>? AdditionalStaticFilesPaths { get; }
@@ -98,7 +138,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
             HelperClassName = string.IsNullOrWhiteSpace(helperClassName)
                 ? "MVC"
                 : helperClassName!.Trim();
-            LinksClassName = string.IsNullOrWhiteSpace(linksClassName) 
+            LinksClassName = string.IsNullOrWhiteSpace(linksClassName)
                 ? "Links"
                 : linksClassName!.Trim();
             StaticFilesPath = string.IsNullOrWhiteSpace(staticFilesPath)
