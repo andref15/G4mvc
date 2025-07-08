@@ -7,10 +7,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace G4mvc.Test_8;
 
 [TestClass]
-public class G4mvcTests : G4mvcTestBase
+public class G4mvcTests() : G4mvcTestBase(LanguageVersion.CSharp12, $"{nameof(G4mvc)}.{nameof(Test_8)}")
 {
-    public G4mvcTests() : base(LanguageVersion.CSharp12) { }
-
     [TestMethod]
     public void DefaultOptions()
     {

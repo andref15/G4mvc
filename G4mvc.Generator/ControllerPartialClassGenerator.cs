@@ -17,8 +17,6 @@ internal static class ControllerPartialClassGenerator
             sourceBuilder.Using(configuration.GeneratedClassNamespace);
         }
 
-        sourceBuilder.Using(configuration.GetControllerRoutesNamespace(controllerContext.ControllerArea));
-
         sourceBuilder
             .AppendLine()
             .Nullable(controllerContext.NullableEnabled);
@@ -26,7 +24,7 @@ internal static class ControllerPartialClassGenerator
         using (sourceBuilder.BeginNamespace(controllerContext.TypeSymbol.ContainingNamespace.ToDisplayString(), true))
         using (sourceBuilder.BeginClass(controllerContext.DeclarationNode.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
         {
-            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"{controllerContext.ControllerNameWithoutSuffix}Routes.{controllerContext.ControllerNameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.HelperClassName}.{(controllerContext.ControllerArea is null ? null : $"{controllerContext.ControllerArea}.")}{controllerContext.ControllerNameWithoutSuffix}.Views");
+            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"global::{configuration.GetControllerRoutesNamespace(controllerContext.ControllerArea)}.{controllerContext.ControllerNameWithoutSuffix}Routes.{controllerContext.ControllerNameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.HelperClassName}.{(controllerContext.ControllerArea is null ? null : $"{controllerContext.ControllerArea}.")}{controllerContext.ControllerNameWithoutSuffix}.Views");
             sourceBuilder.AppendLine();
 
             using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToAction", "G4mvcRouteValues route"))

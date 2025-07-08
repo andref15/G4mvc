@@ -7,11 +7,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Immutable;
 
 namespace G4mvc.TestBase;
-public abstract class G4mvcTestBase(LanguageVersion languageVersion)
+public abstract class G4mvcTestBase(LanguageVersion languageVersion, string rootNamespace)
 {
     protected readonly CSharpCompilationOptions CompilationOptions = new(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release, warningLevel: 0, nullableContextOptions: NullableContextOptions.Enable);
 
     protected readonly CSharpParseOptions ParseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion).WithDocumentationMode(DocumentationMode.None);
+    private readonly string _rootNamespace = rootNamespace;
 
     protected static void AssertDiagnostics(CSharpCompilation compilation, string type)
     {
@@ -53,7 +54,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion)
 
         var compilation = CSharpCompilation.Create("TestWeb", syntaxTrees, GetMetadataReferences(), options: CompilationOptions);
 
-        var generatorDriver = CSharpGeneratorDriver.Create(g4mvcGenerator).WithUpdatedParseOptions(ParseOptions).WithUpdatedAnalyzerConfigOptions(new G4mvcAnalyzerConfigOptionsProvider());
+        var generatorDriver = CSharpGeneratorDriver.Create(g4mvcGenerator).WithUpdatedParseOptions(ParseOptions).WithUpdatedAnalyzerConfigOptions(new G4mvcAnalyzerConfigOptionsProvider(_rootNamespace));
 
         if (jsonConfig.HasValue)
         {
