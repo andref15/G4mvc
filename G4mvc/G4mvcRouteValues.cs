@@ -21,10 +21,7 @@ public class G4mvcRouteValues
         Action = action;
 
 #if NETCOREAPP
-        if (area is not null)
-        {
-            this[nameof(area)] = area;
-        }
+        this[nameof(area)] = area ?? string.Empty;
 
         this[nameof(controller)] = controller;
         this[nameof(action)] = action;
