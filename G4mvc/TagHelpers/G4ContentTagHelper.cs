@@ -14,7 +14,7 @@ namespace G4mvc.TagHelpers;
 [HtmlTargetElement(_link, Attributes = _attributeName)]
 [HtmlTargetElement(_track, Attributes = _attributeName)]
 [HtmlTargetElement(_video, Attributes = _attributeName)]
-public class G4ContentTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
+public class G4ContentTagHelper(IUrlHelperFactory urlHelperFactory, IFileVersionProvider fileVersionProvider) : TagHelper
 {
     private const string _embed = "embed";
     private const string _iframe = "iframe";
@@ -26,19 +26,22 @@ public class G4ContentTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
     private const string _track = "track";
     private const string _video = "video";
     private const string _attributeName = "g4-content";
+    private const string _appendVersionAttributeName = "asp-append-version";
 
     private readonly IUrlHelperFactory _urlHelperFactory = urlHelperFactory;
+    private readonly IFileVersionProvider _fileVersionProvider = fileVersionProvider;
 
     [HtmlAttributeName(_attributeName)]
     public G4mvcContentLink Content { get; set; } = null!;
+
+    [HtmlAttributeName(_appendVersionAttributeName)]
+    public bool? AppendVersion { get; set; }
 
     [HtmlAttributeNotBound, ViewContext]
     public ViewContext ViewContext { get; set; } = null!;
 
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        output.Attributes.RemoveAll(_attributeName);
-
         var urlHelper = _urlHelperFactory.GetUrlHelper(ViewContext);
 
         var sourceAttributeName = output.TagName switch
@@ -50,7 +53,15 @@ public class G4ContentTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
 
         if (sourceAttributeName is not null)
         {
-            output.Attributes.SetAttribute(sourceAttributeName, Content.ToContentUrl(urlHelper));
+            var url = Content.ToContentUrl(urlHelper);
+
+            if (AppendVersion ?? false)
+            {
+                var requestPathBase = ViewContext.HttpContext.Request.PathBase;
+                url = _fileVersionProvider.AddFileVersionToPath(requestPathBase, url);
+            }
+
+            output.Attributes.SetAttribute(sourceAttributeName, url);
         }
 
         return base.ProcessAsync(context, output);
