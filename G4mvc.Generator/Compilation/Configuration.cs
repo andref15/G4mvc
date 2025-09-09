@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -60,6 +61,43 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     }
 
     public string GeneratedClassModifier => _generatedClassModifier ??= JsonConfig.MakeGeneratedClassesInternal ? "internal" : "public";
+
+    internal readonly string GetControllerRoutesNamespace(string? area)
+    {
+        var sb = new StringBuilder();
+
+        if (AnalyzerConfigValues.RootNamespace is not null)
+        {
+            sb.Append(AnalyzerConfigValues.RootNamespace);
+            sb.Append('.');
+        }
+
+        sb.Append(RoutesNameSpace);
+
+        if (!string.IsNullOrEmpty(area))
+        {
+            sb.Append('.');
+            sb.Append(area);
+        }
+
+        return sb.ToString();
+    }
+
+    internal readonly string GetAreasNamespace()
+    {
+        var sb = new StringBuilder();
+
+        var rootNamespace = AnalyzerConfigValues.RootNamespace;
+        if (rootNamespace is not null)
+        {
+            sb.Append(rootNamespace);
+            sb.Append('.');
+        }
+
+        sb.Append(AreasNameSpace);
+
+        return sb.ToString();
+    }
 
     internal static Configuration CreateConfig(CSharpCompilation compilation, string? configFile, AnalyzerConfigValues analyzerConfigValues)
         => new(compilation.LanguageVersion, compilation.IsNullableEnabled(), configFile, analyzerConfigValues);

@@ -7,10 +7,10 @@ internal class ControllerDeclarationContext : ClassDeclarationContext
     public string Name { get; }
     public string NameWithoutSuffix { get; }
 
-    private ControllerDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, syntax, typeSymbol, globalNullable)
+    private ControllerDeclarationContext(SemanticModel model, ClassDeclarationSyntax declarationNode, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, declarationNode, typeSymbol, globalNullable)
     {
         Area = GetControllerArea(typeSymbol);
-        Name = Syntax.Identifier.Text;
+        Name = declarationNode.Identifier.Text;
         NameWithoutSuffix = Name.RemoveEnd(Suffix);
     }
 
@@ -23,7 +23,7 @@ internal class ControllerDeclarationContext : ClassDeclarationContext
 
     private static string? GetControllerArea(INamedTypeSymbol typeSymbol)
     {
-        var areaAttribute = typeSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
+        var areaAttribute = typeSymbol.GetAttributes(true).FirstOrDefault(a => a.AttributeClass!.DerrivesFromType(TypeNames.AreaAttribute));
 
         return areaAttribute?.ConstructorArguments[0].Value as string;
     }

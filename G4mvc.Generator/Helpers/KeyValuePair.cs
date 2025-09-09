@@ -3,10 +3,6 @@ internal static class KeyValuePair
 {
     public static KeyValuePair<TKey, TValue> Create<TKey, TValue>(TKey key, TValue value)
         => new(key, value);
-
-    public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> kvp, out TKey key, out TValue value)
-    {
-        key = kvp.Key;
-        value = kvp.Value;
-    }
+    public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> pair, out TKey key, out TValue value)
+        => (key, value) = (pair.Key, pair.Value);
 }

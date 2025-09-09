@@ -11,6 +11,12 @@ public static class SyntaxUtils
         return SyntaxFactory.ParseSyntaxTree(sourceText, parseOptions);
     }
 
+    public static SyntaxTree ToSyntaxTree(Stream stream, CSharpParseOptions parseOptions)
+    {
+        var sourceText = SourceText.From(stream);
+        return SyntaxFactory.ParseSyntaxTree(sourceText, parseOptions);
+    }
+
     public static bool AreEquivalent(SyntaxTree left, string right, CSharpParseOptions parseOptions)
         => left.IsEquivalentTo(ToSyntaxTree(right, parseOptions));
 

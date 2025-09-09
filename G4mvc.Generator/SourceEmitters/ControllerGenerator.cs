@@ -44,7 +44,7 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
 
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
-        controllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
+        controllerRouteClassGenerator.AddSharedControllers(context, projectDir, controllerRouteClassNames);
 
         foreach (var controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {
@@ -54,7 +54,7 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
             controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContextImplementations);
 
             var firstContext = controllerContextImplementations[0];
-            if (firstContext.Syntax.Modifiers.Any(SyntaxKind.PartialKeyword))
+            if (firstContext.DeclarationNode.Modifiers.Any(SyntaxKind.PartialKeyword))
             {
                 ControllerPartialClassGenerator.AddControllerPartialClass(context, firstContext, configuration);
             }

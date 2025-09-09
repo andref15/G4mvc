@@ -44,7 +44,7 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
 
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
-        controllerRouteClassGenerator.AddSharedController(context, projectDir, controllerRouteClassNames);
+        controllerRouteClassGenerator.AddSharedControllers(context, projectDir, controllerRouteClassNames);
 
         foreach (var pageContextGroup in pageContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {

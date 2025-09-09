@@ -9,7 +9,7 @@ internal class PageDeclarationContext : ClassDeclarationContext
     private PageDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, syntax, typeSymbol, globalNullable)
     {
         Area = GetPageArea(typeSymbol);
-        Name = Syntax.Identifier.Text;
+        Name = DeclarationNode.Identifier.Text;
     }
 
     public static PageDeclarationContext Create(GeneratorSyntaxContext context, CancellationToken cancellationToken)
