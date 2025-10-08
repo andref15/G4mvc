@@ -9,4 +9,20 @@ internal static class TypeSymbolExtensions
 
     internal static bool IsOrImplementsInterface(this ITypeSymbol typeSymbol, string @interface)
         => typeSymbol.ToDisplayString() == @interface || typeSymbol.AllInterfaces.Any(i => i.ToDisplayString() == @interface);
+
+    public static IEnumerable<AttributeData> GetAttributes(this INamedTypeSymbol type, bool includeBaseTypes = true)
+    {
+        foreach (var attribute in type.GetAttributes())
+        {
+            yield return attribute;
+        }
+
+        if (includeBaseTypes && type.BaseType is not null)
+        {
+            foreach (var baseAttribute in GetAttributes(type.BaseType, true))
+            {
+                yield return baseAttribute;
+            }
+        }
+    }
 }

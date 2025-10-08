@@ -19,9 +19,9 @@ internal static class ControllerPartialClassGenerator
             .Nullable(controllerContext.NullableEnabled);
 
         using (sourceBuilder.BeginNamespace(controllerContext.TypeSymbol.ContainingNamespace.ToDisplayString(), true))
-        using (sourceBuilder.BeginClass(controllerContext.Syntax.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
+        using (sourceBuilder.BeginClass(controllerContext.DeclarationNode.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
         {
-            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"{Configuration.RoutesNameSpace}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.MvcHelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
+            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"global::{configuration.GetControllerRoutesNamespace(controllerContext.Area)}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.MvcHelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
             sourceBuilder.AppendLine();
 
             using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToAction", $"{nameof(G4mvcActionRouteValues)} route"))
@@ -37,6 +37,15 @@ internal static class ControllerPartialClassGenerator
             }
         }
 
-        context.AddGeneratedSource($"{controllerContext.Name}", sourceBuilder);
+        context.AddGeneratedSource(GetPartialClassName(controllerContext), sourceBuilder);
+    }
+
+    private static string GetPartialClassName(ControllerDeclarationContext controllerContext)
+    {
+        var area = controllerContext.Area;
+
+        return area is null
+            ? $"{controllerContext.Name}"
+            : $"{area}.{controllerContext.Name}";
     }
 }

@@ -14,4 +14,18 @@ internal static class TypeNames
     public const string IConvertToActionResult = $"{Namespaces.MicrosoftAspNetCoreMvcInfrastructure}.IConvertToActionResult";
     public const string PageModel = $"{Namespaces.MicrosoftAspNetCoreMvcRazorPages}.PageModel";
     public const string Task = $"{Namespaces.SystemThreadingTasks}.Task";
+
+    public static class NonControllerAttribute
+    {
+        public const string Name = "NonControllerAttribute";
+        public const string ShortName = "NonController";
+        public const string FullName = $"{Namespaces.MicrosoftAspNetCoreMvc}.{Name}";
+    }
+
+    public static class NonActionAttribute
+    {
+        public const string Name = "NonActionAttribute";
+        public const string ShortName = "NonAttribute";
+        public const string FullName = $"{Namespaces.MicrosoftAspNetCoreMvc}.{Name}";
+    }
 }

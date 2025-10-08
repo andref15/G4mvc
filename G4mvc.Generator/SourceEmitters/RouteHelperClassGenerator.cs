@@ -13,16 +13,14 @@ internal static class RouteHelperClassGenerator
 
         var sourceBuilder = configuration.CreateSourceBuilder();
 
-        sourceBuilder.Using(nameof(G4mvc));
-
         var areaNames = routeClassNames.Keys.Where(static k => !string.IsNullOrEmpty(k)).ToList();
 
         if (areaNames.Count > 0)
         {
-            sourceBuilder.Using(Configuration.AreasNameSpace);
+            sourceBuilder.Using(configuration.GetAreasNamespace());
         }
 
-        sourceBuilder.Using(Configuration.RoutesNameSpace).AppendLine();
+        sourceBuilder.Using(configuration.GetControllerRoutesNamespace(null));
 
         var namespaceDisposable = (IDisposable?)null;
 

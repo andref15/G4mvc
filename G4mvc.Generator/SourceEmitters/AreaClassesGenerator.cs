@@ -5,24 +5,24 @@ internal static class AreaClassesGenerator
 {
     internal static void AddAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration)
     {
-        foreach (var area in routeClassNames.Where(kvp => kvp.Key != string.Empty))
+        foreach (var (areaName, className) in routeClassNames.Where(kvp => kvp.Key != string.Empty))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
             var sourceBuilder = configuration.CreateSourceBuilder();
 
             sourceBuilder
-                .Using(Configuration.RoutesNameSpace)
+                .Using(configuration.GetControllerRoutesNamespace(areaName))
                 .Nullable(configuration.GlobalNullable);
 
-            using (sourceBuilder.BeginNamespace(Configuration.AreasNameSpace, true))
-            using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, $"{area.Key}Area"))
+            using (sourceBuilder.BeginNamespace(configuration.GetAreasNamespace(), true))
+            using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, $"{areaName}Area"))
             {
-                sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(area.Key));
-                sourceBuilder.AppendProperties("public", area.Value, "get", null, "new()");
+                sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(areaName));
+                sourceBuilder.AppendProperties("public", className, "get", null, "new()");
             }
 
-            context.AddGeneratedSource($"{area.Key}Area", sourceBuilder);
+            context.AddGeneratedSource($"{areaName}Area", sourceBuilder);
         }
     }
 }
