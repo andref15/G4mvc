@@ -8,4 +8,8 @@ internal static class SourceCode
 
     public static string Nameof(string variable)
         => $"nameof({variable})";
+
+    public static string? GetDefaultValue(ParameterSyntax syntax)
+        => syntax.Default is null ? null : $" {syntax.Default}";
+
 }

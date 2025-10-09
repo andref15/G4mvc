@@ -12,7 +12,7 @@ internal static class AreaClassesGenerator
             var sourceBuilder = configuration.CreateSourceBuilder();
 
             sourceBuilder
-                .Using(configuration.GetControllerRoutesNamespace(areaName))
+                .Using(configuration.GetAreaRoutesNamespace(areaName))
                 .Nullable(configuration.GlobalNullable);
 
             using (sourceBuilder.BeginNamespace(configuration.GetAreasNamespace(), true))

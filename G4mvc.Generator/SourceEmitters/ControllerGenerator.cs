@@ -27,7 +27,7 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
     protected override ControllerDeclarationContext Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => ControllerDeclarationContext.Create(context, cancellationToken);
 
-    protected override void Execute(SourceProductionContext context, ImmutableArray<ControllerDeclarationContext> controllerContexts, Configuration configuration)
+    protected override void Execute(SourceProductionContext context, ImmutableArray<ControllerDeclarationContext> controllerContexts, Configuration configuration, ImmutableArray<AdditionalText> views)
     {
 #if DEBUG
         _version++;
@@ -40,11 +40,9 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
 
         var controllerRouteClassNames = new Dictionary<string, Dictionary<string, string>>();
 
-        var controllerRouteClassGenerator = new ControllerRouteClassGenerator(configuration);
+        var controllerRouteClassGenerator = new ControllerRouteClassGenerator(configuration, views);
 
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
-
-        controllerRouteClassGenerator.AddSharedControllers(context, projectDir, controllerRouteClassNames);
 
         foreach (var controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {
@@ -59,6 +57,8 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
                 ControllerPartialClassGenerator.AddControllerPartialClass(context, firstContext, configuration);
             }
         }
+
+        controllerRouteClassGenerator.AddSharedControllers(context, projectDir, controllerRouteClassNames);
 
         AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);
 

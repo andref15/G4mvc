@@ -1,15 +1,10 @@
 ﻿namespace G4mvc.Generator.Contexts;
-internal class PageDeclarationContext : ClassDeclarationContext
+internal class PageDeclarationContext : MvcDeclarationContext
 {
-    public const string Suffix = "Page";
+    public const string Suffix = "Model";
 
-    public string? Area { get; }
-    public string Name { get; }
-
-    private PageDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol, bool globalNullable) : base(model, syntax, typeSymbol, globalNullable)
+    private PageDeclarationContext(SemanticModel model, ClassDeclarationSyntax syntax, INamedTypeSymbol typeSymbol, bool globalNullable) : base(Suffix, model, syntax, typeSymbol, globalNullable)
     {
-        Area = GetPageArea(typeSymbol);
-        Name = DeclarationNode.Identifier.Text;
     }
 
     public static PageDeclarationContext Create(GeneratorSyntaxContext context, CancellationToken cancellationToken)
@@ -19,9 +14,45 @@ internal class PageDeclarationContext : ClassDeclarationContext
         return new PageDeclarationContext(context.SemanticModel, classDeclaration, context.SemanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken)!, ((CSharpCompilation)context.SemanticModel.Compilation).IsNullableEnabled());
     }
 
-    private static string? GetPageArea(INamedTypeSymbol typeSymbol)
+    protected override string? GetArea(INamedTypeSymbol typeSymbol)
     {
-        _ = typeSymbol;
-        return null; // TODO
+        var typeNamespace = typeSymbol.ContainingNamespace;
+        var areasNamespace = GetAreasNamespace(typeNamespace);
+
+        if (areasNamespace is null)
+        {
+            return null;
+        }
+
+        var remainingNs = typeNamespace.ToDisplayString().AsSpan().Slice(areasNamespace.ToDisplayString().Length);
+        var areaEndIdx = remainingNs.IndexOf('.');
+
+        return areaEndIdx is -1
+            ? remainingNs.ToString()
+            : remainingNs.Slice(0, areaEndIdx).ToString();
+    }
+
+    private static INamespaceSymbol? GetAreasNamespace(INamespaceSymbol symbol)
+    {
+        var current = symbol;
+
+        for (var i = 0; i < 64; i++)
+        {
+            var containing = current.ContainingNamespace;
+
+            if (containing is null)
+            {
+                break;
+            }
+
+            if (containing.Name == "Areas")
+            {
+                return current;
+            }
+
+            current = containing;
+        }
+
+        return null;
     }
 }

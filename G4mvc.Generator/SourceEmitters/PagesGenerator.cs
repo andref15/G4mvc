@@ -22,7 +22,7 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
     }
 
     protected override bool DeclatationPredicate(PageDeclarationContext classContext)
-        => !classContext.TypeSymbol.IsAbstract && classContext.TypeSymbol.DerrivesFromType(TypeNames.PageModel);
+        => !classContext.TypeSymbol.IsAbstract && classContext.TypeSymbol.GetAttributes().Any(static a => a.AttributeClass!.ToDisplayString() == TypeNames.PageModelAttribute) && classContext.TypeSymbol.DerrivesFromType(TypeNames.PageModel);
 
     protected override PageDeclarationContext Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => PageDeclarationContext.Create(context, cancellationToken);
@@ -38,22 +38,26 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
             return;
         }
 
-        var controllerRouteClassNames = new Dictionary<string, Dictionary<string, string>>();
+        var pageRouteClassNames = new Dictionary<string, Dictionary<string, string>>();
 
-        var controllerRouteClassGenerator = new ControllerRouteClassGenerator(configuration);
+        var pageRouteClassGenerator = new PageRouteClassGenerator(configuration);
 
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
-        controllerRouteClassGenerator.AddSharedControllers(context, projectDir, controllerRouteClassNames);
 
         foreach (var pageContextGroup in pageContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
+
+            var pageContextImplementations = pageContextGroup.ToList();
+            pageRouteClassGenerator.AddPageRouteClass(context, projectDir, pageRouteClassNames, pageContextImplementations);
         }
 
-        AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);
+        pageRouteClassGenerator.AddSharedPages(context, projectDir, pageRouteClassNames);
 
-        RouteHelperClassGenerator.AddRouteClassClass(context, configuration.JsonConfig.PageHelperClassName, controllerRouteClassNames, configuration
+        AreaClassesGenerator.AddAreaClasses(context, pageRouteClassNames, configuration);
+
+        RouteHelperClassGenerator.AddRouteClassClass(context, configuration.JsonConfig.PageHelperClassName, pageRouteClassNames, configuration
 
 #if DEBUG
         , _version

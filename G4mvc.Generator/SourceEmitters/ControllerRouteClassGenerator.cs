@@ -1,9 +1,11 @@
 ﻿using G4mvc.Generator.Compilation;
+using System.Collections.Immutable;
 
 namespace G4mvc.Generator.SourceEmitters;
-internal class ControllerRouteClassGenerator(Configuration configuration)
+internal class ControllerRouteClassGenerator(Configuration configuration, ImmutableArray<AdditionalText> views)
 {
     private readonly Configuration _configuration = configuration;
+    private readonly ImmutableArray<AdditionalText> _views = views;
 
     internal void AddSharedControllers(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
     {
@@ -28,19 +30,19 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
         var httpMethods = controllerContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<MethodDeclarationSyntax>()
                     .Select(md => new MethodDeclarationContext(md, c.Model, _configuration.GlobalNullable)))
-                .Where(static (mc) => !mc.MethodSymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonActionAttribute.FullName) && IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
+                .Where(static mc => !mc.MethodSymbol.GetAttributes().Any(static a => a.AttributeClass!.ToDisplayString() == TypeNames.NonActionAttribute.FullName) && IsActionResult(mc.MethodSymbol.ReturnType)).ToList();
 
         var mainControllerContext = controllerContexts[0];
 
         sourceBuilder
             .Using(nameof(G4mvc))
             .AppendLine()
-            .Nullable(controllerContexts[0].NullableEnabled);
+            .Nullable(mainControllerContext.NullableEnabled);
 
         var controllerRouteClassName = $"{mainControllerContext.NameWithoutSuffix}Routes";
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.Area, mainControllerContext.NameWithoutSuffix, controllerRouteClassName);
 
-        using (sourceBuilder.BeginNamespace(_configuration.GetControllerRoutesNamespace(mainControllerContext.Area), true))
+        using (sourceBuilder.BeginNamespace(_configuration.GetAreaRoutesNamespace(mainControllerContext.Area), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, controllerRouteClassName))
         {
             if (mainControllerContext.Area is not null)
@@ -91,7 +93,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             var viewsDirectory = GetViewsDirectoryForController(projectDir, mainControllerContext);
 
-            AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.NameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
+            AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.NameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews, ref _views);
         }
 
         context.AddGeneratedSource(GetControllerRoutesFileName(mainControllerContext.Area, mainControllerContext.NameWithoutSuffix), sourceBuilder);
@@ -103,7 +105,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
         sourceBuilder.Nullable(_configuration.GlobalNullable);
 
-        using (sourceBuilder.BeginNamespace(_configuration.GetControllerRoutesNamespace(areaName), true))
+        using (sourceBuilder.BeginNamespace(_configuration.GetAreaRoutesNamespace(areaName), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, $"{controllerNameWithoutSuffix}Routes"))
         {
             var directory = new DirectoryInfo(Path.Combine(projectDir, areaName.IfNotNullNullOrEmpty("Areas"), areaName, "Views", controllerNameWithoutSuffix));
@@ -201,15 +203,18 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
     private static void AddClassNameToDictionary(Dictionary<string, Dictionary<string, string>> controllerRouteClassNames, string? controllerArea, string controllerNameWithoutSuffix, string controllerRouteClassName)
     {
-        if (!controllerRouteClassNames.ContainsKey(controllerArea ?? string.Empty))
+        var areaKey = controllerArea ?? string.Empty;
+
+        if (!controllerRouteClassNames.TryGetValue(areaKey, out var classNames))
         {
-            controllerRouteClassNames[controllerArea ?? string.Empty] = [];
+            classNames = [];
+            controllerRouteClassNames.Add(areaKey, classNames);
         }
 
-        controllerRouteClassNames[controllerArea ?? string.Empty].Add(controllerRouteClassName, controllerNameWithoutSuffix);
+        classNames.Add(controllerRouteClassName, controllerNameWithoutSuffix);
     }
 
-    private static void AddViewsClass(SourceBuilder sourceBuilder, string projectDir, DirectoryInfo directoryInfo, string className, bool enumerateSubDirectories)
+    private static void AddViewsClass(SourceBuilder sourceBuilder, string projectDir, DirectoryInfo? directoryInfo, string className, bool enumerateSubDirectories, ref readonly ImmutableArray<AdditionalText> views)
     {
         using (sourceBuilder.BeginClass("public", $"{className}Views"))
         {
@@ -221,7 +226,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
             sourceBuilder.AppendProperty("public", $"{className}ViewNames", "ViewNames", "get", null, SourceCode.NewCtor);
 
             List<string> viewNames = [];
-            foreach (var view in GetViewsForController(projectDir, directoryInfo))
+            foreach (var view in GetViewsForController(projectDir, directoryInfo, views))
             {
                 viewNames.Add(view.Key);
                 sourceBuilder.AppendProperty("public", "string", view.Key, "get", null, SourceCode.String(view.Value));
@@ -246,19 +251,36 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                     var subClassName = IdentifierParser.CreateIdentifierFromPath(subDir.Name, classNameSpan);
 
                     sourceBuilder.AppendProperty("public", $"{subClassName}Views", subClassName, "get", null, SourceCode.NewCtor);
-                    AddViewsClass(sourceBuilder, projectDir, subDir, subClassName, enumerateSubDirectories);
+                    AddViewsClass(sourceBuilder, projectDir, subDir, subClassName, enumerateSubDirectories, views);
                 }
             }
         }
     }
 
-    private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, DirectoryInfo directoryInfo)
+    private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, DirectoryInfo? directoryInfo, ImmutableArray<AdditionalText> views)
     {
-        var appRootPrefix = projectDir[projectDir.Length - 1] == Path.DirectorySeparatorChar ? "~/" : "~";
+        return directoryInfo is null
+            ? FromAdditionalTexts(projectDir, views)
+            : PathBased(projectDir, directoryInfo);
 
-        foreach (var file in directoryInfo.EnumerateFiles("*.cshtml").OrderBy(f => f.Name))
+        static IEnumerable<KeyValuePair<string, string>> FromAdditionalTexts(string projectDir, ImmutableArray<AdditionalText> views)
         {
-            yield return new KeyValuePair<string, string>(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, appRootPrefix).Replace("\\", "/"));
+            foreach (var view in views)
+            {
+                var viewPath = view.Path;
+                var relativePath = viewPath.Replace(projectDir, string.Empty);
+                yield return KeyValuePair.Create(Path.GetFileNameWithoutExtension(viewPath), relativePath.Replace("\\", "/"));
+            }
+        }
+
+        static IEnumerable<KeyValuePair<string, string>> PathBased(string projectDir, DirectoryInfo directoryInfo)
+        {
+            var appRootPrefix = projectDir[projectDir.Length - 1] == Path.DirectorySeparatorChar ? "~/" : "~";
+
+            foreach (var file in directoryInfo.EnumerateFiles("*.cshtml").OrderBy(f => f.Name))
+            {
+                yield return KeyValuePair.Create(Path.GetFileNameWithoutExtension(file.Name), file.FullName.Replace(projectDir, appRootPrefix).Replace("\\", "/"));
+            }
         }
     }
 

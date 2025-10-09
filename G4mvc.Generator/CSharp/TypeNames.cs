@@ -13,6 +13,7 @@ internal static class TypeNames
     public const string IActionResult = $"{Namespaces.MicrosoftAspNetCoreMvc}.IActionResult";
     public const string IConvertToActionResult = $"{Namespaces.MicrosoftAspNetCoreMvcInfrastructure}.IConvertToActionResult";
     public const string PageModel = $"{Namespaces.MicrosoftAspNetCoreMvcRazorPages}.PageModel";
+    public const string PageModelAttribute = $"{Namespaces.MicrosoftAspNetCoreMvcRazorPagesInfrastructure}.PageModelAttribute";
     public const string Task = $"{Namespaces.SystemThreadingTasks}.Task";
 
     public static class NonControllerAttribute
