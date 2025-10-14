@@ -27,7 +27,7 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
     protected override PageDeclarationContext Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => PageDeclarationContext.Create(context, cancellationToken);
 
-    protected override void Execute(SourceProductionContext context, ImmutableArray<PageDeclarationContext> pageContexts, Configuration configuration)
+    protected override void Execute(SourceProductionContext context, ImmutableArray<PageDeclarationContext> pageContexts, Configuration configuration, ImmutableArray<AdditionalText> views)
     {
 #if DEBUG
         _version++;
@@ -45,11 +45,10 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
 
-        foreach (var pageContextGroup in pageContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
+        foreach (var pageContextImplementations in pageContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()).Select(g => g.ToList()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            var pageContextImplementations = pageContextGroup.ToList();
             pageRouteClassGenerator.AddPageRouteClass(context, projectDir, pageRouteClassNames, pageContextImplementations);
         }
 

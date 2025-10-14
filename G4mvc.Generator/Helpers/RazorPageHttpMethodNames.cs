@@ -1,33 +1,29 @@
 ﻿namespace G4mvc.Generator.Helpers;
 internal class RazorPageHttpMethodNames
 {
-    private static readonly string[] _httpMethods =
+    private static readonly string[] _namePrefixes =
     [
-        "Connect",
-        "Delete",
-        "Get",
-        "Head",
-        "Options",
-        "Patch",
-        "Post",
-        "Put",
-        "Trace",
+        "OnConnect",
+        "OnDelete",
+        "OnGet",
+        "OnHead",
+        "OnOptions",
+        "OnPatch",
+        "OnPost",
+        "OnPut",
+        "OnTrace",
     ];
 
-    private static readonly HashSet<string> _names = ParseHttpMethodNames();
-
-    public static HashSet<string> NameSet => _names;
-
-    private static HashSet<string> ParseHttpMethodNames()
+    public static bool IsMatch(string methodName)
     {
-        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var method in _httpMethods)
+        foreach (var prefix in _namePrefixes)
         {
-            names.Add($"On{method}");
-            names.Add($"On{method}Async");
+            if (methodName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
         }
 
-        return names;
+        return false;
     }
 }

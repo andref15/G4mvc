@@ -1,11 +1,9 @@
 ﻿using G4mvc.Generator.Compilation;
-using System.Collections.Immutable;
 
 namespace G4mvc.Generator.SourceEmitters;
-internal class ControllerRouteClassGenerator(Configuration configuration, ImmutableArray<AdditionalText> views)
+internal class ControllerRouteClassGenerator(Configuration configuration)
 {
     private readonly Configuration _configuration = configuration;
-    private readonly ImmutableArray<AdditionalText> _views = views;
 
     internal void AddSharedControllers(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
     {
@@ -64,7 +62,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration, Immuta
 
             sourceBuilder.AppendLine();
 
-            var actionParameterGroups = AddActionMethodsAndGetParameterGroups(context, mainControllerContext, sourceBuilder, httpMethods);
+            var actionParameterGroups = AddActionMethodsAndGetParameterGroups(context, mainControllerContext, sourceBuilder, httpMethodGroups);
 
             using (sourceBuilder.BeginClass("public", $"{mainControllerContext.NameWithoutSuffix}ActionNames"))
             {
@@ -91,9 +89,11 @@ internal class ControllerRouteClassGenerator(Configuration configuration, Immuta
 
             sourceBuilder.AppendLine();
 
-            var viewsDirectory = GetViewsDirectoryForController(projectDir, mainControllerContext);
+            var viewsDirectory = _configuration.JsonConfig.UsePathBasedViewLookup
+                ? GetViewsDirectoryForController(projectDir, mainControllerContext)
+                : null;
 
-            AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.NameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews, ref _views);
+            AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.NameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
         }
 
         context.AddGeneratedSource(GetControllerRoutesFileName(mainControllerContext.Area, mainControllerContext.NameWithoutSuffix), sourceBuilder);
@@ -120,15 +120,13 @@ internal class ControllerRouteClassGenerator(Configuration configuration, Immuta
         context.AddGeneratedSource(GetControllerRoutesFileName(areaName, controllerNameWithoutSuffix), sourceBuilder);
     }
 
-    private static Dictionary<string, HashSet<string>> AddActionMethodsAndGetParameterGroups(SourceProductionContext context, ControllerDeclarationContext mainControllerContext, SourceBuilder sourceBuilder, List<MethodDeclarationContext> httpMethods)
+    private static Dictionary<string, HashSet<string>> AddActionMethodsAndGetParameterGroups(SourceProductionContext context, ControllerDeclarationContext mainControllerContext, SourceBuilder sourceBuilder, Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups)
     {
         var actionParameterGroups = new Dictionary<string, HashSet<string>>();
 
-        foreach (var httpMethodsGroup in httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")))
+        foreach (var (actionName, httpMethodsGroup) in httpMethodGroups)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
-
-            var actionName = httpMethodsGroup.Key;
 
             var methodsGroupParameterNames = new HashSet<string>();
             actionParameterGroups.Add(actionName, methodsGroupParameterNames);
@@ -214,11 +212,11 @@ internal class ControllerRouteClassGenerator(Configuration configuration, Immuta
         classNames.Add(controllerRouteClassName, controllerNameWithoutSuffix);
     }
 
-    private static void AddViewsClass(SourceBuilder sourceBuilder, string projectDir, DirectoryInfo? directoryInfo, string className, bool enumerateSubDirectories, ref readonly ImmutableArray<AdditionalText> views)
+    private void AddViewsClass(SourceBuilder sourceBuilder, string projectDir, DirectoryInfo directoryInfo, string className, bool enumerateSubDirectories)
     {
         using (sourceBuilder.BeginClass("public", $"{className}Views"))
         {
-            if (!directoryInfo.Exists)
+            if (directoryInfo is { Exists: true })
             {
                 return;
             }
@@ -226,7 +224,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration, Immuta
             sourceBuilder.AppendProperty("public", $"{className}ViewNames", "ViewNames", "get", null, SourceCode.NewCtor);
 
             List<string> viewNames = [];
-            foreach (var view in GetViewsForController(projectDir, directoryInfo, views))
+            foreach (var view in GetViewsForController(projectDir, directoryInfo))
             {
                 viewNames.Add(view.Key);
                 sourceBuilder.AppendProperty("public", "string", view.Key, "get", null, SourceCode.String(view.Value));
@@ -251,27 +249,15 @@ internal class ControllerRouteClassGenerator(Configuration configuration, Immuta
                     var subClassName = IdentifierParser.CreateIdentifierFromPath(subDir.Name, classNameSpan);
 
                     sourceBuilder.AppendProperty("public", $"{subClassName}Views", subClassName, "get", null, SourceCode.NewCtor);
-                    AddViewsClass(sourceBuilder, projectDir, subDir, subClassName, enumerateSubDirectories, views);
+                    AddViewsClass(sourceBuilder, projectDir, subDir, subClassName, enumerateSubDirectories);
                 }
             }
         }
     }
 
-    private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, DirectoryInfo? directoryInfo, ImmutableArray<AdditionalText> views)
+    private static IEnumerable<KeyValuePair<string, string>> GetViewsForController(string projectDir, DirectoryInfo directoryInfo)
     {
-        return directoryInfo is null
-            ? FromAdditionalTexts(projectDir, views)
-            : PathBased(projectDir, directoryInfo);
-
-        static IEnumerable<KeyValuePair<string, string>> FromAdditionalTexts(string projectDir, ImmutableArray<AdditionalText> views)
-        {
-            foreach (var view in views)
-            {
-                var viewPath = view.Path;
-                var relativePath = viewPath.Replace(projectDir, string.Empty);
-                yield return KeyValuePair.Create(Path.GetFileNameWithoutExtension(viewPath), relativePath.Replace("\\", "/"));
-            }
-        }
+        return PathBased(projectDir, directoryInfo);
 
         static IEnumerable<KeyValuePair<string, string>> PathBased(string projectDir, DirectoryInfo directoryInfo)
         {

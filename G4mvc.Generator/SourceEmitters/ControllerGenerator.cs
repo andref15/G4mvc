@@ -40,18 +40,23 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
 
         var controllerRouteClassNames = new Dictionary<string, Dictionary<string, string>>();
 
-        var controllerRouteClassGenerator = new ControllerRouteClassGenerator(configuration, views);
+        var controllerRouteClassGenerator = new ControllerRouteClassGenerator(configuration);
 
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
-        foreach (var controllerContextGroup in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()))
+        foreach (var controllerContextImplementations in controllerContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()).Select(g => g.ToList()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-            var controllerContextImplementations = controllerContextGroup.ToList();
+            var firstContext = controllerContextImplementations[0];
+
+            if (firstContext.TypeSymbol.GetAttributes(true).Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonControllerAttribute.FullName))
+            {
+                continue;
+            }
+
             controllerRouteClassGenerator.AddControllerRouteClass(context, projectDir, controllerRouteClassNames, controllerContextImplementations);
 
-            var firstContext = controllerContextImplementations[0];
             if (firstContext.DeclarationNode.Modifiers.Any(SyntaxKind.PartialKeyword))
             {
                 ControllerPartialClassGenerator.AddControllerPartialClass(context, firstContext, configuration);
