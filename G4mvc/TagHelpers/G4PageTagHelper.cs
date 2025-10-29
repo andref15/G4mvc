@@ -38,7 +38,7 @@ public class G4PageTagHelper(IUrlHelperFactory urlHelperFactory) : TagHelper
 
                 if (!context.AllAttributes.TryGetAttribute("method", out var attribute) || string.IsNullOrEmpty(attribute.Value?.ToString()))
                 {
-                    output.Attributes.SetAttribute("method", "POST");
+                    output.Attributes.SetAttribute("method", Page.Method);
                 }
 
                 break;

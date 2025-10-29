@@ -26,7 +26,10 @@ internal class PageRouteClassGenerator(Configuration configuration)
 
         var httpMethods = pageContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<MethodDeclarationSyntax>()
                 .Select(md => new MethodDeclarationContext(md, c.Model, _configuration.GlobalNullable)))
-            .Where(static mc => mc.MethodSymbol.DeclaredAccessibility is Accessibility.Public && RazorPageHttpMethodNames.IsMatch(mc.MethodSymbol.Name) && mc.MethodSymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonHandlerAttribute.FullName)).ToList();
+            .Where(static mc => mc.MethodSymbol.DeclaredAccessibility is Accessibility.Public && RazorPageHttpMethodNames.IsMatch(mc.MethodSymbol.Name) && !mc.MethodSymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonHandlerAttribute.FullName)).ToList();
+        var bindModelProperties = pageContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<PropertyDeclarationSyntax>()
+                .Select(pd => new PropertyDeclarationContext(pd, c.Model, _configuration.GlobalNullable)))
+            .Where(static pc => pc.PropertySymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.BindPropertyAttribute.FullName)).ToList();
 
         var mainPageContext = pageContexts[0];
 
@@ -39,7 +42,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
 
         AddClassNameToDictionary(pageRouteClassNames, mainPageContext.Area, mainPageContext.NameWithoutSuffix, pageRouteClassName);
 
-        using (sourceBuilder.BeginNamespace(_configuration.GetAreaRoutesNamespace(mainPageContext.Area), true))
+        using (sourceBuilder.BeginNamespace(_configuration.GetPagesNamespace(mainPageContext.Area), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, pageRouteClassName))
         {
             if (mainPageContext.Area is not null)
@@ -52,7 +55,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}HttpMethods", "HttpMethods", "get", null, SourceCode.String(mainPageContext.Area))
                 .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}View", "View", "get", null, SourceCode.NewCtor);
 
-            var httpMethodGroups = httpMethods.GroupBy(static hm => hm.Syntax.Identifier.Text.RemoveEnd("Async")).ToDictionary(g => g.Key, g => g.AsEnumerable());
+            var httpMethodGroups = httpMethods.GroupBy(static hm => hm.Syntax.Identifier.Text.Remove("On", "Async", StringComparison.OrdinalIgnoreCase)).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
             foreach (var actionName in httpMethodGroups.Keys)
             {
@@ -61,7 +64,43 @@ internal class PageRouteClassGenerator(Configuration configuration)
 
             sourceBuilder.AppendLine();
 
-            var methodParameterGroups = AddHttpMethodsAndGetParameterGroups(context, mainPageContext, sourceBuilder, httpMethods);
+            var methodParameterGroups = AddHttpMethodsAndGetParameterGroups(context, mainPageContext, sourceBuilder, httpMethodGroups, bindModelProperties);
+
+            using (sourceBuilder.BeginClass("public", $"{mainPageContext.NameWithoutSuffix}MethodNames"))
+            {
+                foreach (var actionName in httpMethodGroups.Keys)
+                {
+                    context.CancellationToken.ThrowIfCancellationRequested();
+
+                    sourceBuilder.AppendProperty("public", "string", actionName, "get", null, SourceCode.Nameof(actionName));
+                }
+            }
+
+            foreach (var methodParameters in methodParameterGroups)
+            {
+                sourceBuilder.AppendLine();
+
+                using (sourceBuilder.BeginClass("public", $"{methodParameters.Key}ParamsClass"))
+                {
+                    foreach (var paramName in methodParameters.Value)
+                    {
+                        sourceBuilder.AppendProperty("public", "string", paramName, $"get", null, SourceCode.Nameof(paramName));
+                    }
+                }
+            }
+
+            var viewFile = new FileInfo(mainPageContext.DeclarationNode.SyntaxTree.FilePath.RemoveEnd(".cs", StringComparison.Ordinal));
+
+            if (viewFile.Exists)
+            {
+                using (sourceBuilder.BeginClass("public", $"{mainPageContext.NameWithoutSuffix}View"))
+                {
+                    var appRootPrefix = projectDir[projectDir.Length - 1] == Path.DirectorySeparatorChar ? "~/" : "~";
+
+                    sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(viewFile.Name));
+                    sourceBuilder.AppendProperty("public", "string", "AppPath", "get", null, SourceCode.String(viewFile.FullName.Replace(projectDir, appRootPrefix).Replace("\\", "/")));
+                }
+            }
         }
 
         context.AddGeneratedSource(GetPageRoutesFileName(mainPageContext.Area, mainPageContext.NameWithoutSuffix), sourceBuilder);
@@ -70,21 +109,21 @@ internal class PageRouteClassGenerator(Configuration configuration)
     private static string? GetDefaultValue(ParameterSyntax syntax)
         => syntax.Default is null ? null : $" {syntax.Default}";
 
-    private static Dictionary<string, HashSet<string>> AddHttpMethodsAndGetParameterGroups(SourceProductionContext context, PageDeclarationContext mainPageContext, SourceBuilder sourceBuilder, Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups)
+    private static Dictionary<string, HashSet<string>> AddHttpMethodsAndGetParameterGroups(SourceProductionContext context, PageDeclarationContext mainPageContext, SourceBuilder sourceBuilder, Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups, List<PropertyDeclarationContext> bindModelProperties)
     {
         var methodParameterGroups = new Dictionary<string, HashSet<string>>();
 
-        foreach (var (methodName, httpMethodsGroup) in httpMethodGroups)
+        foreach (var (handlerHethodName, httpMethodsGroup) in httpMethodGroups)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
 
-
             var methodsGroupParameterNames = new HashSet<string>();
-            methodParameterGroups.Add(methodName, methodsGroupParameterNames);
+            methodParameterGroups.Add(handlerHethodName, methodsGroupParameterNames);
 
-            using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), methodName))
+            var (method, handlerName) = RazorPageHttpMethodNames.ParseMethodAndHandlerName(handlerHethodName);
+            using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), handlerHethodName))
             {
-                sourceBuilder.AppendReturnCtor(nameof(G4mvcPageRouteValues), SourceCode.String(mainPageContext.Area), SourceCode.String(mainPageContext.NameWithoutSuffix), SourceCode.String(methodName));
+                sourceBuilder.AppendReturnCtor(nameof(G4mvcPageRouteValues), SourceCode.String(mainPageContext.Area), SourceCode.String(mainPageContext.NameWithoutSuffix), SourceCode.String(handlerName), SourceCode.String(method));
             }
 
             sourceBuilder.AppendLine();
@@ -94,6 +133,15 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 context.CancellationToken.ThrowIfCancellationRequested();
 
                 var relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, httpMethodContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
+
+                foreach (var bindModelProperty in bindModelProperties)
+                {
+                    bindModelProperty.PropertySymbol.GetAttributes().Any(a => a.NamedArguments.FirstOrDefault(arg => arg.Key == "SupportsGet").Value.Value)
+                if (method.Equals(RazorPageHttpMethodNames.Get, StringComparison.OrdinalIgnoreCase))
+                    {
+                        bindModelProperty.
+                }
+                }
 
                 if (relevantParameters.Count is 0)
                 {
@@ -113,9 +161,9 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 }
 
                 using (nullableBlock)
-                using (sourceBuilder.BeginMethod("public", nameof(G4mvcActionRouteValues), methodName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
+                using (sourceBuilder.BeginMethod("public", nameof(G4mvcActionRouteValues), handlerHethodName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
                 {
-                    sourceBuilder.AppendLine($"var route = {methodName}()").AppendLine();
+                    sourceBuilder.AppendLine($"var route = {handlerHethodName}()").AppendLine();
 
                     foreach (var parameter in relevantParameters)
                     {
@@ -145,8 +193,8 @@ internal class PageRouteClassGenerator(Configuration configuration)
         classNames.Add(pageRouteClassName, pageNameWithoutSuffix);
     }
 
-    private static string GetPageRoutesFileName(string? area, string controllerNameWithoutSuffix)
+    private static string GetPageRoutesFileName(string? area, string pageNameWithoutSuffix)
     => string.IsNullOrEmpty(area)
-        ? $"{controllerNameWithoutSuffix}Routes"
-        : $"{area}.{controllerNameWithoutSuffix}Routes";
+        ? $"{pageNameWithoutSuffix}Routes"
+        : $"{area}.{pageNameWithoutSuffix}Routes";
 }

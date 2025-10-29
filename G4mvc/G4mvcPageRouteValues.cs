@@ -15,15 +15,18 @@ public class G4mvcPageRouteValues
 {
     private const string _areaKey = "area";
     private const string _pageKey = "page";
+    private const string _handlerKey = "handler";
 
     public string? Area { get => (string?)this[_areaKey]; set => this[_areaKey] = value; }
     public string Page { get => (string)this[_pageKey]!; set => this[_pageKey] = value; }
+    public string? Handler { get => (string?)this[_handlerKey]; set => this[_handlerKey] = value; }
     public string Method { get; set; }
 
-    public G4mvcPageRouteValues(string? area, string page, string method)
+    public G4mvcPageRouteValues(string? area, string page, string? handler, string method)
     {
         Area = area;
         Page = page;
+        Handler = handler;
         Method = method;
     }
 

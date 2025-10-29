@@ -22,12 +22,12 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
     }
 
     protected override bool DeclatationPredicate(PageDeclarationContext classContext)
-        => !classContext.TypeSymbol.IsAbstract && classContext.TypeSymbol.GetAttributes().Any(static a => a.AttributeClass!.ToDisplayString() == TypeNames.PageModelAttribute) && classContext.TypeSymbol.DerrivesFromType(TypeNames.PageModel);
+        => !classContext.TypeSymbol.IsAbstract && classContext.TypeSymbol.GetAttributes(true).Any(static a => a.AttributeClass!.ToDisplayString() == TypeNames.PageModelAttribute) && classContext.TypeSymbol.DerrivesFromType(TypeNames.PageModel);
 
     protected override PageDeclarationContext Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => PageDeclarationContext.Create(context, cancellationToken);
 
-    protected override void Execute(SourceProductionContext context, ImmutableArray<PageDeclarationContext> pageContexts, Configuration configuration, ImmutableArray<AdditionalText> views)
+    protected override void Execute(SourceProductionContext context, ImmutableArray<PageDeclarationContext> pageContexts, Configuration configuration)
     {
 #if DEBUG
         _version++;

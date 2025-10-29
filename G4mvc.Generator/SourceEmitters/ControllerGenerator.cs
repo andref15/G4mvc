@@ -27,7 +27,7 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
     protected override ControllerDeclarationContext Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => ControllerDeclarationContext.Create(context, cancellationToken);
 
-    protected override void Execute(SourceProductionContext context, ImmutableArray<ControllerDeclarationContext> controllerContexts, Configuration configuration, ImmutableArray<AdditionalText> views)
+    protected override void Execute(SourceProductionContext context, ImmutableArray<ControllerDeclarationContext> controllerContexts, Configuration configuration)
     {
 #if DEBUG
         _version++;

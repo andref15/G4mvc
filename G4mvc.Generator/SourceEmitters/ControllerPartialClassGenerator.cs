@@ -21,7 +21,7 @@ internal static class ControllerPartialClassGenerator
         using (sourceBuilder.BeginNamespace(controllerContext.TypeSymbol.ContainingNamespace.ToDisplayString(), true))
         using (sourceBuilder.BeginClass(controllerContext.DeclarationNode.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
         {
-            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"global::{configuration.GetAreaRoutesNamespace(controllerContext.Area)}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.MvcHelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
+            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"global::{configuration.GetMvcNamespace(controllerContext.Area)}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.MvcHelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
             sourceBuilder.AppendLine();
 
             using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToAction", $"{nameof(G4mvcActionRouteValues)} route"))

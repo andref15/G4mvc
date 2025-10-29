@@ -20,7 +20,7 @@ internal static class RouteHelperClassGenerator
             sourceBuilder.Using(configuration.GetAreasNamespace());
         }
 
-        sourceBuilder.Using(configuration.GetAreaRoutesNamespace(null));
+        sourceBuilder.Using(configuration.GetMvcNamespace(null));
 
         var namespaceDisposable = (IDisposable?)null;
 

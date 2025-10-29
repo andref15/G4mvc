@@ -12,10 +12,7 @@ public static class UrlHelperExtensions
         => urlHelper.RouteUrl(null, route, protocol, hostName, fragment);
 
     public static string ActionAbsolute(this IUrlHelper urlHelper, G4mvcActionRouteValues route)
-    {
-        var request = urlHelper.ActionContext.HttpContext.Request;
-        return $"{request.Scheme}://{request.Host}{urlHelper.RouteUrl(route)}";
-    }
+        => GetAbsoluteUrl(urlHelper, route);
 
     public static string? RouteUrl(this IUrlHelper urlHelper, G4mvcActionRouteValues route)
         => urlHelper.RouteUrl(null, route, null, null);
@@ -25,6 +22,20 @@ public static class UrlHelperExtensions
 
     public static string? Content(this IUrlHelper urlHelper, G4mvcContentLink contentLink)
         => contentLink.ToContentUrl(urlHelper);
-}
 
+    public static string? Page(this IUrlHelper urlHelper, G4mvcPageRouteValues route)
+        => urlHelper.RouteUrl(route);
+
+    public static string? Page(this IUrlHelper urlHelper, G4mvcPageRouteValues route, string? protocol = null, string? hostName = null, string? fragment = null)
+        => urlHelper.RouteUrl(null, route, protocol, hostName, fragment);
+
+    public static string PageAbsolute(this IUrlHelper urlHelper, G4mvcPageRouteValues route)
+        => GetAbsoluteUrl(urlHelper, route);
+
+    private static string GetAbsoluteUrl(IUrlHelper urlHelper, RouteValueDictionary route)
+    {
+        var request = urlHelper.ActionContext.HttpContext.Request;
+        return $"{request.Scheme}://{request.Host}{urlHelper.RouteUrl(route)}";
+    }
+}
 #endif

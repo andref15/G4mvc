@@ -40,7 +40,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         var controllerRouteClassName = $"{mainControllerContext.NameWithoutSuffix}Routes";
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.Area, mainControllerContext.NameWithoutSuffix, controllerRouteClassName);
 
-        using (sourceBuilder.BeginNamespace(_configuration.GetAreaRoutesNamespace(mainControllerContext.Area), true))
+        using (sourceBuilder.BeginNamespace(_configuration.GetMvcNamespace(mainControllerContext.Area), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, controllerRouteClassName))
         {
             if (mainControllerContext.Area is not null)
@@ -53,7 +53,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                 .AppendProperty("public", $"{mainControllerContext.NameWithoutSuffix}ActionNames", "ActionNames", "get", null, SourceCode.NewCtor)
                 .AppendProperty("public", $"{mainControllerContext.NameWithoutSuffix}Views", "Views", "get", null, SourceCode.NewCtor);
 
-            var httpMethodGroups = httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async")).ToDictionary(g => g.Key, g => g.AsEnumerable());
+            var httpMethodGroups = httpMethods.GroupBy(md => md.Syntax.Identifier.Text.RemoveEnd("Async", StringComparison.OrdinalIgnoreCase)).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
             foreach (var actionName in httpMethodGroups.Keys)
             {
@@ -89,9 +89,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
             sourceBuilder.AppendLine();
 
-            var viewsDirectory = _configuration.JsonConfig.UsePathBasedViewLookup
-                ? GetViewsDirectoryForController(projectDir, mainControllerContext)
-                : null;
+            var viewsDirectory = GetViewsDirectoryForController(projectDir, mainControllerContext);
 
             AddViewsClass(sourceBuilder, projectDir, viewsDirectory, mainControllerContext.NameWithoutSuffix, _configuration.JsonConfig.EnableSubfoldersInViews);
         }
@@ -105,7 +103,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
         sourceBuilder.Nullable(_configuration.GlobalNullable);
 
-        using (sourceBuilder.BeginNamespace(_configuration.GetAreaRoutesNamespace(areaName), true))
+        using (sourceBuilder.BeginNamespace(_configuration.GetMvcNamespace(areaName), true))
         using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, $"{controllerNameWithoutSuffix}Routes"))
         {
             var directory = new DirectoryInfo(Path.Combine(projectDir, areaName.IfNotNullNullOrEmpty("Areas"), areaName, "Views", controllerNameWithoutSuffix));
@@ -216,7 +214,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
     {
         using (sourceBuilder.BeginClass("public", $"{className}Views"))
         {
-            if (directoryInfo is { Exists: true })
+            if (!directoryInfo.Exists)
             {
                 return;
             }

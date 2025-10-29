@@ -36,4 +36,11 @@ internal static class TypeNames
         public const string ShortName = "NonHandler";
         public const string FullName = $"{Namespaces.MicrosoftAspNetCoreMvcRazorPages}.{Name}";
     }
+
+    public static class BindPropertyAttribute
+    {
+        public const string Name = "BindPropertyAttribute";
+        public const string ShortName = "BindProperty";
+        public const string FullName = $"{Namespaces.MicrosoftAspNetCoreMvc}.{Name}";
+    }
 }

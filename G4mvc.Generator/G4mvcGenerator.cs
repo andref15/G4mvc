@@ -24,11 +24,8 @@ public class G4mvcGenerator : IIncrementalGenerator
                 .Combine(configFile)
                 .Select(static (tup, ct) => Configuration.CreateConfig((CSharpCompilation)tup.Left.Right, tup.Right, tup.Left.Left));
 
-        var views = context.AdditionalTextsProvider
-            .Where(static f => Path.GetExtension(f.Path).Equals(".cshtml", StringComparison.OrdinalIgnoreCase));
-
         _linksGenerator.Initialize(context, configuration);
-        _controllerGenerator.Initialize(context, configuration, context.SyntaxProvider, views);
-        _pagesGenerator.Initialize(context, configuration, context.SyntaxProvider, views);
+        _controllerGenerator.Initialize(context, configuration, context.SyntaxProvider);
+        _pagesGenerator.Initialize(context, configuration, context.SyntaxProvider);
     }
 }
