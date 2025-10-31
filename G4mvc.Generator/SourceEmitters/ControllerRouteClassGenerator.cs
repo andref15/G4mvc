@@ -33,6 +33,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         var mainControllerContext = controllerContexts[0];
 
         sourceBuilder
+            .Using(nameof(G4mvc))
             .AppendLine()
             .Nullable(mainControllerContext.NullableEnabled);
 

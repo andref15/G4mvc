@@ -19,6 +19,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
         var mainPageContext = pageContexts[0];
 
         sourceBuilder
+            .Using(nameof(G4mvc))
             .AppendLine()
             .Nullable(mainPageContext.NullableEnabled);
 
