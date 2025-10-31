@@ -8,14 +8,22 @@ internal static class RouteHelperClassGenerator
         , int version
 #endif
         )
-        => AddRouteHelperClass(context, helperClassName, configuration.GetMvcNamespace(null), routeClassNames, configuration, version);
+        => AddRouteHelperClass(context, helperClassName, configuration.GetMvcNamespace(null), routeClassNames, configuration
+#if DEBUG
+            , version
+#endif
+            );
 
     public static void AddPageHelperClass(SourceProductionContext context, string helperClassName, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
 #if DEBUG
         , int version
 #endif
         )
-        => AddRouteHelperClass(context, helperClassName, configuration.GetPagesNamespace(null), routeClassNames, configuration, version);
+        => AddRouteHelperClass(context, helperClassName, configuration.GetPagesNamespace(null), routeClassNames, configuration
+#if DEBUG
+            , version
+#endif
+            );
 
     private static void AddRouteHelperClass(SourceProductionContext context, string helperClassName, string helpersNamespace, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
 #if DEBUG
