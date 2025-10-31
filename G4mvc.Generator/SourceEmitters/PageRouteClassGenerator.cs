@@ -5,21 +5,6 @@ internal class PageRouteClassGenerator(Configuration configuration)
 {
     private readonly Configuration _configuration = configuration;
 
-    public void AddSharedPages(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> controllerRouteClassNames)
-    {
-        const string sharedControllerName = "Shared";
-
-        foreach (var (areaName, controllerRouteClasses) in controllerRouteClassNames)
-        {
-            if (controllerRouteClasses.ContainsKey($"{sharedControllerName}Routes"))
-            {
-                continue;
-            }
-
-            // TODO
-        }
-    }
-
     public void AddPageRouteClass(SourceProductionContext context, string projectDir, Dictionary<string, Dictionary<string, string>> pageRouteClassNames, List<PageDeclarationContext> pageContexts)
     {
         var sourceBuilder = _configuration.CreateSourceBuilder();
@@ -28,13 +13,12 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 .Select(md => new MethodDeclarationContext(md, c.Model, _configuration.GlobalNullable)))
             .Where(static mc => mc.MethodSymbol.DeclaredAccessibility is Accessibility.Public && RazorPageHttpMethodNames.IsMatch(mc.MethodSymbol.Name) && !mc.MethodSymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonHandlerAttribute.FullName)).ToList();
         var bindModelProperties = pageContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<PropertyDeclarationSyntax>()
-                .Select(pd => new PropertyDeclarationContext(pd, c.Model, _configuration.GlobalNullable)))
-            .Where(static pc => pc.PropertySymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.BindPropertyAttribute.FullName)).ToList();
+                .Select(pd => (Pd: pd, Symbol: c.Model.GetDeclaredSymbol(pd)!)).Where(static pds => pds.Symbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.BindPropertyAttribute.FullName))
+            .Select(pds => new ModelBindingPropertyDeclarationContext(pds.Pd, c.Model, pds.Symbol, _configuration.GlobalNullable))).ToList();
 
         var mainPageContext = pageContexts[0];
 
         sourceBuilder
-            .Using(nameof(G4mvc))
             .AppendLine()
             .Nullable(mainPageContext.NullableEnabled);
 
@@ -51,8 +35,8 @@ internal class PageRouteClassGenerator(Configuration configuration)
             }
 
             sourceBuilder
-                .AppendProperty("public", "string", "Name", "get", null, SourceCode.String(mainPageContext.Area))
-                .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}HttpMethods", "HttpMethods", "get", null, SourceCode.String(mainPageContext.Area))
+                .AppendProperty("public", "string", "Name", "get", null, SourceCode.String(mainPageContext.NameWithoutSuffix))
+                .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}MethodNames", "HttpMethods", "get", null, SourceCode.NewCtor)
                 .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}View", "View", "get", null, SourceCode.NewCtor);
 
             var httpMethodGroups = httpMethods.GroupBy(static hm => hm.Syntax.Identifier.Text.Remove("On", "Async", StringComparison.OrdinalIgnoreCase)).ToDictionary(g => g.Key, g => g.AsEnumerable());
@@ -76,13 +60,13 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 }
             }
 
-            foreach (var methodParameters in methodParameterGroups)
+            foreach (var (methodName, paramNames) in methodParameterGroups)
             {
                 sourceBuilder.AppendLine();
 
-                using (sourceBuilder.BeginClass("public", $"{methodParameters.Key}ParamsClass"))
+                using (sourceBuilder.BeginClass("public", $"{methodName}ParamsClass"))
                 {
-                    foreach (var paramName in methodParameters.Value)
+                    foreach (var paramName in paramNames)
                     {
                         sourceBuilder.AppendProperty("public", "string", paramName, $"get", null, SourceCode.Nameof(paramName));
                     }
@@ -97,7 +81,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 {
                     var appRootPrefix = projectDir[projectDir.Length - 1] == Path.DirectorySeparatorChar ? "~/" : "~";
 
-                    sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(viewFile.Name));
+                    sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(Path.GetFileNameWithoutExtension(viewFile.Name)));
                     sourceBuilder.AppendProperty("public", "string", "AppPath", "get", null, SourceCode.String(viewFile.FullName.Replace(projectDir, appRootPrefix).Replace("\\", "/")));
                 }
             }
@@ -109,9 +93,24 @@ internal class PageRouteClassGenerator(Configuration configuration)
     private static string? GetDefaultValue(ParameterSyntax syntax)
         => syntax.Default is null ? null : $" {syntax.Default}";
 
-    private static Dictionary<string, HashSet<string>> AddHttpMethodsAndGetParameterGroups(SourceProductionContext context, PageDeclarationContext mainPageContext, SourceBuilder sourceBuilder, Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups, List<PropertyDeclarationContext> bindModelProperties)
+    private static Dictionary<string, HashSet<string>> AddHttpMethodsAndGetParameterGroups(SourceProductionContext context, PageDeclarationContext mainPageContext, SourceBuilder sourceBuilder, Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups, List<ModelBindingPropertyDeclarationContext> bindModelProperties)
     {
         var methodParameterGroups = new Dictionary<string, HashSet<string>>();
+
+        var bindModelPropertyParameters = new List<(string Type, string Name, string? DefaultAssignment)>();
+        var bindModelPropertyParametersSupportGet = new List<(string Type, string Name, string? DefaultAssignment)>();
+        foreach (var bindModelProperty in bindModelProperties)
+        {
+            var type = $"global::{bindModelProperty.PropertySymbol.Type.ToDisplayString()}";
+            var name = bindModelProperty.PropertySymbol.Name.FirstCharLower();
+
+            if ((bool?)bindModelProperty.BindPropertyAttribute.NamedArguments.FirstOrDefault(arg => arg.Key == TypeNames.BindPropertyAttribute.NamedArguments.SupportsGet).Value.Value ?? false)
+            {
+                bindModelPropertyParametersSupportGet.Add((type, name, null));
+            }
+
+            bindModelPropertyParameters.Add((type, name, null));
+        }
 
         foreach (var (handlerHethodName, httpMethodsGroup) in httpMethodGroups)
         {
@@ -132,23 +131,28 @@ internal class PageRouteClassGenerator(Configuration configuration)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
-                var relevantParameters = httpMethodContext.Syntax.ParameterList.Parameters.Select(p => new ParameterContext(p, httpMethodContext.Model.GetDeclaredSymbol(p)!)).Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken).ToList();
+                var relevantParameterEnumerable = httpMethodContext.Syntax.ParameterList.Parameters
+                    .Select(p => new ParameterContext(p, httpMethodContext.Model.GetDeclaredSymbol(p)!))
+                    .Where(p => p.Symbol.Type.ToDisplayString() != TypeNames.CancellationToken)
+                    .Select(p => (Type: p.Symbol.Type.ToDisplayString(), p.Symbol.Name, DefaultAssignment: GetDefaultValue(p.Syntax)));
 
-                foreach (var bindModelProperty in bindModelProperties)
+                if (method == RazorPageHttpMethodNames.Get)
                 {
-                    bindModelProperty.PropertySymbol.GetAttributes().Any(a => a.NamedArguments.FirstOrDefault(arg => arg.Key == "SupportsGet").Value.Value)
-                if (method.Equals(RazorPageHttpMethodNames.Get, StringComparison.OrdinalIgnoreCase))
-                    {
-                        bindModelProperty.
+                    relevantParameterEnumerable = relevantParameterEnumerable.Union(bindModelPropertyParametersSupportGet);
                 }
+                else
+                {
+                    relevantParameterEnumerable = relevantParameterEnumerable.Union(bindModelPropertyParameters);
                 }
+
+                var relevantParameters = relevantParameterEnumerable.OrderBy(p => p.DefaultAssignment is not null).ToList();
 
                 if (relevantParameters.Count is 0)
                 {
                     continue;
                 }
 
-                foreach (var paramName in relevantParameters.Select(p => p.Symbol.Name))
+                foreach (var paramName in relevantParameters.Select(p => p.Name))
                 {
                     methodsGroupParameterNames.Add(paramName);
                 }
@@ -161,7 +165,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 }
 
                 using (nullableBlock)
-                using (sourceBuilder.BeginMethod("public", nameof(G4mvcActionRouteValues), handlerHethodName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
+                using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), handlerHethodName, string.Join(", ", relevantParameters.Select(p => $"{p.Type} {p.Name}{p.DefaultAssignment}"))))
                 {
                     sourceBuilder.AppendLine($"var route = {handlerHethodName}()").AppendLine();
 
@@ -169,7 +173,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
                     {
                         context.CancellationToken.ThrowIfCancellationRequested();
 
-                        sourceBuilder.AppendLine($"route[{SourceCode.String(parameter.Symbol.Name)}] = {parameter.Symbol.Name}");
+                        sourceBuilder.AppendLine($"route[{SourceCode.String(parameter.Name)}] = {parameter.Name}");
                     }
 
                     sourceBuilder.AppendLine().AppendLine("return route");

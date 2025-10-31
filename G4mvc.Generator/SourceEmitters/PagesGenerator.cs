@@ -44,7 +44,6 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
 
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
-
         foreach (var pageContextImplementations in pageContexts.GroupBy(static cc => cc.TypeSymbol.ToDisplayString()).Select(g => g.ToList()))
         {
             context.CancellationToken.ThrowIfCancellationRequested();
@@ -52,11 +51,9 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
             pageRouteClassGenerator.AddPageRouteClass(context, projectDir, pageRouteClassNames, pageContextImplementations);
         }
 
-        pageRouteClassGenerator.AddSharedPages(context, projectDir, pageRouteClassNames);
-
         AreaClassesGenerator.AddAreaClasses(context, pageRouteClassNames, configuration);
 
-        RouteHelperClassGenerator.AddRouteClassClass(context, configuration.JsonConfig.PageHelperClassName, pageRouteClassNames, configuration
+        RouteHelperClassGenerator.AddPageHelperClass(context, configuration.JsonConfig.PageHelperClassName, pageRouteClassNames, configuration
 
 #if DEBUG
         , _version

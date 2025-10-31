@@ -67,7 +67,7 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
 
         AreaClassesGenerator.AddAreaClasses(context, controllerRouteClassNames, configuration);
 
-        RouteHelperClassGenerator.AddRouteClassClass(context, configuration.JsonConfig.MvcHelperClassName, controllerRouteClassNames, configuration
+        RouteHelperClassGenerator.AddMvcHelperClass(context, configuration.JsonConfig.MvcHelperClassName, controllerRouteClassNames, configuration
 #if DEBUG
         , _version
 #endif

@@ -3,7 +3,21 @@
 namespace G4mvc.Generator.SourceEmitters;
 internal static class RouteHelperClassGenerator
 {
-    public static void AddRouteClassClass(SourceProductionContext context, string helperClassName, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
+    public static void AddMvcHelperClass(SourceProductionContext context, string helperClassName, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
+#if DEBUG
+        , int version
+#endif
+        )
+        => AddRouteHelperClass(context, helperClassName, configuration.GetMvcNamespace(null), routeClassNames, configuration, version);
+
+    public static void AddPageHelperClass(SourceProductionContext context, string helperClassName, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
+#if DEBUG
+        , int version
+#endif
+        )
+        => AddRouteHelperClass(context, helperClassName, configuration.GetPagesNamespace(null), routeClassNames, configuration, version);
+
+    private static void AddRouteHelperClass(SourceProductionContext context, string helperClassName, string helpersNamespace, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
 #if DEBUG
         , int version
 #endif
@@ -20,7 +34,7 @@ internal static class RouteHelperClassGenerator
             sourceBuilder.Using(configuration.GetAreasNamespace());
         }
 
-        sourceBuilder.Using(configuration.GetMvcNamespace(null));
+        sourceBuilder.Using(helpersNamespace);
 
         var namespaceDisposable = (IDisposable?)null;
 
@@ -31,6 +45,7 @@ internal static class RouteHelperClassGenerator
 
         sourceBuilder.Nullable(configuration.GlobalNullable);
 
+        using (namespaceDisposable)
         using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, helperClassName))
         {
 #if DEBUG
@@ -51,8 +66,6 @@ internal static class RouteHelperClassGenerator
         }
 
         context.CancellationToken.ThrowIfCancellationRequested();
-
-        namespaceDisposable?.Dispose();
 
         context.AddGeneratedSource(helperClassName, sourceBuilder);
     }

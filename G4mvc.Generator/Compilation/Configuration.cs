@@ -15,7 +15,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
     public const string FileName = "g4mvc.json";
     public const string MvcNameSpace = $"{nameof(G4mvc)}.Mvc";
-    public const string PagesNameSpace = $"{nameof(G4mvc)}.Pages";
+    public const string PagesNameSpace = $"{nameof(G4mvc)}.RazorPages";
     public const string AreasNameSpace = $"{nameof(G4mvc)}.Areas";
     public const string VppClassName = "VirtualPathProcessor";
     public const string VppMethodName = "Process";
@@ -131,7 +131,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     {
 
         private const string _defaultMvcHelperClassName = "MVC";
-        private const string _defaultPageHelperClassName = "Pages";
+        private const string _defaultPageHelperClassName = "RazorPages";
         private const string _defaultLinksHelperClassName = "Links";
         private const string _defaultStaticFilesPath = "wwwroot";
         private const string _defaultGeneratedClassNamespace = "global";

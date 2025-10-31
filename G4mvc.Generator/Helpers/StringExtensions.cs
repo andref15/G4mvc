@@ -31,4 +31,18 @@ internal static class StringExtensions
 
     internal static string IfNotNullNullOrEmpty(this string? @string, string @if, string @else)
         => !string.IsNullOrEmpty(@string) ? @if : @else;
+
+    internal static string FirstCharLower(this string @string)
+    {
+        Span<char> span = stackalloc char[@string.Length];
+
+        span[0] = char.ToLower(@string[0]);
+
+        for (var i = 1; i < @string.Length; i++)
+        {
+            span[i] = @string[i];
+        }
+
+        return span.ToString();
+    }
 }

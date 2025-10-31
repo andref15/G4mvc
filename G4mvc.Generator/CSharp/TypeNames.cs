@@ -42,5 +42,12 @@ internal static class TypeNames
         public const string Name = "BindPropertyAttribute";
         public const string ShortName = "BindProperty";
         public const string FullName = $"{Namespaces.MicrosoftAspNetCoreMvc}.{Name}";
+
+        public static class NamedArguments
+        {
+            public const string BinderType = nameof(BinderType);
+            public const string Name = nameof(Name);
+            public const string SupportsGet = nameof(SupportsGet);
+        }
     }
 }
