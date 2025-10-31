@@ -18,18 +18,7 @@ internal class PageDeclarationContext : MvcDeclarationContext
     {
         var typeNamespace = typeSymbol.ContainingNamespace;
         var areasNamespace = GetAreasNamespace(typeNamespace);
-
-        if (areasNamespace is null)
-        {
-            return null;
-        }
-
-        var remainingNs = typeNamespace.ToDisplayString().AsSpan().Slice(areasNamespace.ToDisplayString().Length);
-        var areaEndIdx = remainingNs.IndexOf('.');
-
-        return areaEndIdx is -1
-            ? remainingNs.ToString()
-            : remainingNs.Slice(0, areaEndIdx).ToString();
+        return areasNamespace?.Name;
     }
 
     private static INamespaceSymbol? GetAreasNamespace(INamespaceSymbol symbol)
