@@ -8,7 +8,7 @@ internal static class RouteHelperClassGenerator
         , int version
 #endif
         )
-        => AddRouteHelperClass(context, helperClassName, configuration.GetMvcNamespace(null), routeClassNames, configuration
+        => AddRouteHelperClass(context, helperClassName, configuration.GetMvcAreasNamespace(), configuration.GetMvcNamespace(null), routeClassNames, configuration
 #if DEBUG
             , version
 #endif
@@ -19,13 +19,13 @@ internal static class RouteHelperClassGenerator
         , int version
 #endif
         )
-        => AddRouteHelperClass(context, helperClassName, configuration.GetPagesNamespace(null), routeClassNames, configuration
+        => AddRouteHelperClass(context, helperClassName, configuration.GetPagesAreasNamespace(), configuration.GetPagesNamespace(null), routeClassNames, configuration
 #if DEBUG
             , version
 #endif
             );
 
-    private static void AddRouteHelperClass(SourceProductionContext context, string helperClassName, string helpersNamespace, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
+    private static void AddRouteHelperClass(SourceProductionContext context, string helperClassName, string areasNamespace, string helpersNamespace, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration
 #if DEBUG
         , int version
 #endif
@@ -39,7 +39,7 @@ internal static class RouteHelperClassGenerator
 
         if (areaNames.Count > 0)
         {
-            sourceBuilder.Using(configuration.GetAreasNamespace());
+            sourceBuilder.Using(areasNamespace);
         }
 
         sourceBuilder.Using(helpersNamespace);

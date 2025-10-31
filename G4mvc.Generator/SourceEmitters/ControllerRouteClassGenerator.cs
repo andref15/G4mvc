@@ -162,7 +162,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                 using (nullableBlock)
                 using (sourceBuilder.BeginMethod("public", nameof(G4mvcActionRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
                 {
-                    sourceBuilder.AppendLine($"{nameof(G4mvcActionRouteValues)} route = {actionName}()").AppendLine();
+                    sourceBuilder.AppendLine($"var route = {actionName}()").AppendLine();
 
                     foreach (var parameter in relevantParameters)
                     {

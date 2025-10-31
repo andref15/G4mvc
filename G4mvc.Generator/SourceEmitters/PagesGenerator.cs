@@ -51,7 +51,7 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
             pageRouteClassGenerator.AddPageRouteClass(context, projectDir, pageRouteClassNames, pageContextImplementations);
         }
 
-        AreaClassesGenerator.AddAreaClasses(context, pageRouteClassNames, configuration);
+        AreaClassesGenerator.AddPagesAreaClasses(context, pageRouteClassNames, configuration);
 
         RouteHelperClassGenerator.AddPageHelperClass(context, configuration.JsonConfig.PageHelperClassName, pageRouteClassNames, configuration
 

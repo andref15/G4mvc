@@ -3,7 +3,13 @@
 namespace G4mvc.Generator.SourceEmitters;
 internal static class AreaClassesGenerator
 {
-    internal static void AddAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration)
+    internal static void AddMvcAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration)
+        => AddAreaClasses(context, routeClassNames, configuration, configuration.GetMvcAreasNamespace(), configuration.GetMvcNamespace);
+
+    internal static void AddPagesAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration)
+        => AddAreaClasses(context, routeClassNames, configuration, configuration.GetPagesAreasNamespace(), configuration.GetPagesNamespace);
+
+    private static void AddAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration, string areaNamespace, Func<string?, string> getHelperNamespace)
     {
         foreach (var (areaName, className) in routeClassNames.Where(kvp => kvp.Key != string.Empty))
         {
@@ -12,10 +18,10 @@ internal static class AreaClassesGenerator
             var sourceBuilder = configuration.CreateSourceBuilder();
 
             sourceBuilder
-                .Using(configuration.GetMvcNamespace(areaName))
+                .Using(getHelperNamespace(areaName))
                 .Nullable(configuration.GlobalNullable);
 
-            using (sourceBuilder.BeginNamespace(configuration.GetAreasNamespace(), true))
+            using (sourceBuilder.BeginNamespace(areaNamespace, true))
             using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, $"{areaName}Area"))
             {
                 sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(areaName));

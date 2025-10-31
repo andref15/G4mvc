@@ -16,7 +16,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     public const string FileName = "g4mvc.json";
     public const string MvcNameSpace = $"{nameof(G4mvc)}.Mvc";
     public const string PagesNameSpace = $"{nameof(G4mvc)}.RazorPages";
-    public const string AreasNameSpace = $"{nameof(G4mvc)}.Areas";
+    public const string AreasNameSpace = "Areas";
     public const string VppClassName = "VirtualPathProcessor";
     public const string VppMethodName = "Process";
     private string? _generatedClassNamespace;
@@ -102,17 +102,16 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         return sb.ToString();
     }
 
-    internal readonly string GetAreasNamespace()
+    internal readonly string GetMvcAreasNamespace()
+        => GetAreasNamespace(GetMvcNamespace(null));
+    internal readonly string GetPagesAreasNamespace()
+        => GetAreasNamespace(GetPagesNamespace(null));
+
+    private readonly string GetAreasNamespace(string rootNamespace)
     {
         var sb = new StringBuilder();
 
-        var rootNamespace = AnalyzerConfigValues.RootNamespace;
-        if (rootNamespace is not null)
-        {
-            sb.Append(rootNamespace);
-            sb.Append('.');
-        }
-
+        sb.Append(rootNamespace);
         sb.Append(AreasNameSpace);
 
         return sb.ToString();
