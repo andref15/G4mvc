@@ -123,7 +123,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
             var (method, handlerName) = RazorPageHttpMethodNames.ParseMethodAndHandlerName(handlerHethodName);
             using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), handlerHethodName))
             {
-                sourceBuilder.AppendReturnCtor(nameof(G4mvcPageRouteValues), SourceCode.String(mainPageContext.Area), SourceCode.String(mainPageContext.NameWithoutSuffix), SourceCode.String(handlerName), SourceCode.String(method));
+                sourceBuilder.AppendReturnCtor(nameof(G4mvcPageRouteValues), SourceCode.String(mainPageContext.Area), SourceCode.String($"/{mainPageContext.NameWithoutSuffix}"), SourceCode.String(handlerName), SourceCode.String(method));
             }
 
             sourceBuilder.AppendLine();
