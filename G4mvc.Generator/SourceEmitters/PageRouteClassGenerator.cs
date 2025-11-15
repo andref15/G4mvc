@@ -189,7 +189,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
 
             sourceBuilder.AppendLine();
 
-            foreach (var httpMethodContext in httpMethodsGroup.Where(md => md.Syntax.ParameterList.Parameters.Count > 0))
+            foreach (var httpMethodContext in httpMethodsGroup)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
