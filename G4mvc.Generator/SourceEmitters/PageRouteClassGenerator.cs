@@ -160,7 +160,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
         var bindModelPropertyParametersSupportGet = new List<(string Type, string Name, string? DefaultAssignment)>();
         foreach (var bindModelProperty in bindModelProperties)
         {
-            var type = $"global::{bindModelProperty.PropertySymbol.Type.ToDisplayString()}";
+            var type = bindModelProperty.PropertySymbol.Type.ToDisplayString();
             var name = bindModelProperty.PropertySymbol.Name.FirstCharLower();
 
             if (bindPropertiesSupportsGet ?? (bool?)bindModelProperty.BindPropertyAttribute?.NamedArguments.FirstOrDefault(arg => arg.Key == TypeNames.BindPropertyAttribute.NamedArguments.SupportsGet).Value.Value ?? false)
@@ -227,7 +227,17 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 }
 
                 using (nullableBlock)
-                using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), handlerHethodName, string.Join(", ", relevantParameters.Select(p => $"{p.Type} {p.Name}{p.DefaultAssignment}"))))
+                using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), handlerHethodName, string.Join(", ", relevantParameters.Select(p =>
+                {
+                    var sb = new StringBuilder();
+
+                    if (p.Type.Contains('.'))
+                    {
+                        sb.Append("global::");
+                    }
+
+                    return sb.Append(p.Type).Append(' ').Append(p.Name).Append(p.DefaultAssignment).ToString();
+                }))))
                 {
                     sourceBuilder.AppendLine($"var route = {handlerHethodName}()").AppendLine();
 
