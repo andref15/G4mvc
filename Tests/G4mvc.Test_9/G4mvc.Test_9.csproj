@@ -19,6 +19,9 @@
     <None Update="**\*">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Update="AssemblyAttributes.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Compile>
     <Compile Update="ConfigTests.cs">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Compile>

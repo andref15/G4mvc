@@ -9,7 +9,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
     public override string SharedClass => $$"""
         #nullable enable
 
-        namespace {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Routes;
+        namespace {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Mvc;
         {{(ClassesInternal ? "internal" : "public")}} class SharedRoutes
         {
             public SharedViews Views { get; } = new();
@@ -35,8 +35,8 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
 
         #nullable enable
 
-        namespace {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Routes;
-        {{(ClassesInternal ? "internal" : "public")}} class TestRoutes
+        namespace {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Mvc;
+        {{(ClassesInternal ? "internal" : "public")}} partial class TestRoutes
         {
             public string Name { get; } = "Test";
             public TestActionNames ActionNames { get; } = new();
@@ -54,7 +54,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
 
             public {{nameof(G4mvcActionRouteValues)}} Index(string test)
             {
-                {{nameof(G4mvcActionRouteValues)}} route = Index();
+                var route = Index();
 
                 route["test"] = test;
 
@@ -128,8 +128,8 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
 
         #nullable enable
 
-        namespace {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Routes;
-        {{(ClassesInternal ? "internal" : "public")}} class TestPartialRoutes
+        namespace {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Mvc;
+        {{(ClassesInternal ? "internal" : "public")}} partial class TestPartialRoutes
         {
             public string Name { get; } = "TestPartial";
             public TestPartialActionNames ActionNames { get; } = new();
@@ -147,7 +147,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
 
             public {{nameof(G4mvcActionRouteValues)}} Index(string test)
             {
-                {{nameof(G4mvcActionRouteValues)}} route = Index();
+                var route = Index();
 
                 route["test"] = test;
 
@@ -203,7 +203,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
         namespace G4mvc.{{nameof(Test_8)}}.Controllers;
         public partial class TestPartialController
         {
-            {{(ClassesInternal ? "private " : "")}}protected global::{{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Routes.TestPartialRoutes.TestPartialViews Views { get; } = {{MvcClassName}}.TestPartial.Views;
+            {{(ClassesInternal ? "private " : "")}}protected global::{{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Mvc.TestPartialRoutes.TestPartialViews Views { get; } = {{MvcClassName}}.TestPartial.Views;
 
             protected RedirectToRouteResult RedirectToAction({{nameof(G4mvcActionRouteValues)}} route)
             {
@@ -219,7 +219,7 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
         """;
 
     public override string MvcClass => $$"""
-        using {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Routes;
+        using {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Mvc;
 
         {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
         #nullable enable

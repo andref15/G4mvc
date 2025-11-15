@@ -129,11 +129,11 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     internal readonly struct JsonConfigModel
     {
 
-        private const string _defaultMvcHelperClassName = "MVC";
-        private const string _defaultPageHelperClassName = "RazorPages";
-        private const string _defaultLinksHelperClassName = "Links";
-        private const string _defaultStaticFilesPath = "wwwroot";
-        private const string _defaultGeneratedClassNamespace = "global";
+        internal const string DefaultMvcHelperClassName = "MVC";
+        internal const string DefaultPageHelperClassName = "RazorPages";
+        internal const string DefaultLinksHelperClassName = "Links";
+        internal const string DefaultStaticFilesPath = "wwwroot";
+        internal const string DefaultGeneratedClassNamespace = "global";
 
         public string MvcHelperClassName { get; }
         public string PageHelperClassName { get; }
@@ -157,34 +157,34 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
         public JsonConfigModel()
         {
-            MvcHelperClassName = _defaultMvcHelperClassName;
-            PageHelperClassName = _defaultPageHelperClassName;
-            LinksHelperClassName = _defaultLinksHelperClassName;
-            StaticFilesPath = _defaultStaticFilesPath;
-            GeneratedClassNamespace = _defaultGeneratedClassNamespace;
+            MvcHelperClassName = DefaultMvcHelperClassName;
+            PageHelperClassName = DefaultPageHelperClassName;
+            LinksHelperClassName = DefaultLinksHelperClassName;
+            StaticFilesPath = DefaultStaticFilesPath;
+            GeneratedClassNamespace = DefaultGeneratedClassNamespace;
         }
 
         [JsonConstructor]
         public JsonConfigModel(string? mvcHelperClassName, string? pageHelperClassName, string? linksHelperClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool? useProcessedPathForContentLinkNullable, bool makeGeneratedClassesInternal, string? generatedClassNamespace, bool enableSubfoldersInViews, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
         {
             MvcHelperClassName = string.IsNullOrWhiteSpace(mvcHelperClassName)
-                ? _defaultMvcHelperClassName
+                ? DefaultMvcHelperClassName
                 : mvcHelperClassName!.Trim();
             PageHelperClassName = string.IsNullOrWhiteSpace(pageHelperClassName)
-                ? _defaultPageHelperClassName
+                ? DefaultPageHelperClassName
                 : pageHelperClassName!.Trim();
             LinksHelperClassName = string.IsNullOrWhiteSpace(linksHelperClassName)
-                ? _defaultLinksHelperClassName
+                ? DefaultLinksHelperClassName
                 : linksHelperClassName!.Trim();
             StaticFilesPath = string.IsNullOrWhiteSpace(staticFilesPath)
-                ? _defaultStaticFilesPath
+                ? DefaultStaticFilesPath
                 : staticFilesPath!.Trim();
             UseVirtualPathProcessor = useVirtualPathProcessor;
             UseProcessedPathForContentLinkNullable = useProcessedPathForContentLinkNullable;
             UseProcessedPathForContentLink = useVirtualPathProcessor && (useProcessedPathForContentLinkNullable ?? true);
             MakeGeneratedClassesInternal = makeGeneratedClassesInternal;
             GeneratedClassNamespace = string.IsNullOrWhiteSpace(generatedClassNamespace)
-                ? nameof(ClassNamespaceIdentifier.Project)
+                ? DefaultGeneratedClassNamespace
                 : generatedClassNamespace!.Trim();
             EnableSubfoldersInViews = enableSubfoldersInViews;
             ExcludedStaticFileExtensions = excludedStaticFileExtensions;
