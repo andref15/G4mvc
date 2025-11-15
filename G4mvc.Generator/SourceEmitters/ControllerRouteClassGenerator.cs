@@ -1,6 +1,7 @@
 ﻿using G4mvc.Generator.Compilation;
 
 namespace G4mvc.Generator.SourceEmitters;
+
 internal class ControllerRouteClassGenerator(Configuration configuration)
 {
     private readonly Configuration _configuration = configuration;
@@ -41,7 +42,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.Area, mainControllerContext.NameWithoutSuffix, controllerRouteClassName);
 
         using (sourceBuilder.BeginNamespace(_configuration.GetMvcNamespace(mainControllerContext.Area), true))
-        using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, controllerRouteClassName))
+        using (sourceBuilder.BeginClass($"{_configuration.GeneratedClassModifier} partial", controllerRouteClassName))
         {
             if (mainControllerContext.Area is not null)
             {

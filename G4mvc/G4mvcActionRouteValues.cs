@@ -1,37 +1,24 @@
 ﻿#if NETCOREAPP
-using G4mvc.Extensions;
 using G4mvc.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 #endif
 
 namespace G4mvc;
-public class G4mvcActionRouteValues
-#if NETCOREAPP
-        : RouteValueDictionary
-#else
-        : Dictionary<string, object?>
-#endif
+
+public class G4mvcActionRouteValues : G4mvcBaseRouteValues
 {
     private const string _areaKey = "area";
     private const string _controllerKey = "controller";
     private const string _actionKey = "action";
 
-    public string? Area { get => (string?)this[_areaKey]; set => this[_areaKey] = value; }
     public string Controller { get => (string)this[_controllerKey]!; set => this[_controllerKey] = value; }
     public string Action { get => (string)this[_actionKey]!; set => this[_actionKey] = value; }
 
-    public G4mvcActionRouteValues(string? area, string controller, string action)
+    public G4mvcActionRouteValues(string? area, string controller, string action) : base(area)
     {
-        Area = area;
         Controller = controller;
         Action = action;
     }
-
-#if NETCOREAPP
-    public RouteValueDictionary AsRouteValueDictionary()
-        => this;
-#endif
 
     /// <summary>
     /// Formats the route values into a <see cref="string"/> representation.
@@ -61,9 +48,4 @@ public class G4mvcActionRouteValues
         return $"/{(Area is null ? null : $"{Area}/")}{Controller}/{Action}";
 #endif
     }
-
-#if NETCOREAPP
-    public string? ToString(IUrlHelper urlHelper)
-        => urlHelper.RouteUrl(this);
-#endif
 }

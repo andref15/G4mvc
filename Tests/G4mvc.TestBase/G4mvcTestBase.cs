@@ -4,10 +4,10 @@ using G4mvc.TestBase.Providers;
 using G4mvc.TestBase.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Immutable;
 
 namespace G4mvc.TestBase;
+
 public abstract class G4mvcTestBase(LanguageVersion languageVersion, string rootNamespace)
 {
     protected readonly CSharpCompilationOptions CompilationOptions = new(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release, warningLevel: 0, nullableContextOptions: NullableContextOptions.Enable);
@@ -18,7 +18,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion, string root
     protected static void AssertDiagnostics(CSharpCompilation compilation, string type)
     {
         var diagnostics = compilation.GetDiagnostics();
-        Assert.AreEqual(0, diagnostics.Length, "{0} classes have diagnostic messages:\n{1}", type, string.Join('\n', diagnostics));
+        Assert.IsEmpty(diagnostics, $"{type} classes have diagnostic messages:\n{string.Join('\n', diagnostics)}");
     }
 
     protected static IEnumerable<MetadataReference> GetMetadataReferences()
@@ -74,7 +74,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion, string root
 
     protected void AssertExpectedSyntaxTrees(ExpectedOutputsBase expectedOutputs, ImmutableArray<SyntaxTree> syntaxTrees, int expectedCount = 9)
     {
-        Assert.AreEqual(expectedCount, syntaxTrees.Length);
+        Assert.HasCount(expectedCount, syntaxTrees);
 
         try
         {

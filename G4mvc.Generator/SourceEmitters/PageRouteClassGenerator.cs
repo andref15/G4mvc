@@ -1,6 +1,8 @@
 ﻿using G4mvc.Generator.Compilation;
+using System.Text;
 
 namespace G4mvc.Generator.SourceEmitters;
+
 internal class PageRouteClassGenerator(Configuration configuration)
 {
     private readonly Configuration _configuration = configuration;
@@ -23,13 +25,22 @@ internal class PageRouteClassGenerator(Configuration configuration)
             .AppendLine()
             .Nullable(mainPageContext.NullableEnabled);
 
+        var topClassName = (string?)null;
+        var topClassNameWithoutSuffix = (string?)null;
         var pageRouteClassName = $"{mainPageContext.NameWithoutSuffix}Routes";
 
-        AddClassNameToDictionary(pageRouteClassNames, mainPageContext.Area, mainPageContext.NameWithoutSuffix, pageRouteClassName);
-
         using (sourceBuilder.BeginNamespace(_configuration.GetPagesNamespace(mainPageContext.Area), true))
-        using (sourceBuilder.BeginClass(_configuration.GeneratedClassModifier, pageRouteClassName))
+        using (BeginContainingNamespacesAsClasses(sourceBuilder, mainPageContext.TypeSymbol, _configuration.GeneratedClassModifier, ref topClassName, ref topClassNameWithoutSuffix))
+        using (sourceBuilder.BeginClass($"{_configuration.GeneratedClassModifier} partial", pageRouteClassName))
         {
+            if (topClassName is null || topClassNameWithoutSuffix is null)
+            {
+                topClassName = pageRouteClassName;
+                topClassNameWithoutSuffix = mainPageContext.NameWithoutSuffix;
+            }
+
+            AddClassNameToDictionary(pageRouteClassNames, mainPageContext.Area, topClassNameWithoutSuffix, topClassName);
+
             if (mainPageContext.Area is not null)
             {
                 sourceBuilder.AppendProperty("public", "string", "Area", "get", null, SourceCode.String(mainPageContext.Area));
@@ -88,11 +99,29 @@ internal class PageRouteClassGenerator(Configuration configuration)
             }
         }
 
-        context.AddGeneratedSource(GetPageRoutesFileName(mainPageContext.Area, mainPageContext.NameWithoutSuffix), sourceBuilder);
+        context.AddGeneratedSource(GetPageRoutesFileName(mainPageContext), sourceBuilder);
     }
 
     private static string? GetDefaultValue(ParameterSyntax syntax)
         => syntax.Default is null ? null : $" {syntax.Default}";
+
+    private static IDisposable? BeginContainingNamespacesAsClasses(SourceBuilder sourceBuilder, INamespaceOrTypeSymbol namespaceOrType, string generatedClassModifier, ref string? topNamespaceClassName, ref string? topNamespaceClassNameWithoutSuffix)
+    {
+        var containingNamespace = namespaceOrType.ContainingNamespace;
+        if (containingNamespace.Name is { Length: 0 } or "Pages")
+        {
+            return null;
+        }
+
+        topNamespaceClassNameWithoutSuffix = containingNamespace.Name;
+        var namespaceClassName = $"{topNamespaceClassNameWithoutSuffix}Routes";
+        topNamespaceClassName = namespaceClassName;
+
+        var containingClass = BeginContainingNamespacesAsClasses(sourceBuilder, containingNamespace, generatedClassModifier, ref topNamespaceClassName, ref topNamespaceClassNameWithoutSuffix);
+        var thisClass = sourceBuilder.BeginClass($"{generatedClassModifier} partial", namespaceClassName);
+
+        return containingClass is null ? thisClass : JoinedDisposable.Create(containingClass, thisClass);
+    }
 
     private static Dictionary<string, HashSet<string>> AddHttpMethodsAndGetParameterGroups(SourceProductionContext context, PageDeclarationContext mainPageContext, SourceBuilder sourceBuilder, Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups, List<ModelBindingPropertyDeclarationContext> bindModelProperties)
     {
@@ -113,6 +142,9 @@ internal class PageRouteClassGenerator(Configuration configuration)
             bindModelPropertyParameters.Add((type, name, null));
         }
 
+        var namespacePagePath = GetContainingNamespacesAsPagePath(mainPageContext.TypeSymbol);
+        var areaString = SourceCode.String(mainPageContext.Area);
+        var pageString = SourceCode.String($"{namespacePagePath}{mainPageContext.NameWithoutSuffix}");
         foreach (var (handlerHethodName, httpMethodsGroup) in httpMethodGroups)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
@@ -123,7 +155,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
             var (method, handlerName) = RazorPageHttpMethodNames.ParseMethodAndHandlerName(handlerHethodName);
             using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), handlerHethodName))
             {
-                sourceBuilder.AppendReturnCtor(nameof(G4mvcPageRouteValues), SourceCode.String(mainPageContext.Area), SourceCode.String($"/{mainPageContext.NameWithoutSuffix}"), SourceCode.String(handlerName), SourceCode.String(method));
+                sourceBuilder.AppendReturnCtor(nameof(G4mvcPageRouteValues), areaString, pageString, SourceCode.String(handlerName), SourceCode.String(method));
             }
 
             sourceBuilder.AppendLine();
@@ -185,6 +217,25 @@ internal class PageRouteClassGenerator(Configuration configuration)
         return methodParameterGroups;
     }
 
+    private static string GetContainingNamespacesAsPagePath(ITypeSymbol typeSymbol)
+    {
+        var sb = new StringBuilder("/");
+        Internal(sb, typeSymbol.ContainingNamespace);
+
+        return sb.ToString();
+
+        static void Internal(StringBuilder stringBuilder, INamespaceSymbol @namespace)
+        {
+            if (@namespace.Name is { Length: 0 } or "Pages")
+            {
+                return;
+            }
+
+            Internal(stringBuilder, @namespace.ContainingNamespace);
+            stringBuilder.Append(@namespace.Name).Append('/');
+        }
+    }
+
     private static void AddClassNameToDictionary(Dictionary<string, Dictionary<string, string>> pageRouteClassNames, string? pageArea, string pageNameWithoutSuffix, string pageRouteClassName)
     {
         var areaKey = pageArea ?? string.Empty;
@@ -198,8 +249,30 @@ internal class PageRouteClassGenerator(Configuration configuration)
         classNames.Add(pageRouteClassName, pageNameWithoutSuffix);
     }
 
-    private static string GetPageRoutesFileName(string? area, string pageNameWithoutSuffix)
-    => string.IsNullOrEmpty(area)
-        ? $"{pageNameWithoutSuffix}Routes"
-        : $"{area}.{pageNameWithoutSuffix}Routes";
+    private static string GetPageRoutesFileName(PageDeclarationContext pageDeclarationContext)
+    {
+        var sb = new StringBuilder();
+
+        if (!string.IsNullOrEmpty(pageDeclarationContext.Area))
+        {
+            sb.Append(pageDeclarationContext.Area).Append('.');
+        }
+
+        IterateNamespacesInReverse(sb, pageDeclarationContext.TypeSymbol.ContainingNamespace);
+
+        sb.Append(pageDeclarationContext.NameWithoutSuffix).Append("Routes");
+
+        return sb.ToString();
+
+        static void IterateNamespacesInReverse(StringBuilder stringBuilder, INamespaceSymbol @namespace)
+        {
+            if (@namespace.Name is { Length: 0 } or "Pages")
+            {
+                return;
+            }
+
+            IterateNamespacesInReverse(stringBuilder, @namespace.ContainingNamespace);
+            stringBuilder.Append(@namespace.Name).Append('.');
+        }
+    }
 }

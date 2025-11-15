@@ -6,34 +6,22 @@ using Microsoft.AspNetCore.Routing;
 #endif
 
 namespace G4mvc;
-public class G4mvcPageRouteValues
-#if NETCOREAPP
-        : RouteValueDictionary
-#else
-        : Dictionary<string, object?>
-#endif
+public class G4mvcPageRouteValues : G4mvcBaseRouteValues
 {
     private const string _areaKey = "area";
     private const string _pageKey = "page";
     private const string _handlerKey = "handler";
 
-    public string? Area { get => (string?)this[_areaKey]; set => this[_areaKey] = value; }
     public string Page { get => (string)this[_pageKey]!; set => this[_pageKey] = value; }
     public string? Handler { get => (string?)this[_handlerKey]; set => this[_handlerKey] = value; }
     public string Method { get; set; }
 
-    public G4mvcPageRouteValues(string? area, string page, string? handler, string method)
+    public G4mvcPageRouteValues(string? area, string page, string? handler, string method) : base(area)
     {
-        Area = area;
         Page = page;
         Handler = handler;
         Method = method;
     }
-
-#if NETCOREAPP
-    public RouteValueDictionary AsRouteValueDictionary()
-        => this;
-#endif
 
     /// <summary>
     /// Formats the route values into a <see cref="string"/> representation.
@@ -61,9 +49,4 @@ public class G4mvcPageRouteValues
         return $"/{(Area is null ? null : $"{Area}/")}{Page}";
 #endif
     }
-
-#if NETCOREAPP
-    public string? ToString(IUrlHelper urlHelper)
-        => urlHelper.RouteUrl(this);
-#endif
 }
