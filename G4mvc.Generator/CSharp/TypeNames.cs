@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.CSharp;
+
 internal static class TypeNames
 {
     public const string AreaAttribute = $"{Namespaces.MicrosoftAspNetCoreMvc}.AreaAttribute";
@@ -47,6 +48,18 @@ internal static class TypeNames
         {
             public const string BinderType = nameof(BinderType);
             public const string Name = nameof(Name);
+            public const string SupportsGet = nameof(SupportsGet);
+        }
+    }
+
+    public static class BindPropertiesAttribute
+    {
+        public const string Name = "BindPropertiesAttribute";
+        public const string ShortName = "BindProperties";
+        public const string FullName = $"{Namespaces.MicrosoftAspNetCoreMvc}.{Name}";
+
+        public static class NamedArguments
+        {
             public const string SupportsGet = nameof(SupportsGet);
         }
     }

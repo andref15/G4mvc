@@ -14,9 +14,24 @@ internal class PageRouteClassGenerator(Configuration configuration)
         var httpMethods = pageContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<MethodDeclarationSyntax>()
                 .Select(md => new MethodDeclarationContext(md, c.Model, _configuration.GlobalNullable)))
             .Where(static mc => mc.MethodSymbol.DeclaredAccessibility is Accessibility.Public && RazorPageHttpMethodNames.IsMatch(mc.MethodSymbol.Name) && !mc.MethodSymbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.NonHandlerAttribute.FullName)).ToList();
-        var bindModelProperties = pageContexts.SelectMany(c => c.DeclarationNode.DescendantNodes().OfType<PropertyDeclarationSyntax>()
-                .Select(pd => (Pd: pd, Symbol: c.Model.GetDeclaredSymbol(pd)!)).Where(static pds => pds.Symbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.BindPropertyAttribute.FullName))
-            .Select(pds => new ModelBindingPropertyDeclarationContext(pds.Pd, c.Model, pds.Symbol, _configuration.GlobalNullable))).ToList();
+        var bindPropertiesAttribute = pageContexts[0].TypeSymbol.GetAttributes(true).FirstOrDefault(static a => a.AttributeClass?.ToDisplayString() == TypeNames.BindPropertiesAttribute.FullName);
+        var bindPropertiesSupportsGet = bindPropertiesAttribute is null ? (bool?)null : ((bool?)bindPropertiesAttribute.NamedArguments.FirstOrDefault(a => a.Key == TypeNames.BindPropertiesAttribute.NamedArguments.SupportsGet).Value.Value ?? false);
+        var bindModelProperties = pageContexts.SelectMany(c =>
+        {
+            var query = c.DeclarationNode.DescendantNodes().OfType<PropertyDeclarationSyntax>()
+                            .Select(pd => (Pd: pd, Symbol: c.Model.GetDeclaredSymbol(pd)!));
+
+            if (bindPropertiesAttribute is null)
+            {
+                query = query.Where(pds => pds.Symbol.GetAttributes().Any(a => a.AttributeClass!.ToDisplayString() == TypeNames.BindPropertyAttribute.FullName));
+            }
+            else
+            {
+                query = query.Where(pds => pds.Symbol.DeclaredAccessibility is Accessibility.Public);
+            }
+
+            return query.Select(pds => new ModelBindingPropertyDeclarationContext(pds.Pd, c.Model, pds.Symbol, _configuration.GlobalNullable));
+        }).ToList();
 
         var mainPageContext = pageContexts[0];
 
@@ -31,70 +46,77 @@ internal class PageRouteClassGenerator(Configuration configuration)
 
         using (sourceBuilder.BeginNamespace(_configuration.GetPagesNamespace(mainPageContext.Area), true))
         using (BeginContainingNamespacesAsClasses(sourceBuilder, mainPageContext.TypeSymbol, _configuration.GeneratedClassModifier, ref topClassName, ref topClassNameWithoutSuffix))
-        using (sourceBuilder.BeginClass($"{_configuration.GeneratedClassModifier} partial", pageRouteClassName))
         {
-            if (topClassName is null || topClassNameWithoutSuffix is null)
+            if (topClassName is not null)
             {
-                topClassName = pageRouteClassName;
-                topClassNameWithoutSuffix = mainPageContext.NameWithoutSuffix;
+                sourceBuilder.AppendProperty("public", pageRouteClassName, mainPageContext.NameWithoutSuffix, "get", null, SourceCode.NewCtor).AppendLine();
             }
 
-            AddClassNameToDictionary(pageRouteClassNames, mainPageContext.Area, topClassNameWithoutSuffix, topClassName);
-
-            if (mainPageContext.Area is not null)
+            using (sourceBuilder.BeginClass($"{_configuration.GeneratedClassModifier} partial", pageRouteClassName))
             {
-                sourceBuilder.AppendProperty("public", "string", "Area", "get", null, SourceCode.String(mainPageContext.Area));
-            }
+                if (topClassName is null || topClassNameWithoutSuffix is null)
+                {
+                    topClassName = pageRouteClassName;
+                    topClassNameWithoutSuffix = mainPageContext.NameWithoutSuffix;
+                }
 
-            sourceBuilder
-                .AppendProperty("public", "string", "Name", "get", null, SourceCode.String(mainPageContext.NameWithoutSuffix))
-                .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}MethodNames", "HttpMethods", "get", null, SourceCode.NewCtor)
-                .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}View", "View", "get", null, SourceCode.NewCtor);
+                AddClassNameToDictionary(pageRouteClassNames, mainPageContext.Area, topClassNameWithoutSuffix, topClassName);
 
-            var httpMethodGroups = httpMethods.GroupBy(static hm => hm.Syntax.Identifier.Text.Remove("On", "Async", StringComparison.OrdinalIgnoreCase)).ToDictionary(g => g.Key, g => g.AsEnumerable());
+                if (mainPageContext.Area is not null)
+                {
+                    sourceBuilder.AppendProperty("public", "string", "Area", "get", null, SourceCode.String(mainPageContext.Area));
+                }
 
-            foreach (var actionName in httpMethodGroups.Keys)
-            {
-                sourceBuilder.AppendProperty("public", $"{actionName}ParamsClass", $"{actionName}Params", "get", null, SourceCode.NewCtor);
-            }
+                sourceBuilder
+                    .AppendProperty("public", "string", "Name", "get", null, SourceCode.String(mainPageContext.NameWithoutSuffix))
+                    .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}MethodNames", "HttpMethods", "get", null, SourceCode.NewCtor)
+                    .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}View", "View", "get", null, SourceCode.NewCtor);
 
-            sourceBuilder.AppendLine();
+                var httpMethodGroups = httpMethods.GroupBy(static hm => hm.Syntax.Identifier.Text.Remove("On", "Async", StringComparison.OrdinalIgnoreCase)).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
-            var methodParameterGroups = AddHttpMethodsAndGetParameterGroups(context, mainPageContext, sourceBuilder, httpMethodGroups, bindModelProperties);
-
-            using (sourceBuilder.BeginClass("public", $"{mainPageContext.NameWithoutSuffix}MethodNames"))
-            {
                 foreach (var actionName in httpMethodGroups.Keys)
                 {
-                    context.CancellationToken.ThrowIfCancellationRequested();
-
-                    sourceBuilder.AppendProperty("public", "string", actionName, "get", null, SourceCode.Nameof(actionName));
+                    sourceBuilder.AppendProperty("public", $"{actionName}ParamsClass", $"{actionName}Params", "get", null, SourceCode.NewCtor);
                 }
-            }
 
-            foreach (var (methodName, paramNames) in methodParameterGroups)
-            {
                 sourceBuilder.AppendLine();
 
-                using (sourceBuilder.BeginClass("public", $"{methodName}ParamsClass"))
+                var methodParameterGroups = AddHttpMethodsAndGetParameterGroups(context, mainPageContext, sourceBuilder, httpMethodGroups, bindModelProperties, bindPropertiesSupportsGet);
+
+                using (sourceBuilder.BeginClass("public", $"{mainPageContext.NameWithoutSuffix}MethodNames"))
                 {
-                    foreach (var paramName in paramNames)
+                    foreach (var actionName in httpMethodGroups.Keys)
                     {
-                        sourceBuilder.AppendProperty("public", "string", paramName, $"get", null, SourceCode.Nameof(paramName));
+                        context.CancellationToken.ThrowIfCancellationRequested();
+
+                        sourceBuilder.AppendProperty("public", "string", actionName, "get", null, SourceCode.Nameof(actionName));
                     }
                 }
-            }
 
-            var viewFile = new FileInfo(mainPageContext.DeclarationNode.SyntaxTree.FilePath.RemoveEnd(".cs", StringComparison.Ordinal));
-
-            if (viewFile.Exists)
-            {
-                using (sourceBuilder.BeginClass("public", $"{mainPageContext.NameWithoutSuffix}View"))
+                foreach (var (methodName, paramNames) in methodParameterGroups)
                 {
-                    var appRootPrefix = projectDir[projectDir.Length - 1] == Path.DirectorySeparatorChar ? "~/" : "~";
+                    sourceBuilder.AppendLine();
 
-                    sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(Path.GetFileNameWithoutExtension(viewFile.Name)));
-                    sourceBuilder.AppendProperty("public", "string", "AppPath", "get", null, SourceCode.String(viewFile.FullName.Replace(projectDir, appRootPrefix).Replace("\\", "/")));
+                    using (sourceBuilder.BeginClass("public", $"{methodName}ParamsClass"))
+                    {
+                        foreach (var paramName in paramNames)
+                        {
+                            sourceBuilder.AppendProperty("public", "string", paramName, $"get", null, SourceCode.Nameof(paramName));
+                        }
+                    }
+                }
+
+                var viewFile = new FileInfo(mainPageContext.DeclarationNode.SyntaxTree.FilePath.RemoveEnd(".cs", StringComparison.Ordinal));
+
+                if (viewFile.Exists)
+                {
+                    using (sourceBuilder.BeginClass("public", $"{mainPageContext.NameWithoutSuffix}View"))
+                    {
+                        var appRootPrefix = projectDir[projectDir.Length - 1] == Path.DirectorySeparatorChar ? "~/" : "~";
+
+                        sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(Path.GetFileNameWithoutExtension(viewFile.Name)));
+                        sourceBuilder.AppendProperty("public", "string", "AppPath", "get", null, SourceCode.String(viewFile.FullName.Replace(projectDir, appRootPrefix).Replace("\\", "/")));
+                    }
                 }
             }
         }
@@ -113,17 +135,24 @@ internal class PageRouteClassGenerator(Configuration configuration)
             return null;
         }
 
-        topNamespaceClassNameWithoutSuffix = containingNamespace.Name;
-        var namespaceClassName = $"{topNamespaceClassNameWithoutSuffix}Routes";
+        var namespaceClassNameWithoutSuffix = containingNamespace.Name;
+        var namespaceClassName = $"{namespaceClassNameWithoutSuffix}Routes";
+        topNamespaceClassNameWithoutSuffix = namespaceClassNameWithoutSuffix;
         topNamespaceClassName = namespaceClassName;
 
         var containingClass = BeginContainingNamespacesAsClasses(sourceBuilder, containingNamespace, generatedClassModifier, ref topNamespaceClassName, ref topNamespaceClassNameWithoutSuffix);
+
+        if (containingClass is not null)
+        {
+            sourceBuilder.AppendProperty("public", namespaceClassName, namespaceClassNameWithoutSuffix, "get", null, SourceCode.NewCtor).AppendLine();
+        }
+
         var thisClass = sourceBuilder.BeginClass($"{generatedClassModifier} partial", namespaceClassName);
 
         return containingClass is null ? thisClass : JoinedDisposable.Create(containingClass, thisClass);
     }
 
-    private static Dictionary<string, HashSet<string>> AddHttpMethodsAndGetParameterGroups(SourceProductionContext context, PageDeclarationContext mainPageContext, SourceBuilder sourceBuilder, Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups, List<ModelBindingPropertyDeclarationContext> bindModelProperties)
+    private static Dictionary<string, HashSet<string>> AddHttpMethodsAndGetParameterGroups(SourceProductionContext context, PageDeclarationContext mainPageContext, SourceBuilder sourceBuilder, Dictionary<string, IEnumerable<MethodDeclarationContext>> httpMethodGroups, List<ModelBindingPropertyDeclarationContext> bindModelProperties, bool? bindPropertiesSupportsGet)
     {
         var methodParameterGroups = new Dictionary<string, HashSet<string>>();
 
@@ -134,7 +163,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
             var type = $"global::{bindModelProperty.PropertySymbol.Type.ToDisplayString()}";
             var name = bindModelProperty.PropertySymbol.Name.FirstCharLower();
 
-            if ((bool?)bindModelProperty.BindPropertyAttribute.NamedArguments.FirstOrDefault(arg => arg.Key == TypeNames.BindPropertyAttribute.NamedArguments.SupportsGet).Value.Value ?? false)
+            if (bindPropertiesSupportsGet ?? (bool?)bindModelProperty.BindPropertyAttribute?.NamedArguments.FirstOrDefault(arg => arg.Key == TypeNames.BindPropertyAttribute.NamedArguments.SupportsGet).Value.Value ?? false)
             {
                 bindModelPropertyParametersSupportGet.Add((type, name, null));
             }
