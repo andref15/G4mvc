@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.CSharp;
+
 internal static class SourceCode
 {
     public const string NewCtor = "new()";
@@ -8,4 +9,8 @@ internal static class SourceCode
 
     public static string Nameof(string variable)
         => $"nameof({variable})";
+
+    public static string? GetDefaultValue(ParameterSyntax syntax)
+        => syntax.Default is null ? null : $" {syntax.Default}";
+
 }

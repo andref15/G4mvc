@@ -1,9 +1,10 @@
-﻿using G4mvc.Generator;
+﻿using G4mvc.Generator.Compilation;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System.Text.Json;
 
 namespace G4mvc.TestBase;
+
 internal class ConfigAdditionalText(Configuration.JsonConfigModel jsonConfig) : AdditionalText
 {
     private readonly Configuration.JsonConfigModel _jsonConfig = jsonConfig;

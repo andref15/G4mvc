@@ -1,0 +1,208 @@
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace G4mvc.Generator.Compilation;
+
+internal struct Configuration(LanguageVersion languageVersion, bool globalNullable, string? configFile, AnalyzerConfigValues analyzerConfigValues)
+{
+    private enum ClassNamespaceIdentifier
+    {
+        Global,
+        Project
+    }
+
+    public const string FileName = "g4mvc.json";
+    public const string MvcNameSpace = $"{nameof(G4mvc)}.Mvc";
+    public const string PagesNameSpace = $"{nameof(G4mvc)}.RazorPages";
+    public const string AreasNameSpace = "Areas";
+    public const string VppClassName = "VirtualPathProcessor";
+    public const string VppMethodName = "Process";
+    private string? _generatedClassNamespace;
+    private bool _generatedClassNamespaceInitialized = false;
+    private string? _generatedClassModifier;
+
+    public LanguageVersion LanguageVersion { get; } = languageVersion;
+    public AnalyzerConfigValues AnalyzerConfigValues { get; } = analyzerConfigValues;
+    public JsonConfigModel JsonConfig { get; } = string.IsNullOrWhiteSpace(configFile) ? new() : JsonSerializer.Deserialize<JsonConfigModel>(configFile!);
+    public bool GlobalNullable { get; } = globalNullable;
+    public string? GeneratedClassNamespace
+    {
+        get
+        {
+            if (_generatedClassNamespaceInitialized)
+            {
+                return _generatedClassNamespace;
+            }
+
+            var @namespace = JsonConfig.GeneratedClassNamespace;
+
+            if (@namespace[0] is '.')
+            {
+                @namespace = $"{AnalyzerConfigValues.RootNamespace}{@namespace}";
+            }
+            else if (Enum.TryParse<ClassNamespaceIdentifier>(@namespace, true, out var identifier))
+            {
+                @namespace = identifier switch
+                {
+                    ClassNamespaceIdentifier.Global => null,
+                    ClassNamespaceIdentifier.Project => AnalyzerConfigValues.RootNamespace,
+                    _ => null
+                };
+            }
+
+            _generatedClassNamespaceInitialized = true;
+
+            return _generatedClassNamespace = @namespace;
+        }
+    }
+
+    public string GeneratedClassModifier => _generatedClassModifier ??= JsonConfig.MakeGeneratedClassesInternal ? "internal" : "public";
+
+    internal readonly string GetMvcNamespace(string? area)
+    {
+        var sb = new StringBuilder();
+
+        if (AnalyzerConfigValues.RootNamespace is not null)
+        {
+            sb.Append(AnalyzerConfigValues.RootNamespace);
+            sb.Append('.');
+        }
+
+        sb.Append(MvcNameSpace);
+
+        if (!string.IsNullOrEmpty(area))
+        {
+            sb.Append('.');
+            sb.Append(area);
+        }
+
+        return sb.ToString();
+    }
+
+    internal readonly string GetPagesNamespace(string? area)
+    {
+        var sb = new StringBuilder();
+
+        if (AnalyzerConfigValues.RootNamespace is not null)
+        {
+            sb.Append(AnalyzerConfigValues.RootNamespace);
+            sb.Append('.');
+        }
+
+        sb.Append(PagesNameSpace);
+
+        if (!string.IsNullOrEmpty(area))
+        {
+            sb.Append('.');
+            sb.Append(area);
+        }
+
+        return sb.ToString();
+    }
+
+    internal readonly string GetMvcAreasNamespace()
+        => GetAreasNamespace(GetMvcNamespace(null));
+    internal readonly string GetPagesAreasNamespace()
+        => GetAreasNamespace(GetPagesNamespace(null));
+
+    private readonly string GetAreasNamespace(string rootNamespace)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append(rootNamespace);
+        sb.Append(AreasNameSpace);
+
+        return sb.ToString();
+    }
+
+    internal static Configuration CreateConfig(CSharpCompilation compilation, string? configFile, AnalyzerConfigValues analyzerConfigValues)
+        => new(compilation.LanguageVersion, compilation.IsNullableEnabled(), configFile, analyzerConfigValues);
+
+    internal static Configuration CreateConfig(CSharpParseOptions parseOptions, string? configFile, AnalyzerConfigValues analyzerConfigValues)
+        => new(parseOptions.LanguageVersion, true, configFile, analyzerConfigValues);
+
+    internal readonly SourceBuilder CreateSourceBuilder()
+        => new(LanguageVersion);
+
+    internal readonly struct JsonConfigModel
+    {
+
+        internal const string DefaultMvcHelperClassName = "MVC";
+        internal const string DefaultPageHelperClassName = "RazorPages";
+        internal const string DefaultLinksHelperClassName = "Links";
+        internal const string DefaultStaticFilesPath = "wwwroot";
+        internal const string DefaultGeneratedClassNamespace = "global";
+
+        public bool DisableMvcHelperSourceGeneration { get; }
+        public bool DisablePageHelperSourceGeneration { get; }
+        public bool DisableLinksHelperSourceGeneration { get; }
+        public string MvcHelperClassName { get; }
+        public string PageHelperClassName { get; }
+        public string LinksHelperClassName { get; }
+        public string StaticFilesPath { get; }
+        public bool UseVirtualPathProcessor { get; }
+
+        [JsonInclude, JsonPropertyName(nameof(UseProcessedPathForContentLink))]
+        [SuppressMessage("CodeQuality", "IDE0052:Remove unread private members", Justification = "Used for json")]
+        private bool? UseProcessedPathForContentLinkNullable { get; }
+
+        [JsonIgnore]
+        public bool UseProcessedPathForContentLink { get; }
+        public bool MakeGeneratedClassesInternal { get; }
+        public string GeneratedClassNamespace { get; }
+        public bool EnableSubfoldersInViews { get; }
+        public string[]? ExcludedStaticFileExtensions { get; }
+        public string[]? ExcludedStaticFileDirectories { get; }
+        public IReadOnlyDictionary<string, string>? AdditionalStaticFilesPaths { get; }
+        public IReadOnlyDictionary<string, string>? CustomStaticFileDirectoryAlias { get; }
+
+        public JsonConfigModel()
+        {
+            MvcHelperClassName = DefaultMvcHelperClassName;
+            PageHelperClassName = DefaultPageHelperClassName;
+            LinksHelperClassName = DefaultLinksHelperClassName;
+            StaticFilesPath = DefaultStaticFilesPath;
+            GeneratedClassNamespace = DefaultGeneratedClassNamespace;
+        }
+
+        [JsonConstructor]
+        public JsonConfigModel(bool disableMvcHelperSourceGeneration, bool disablePageHelperSourceGeneration, bool disableLinksHelperSourceGeneration, string? mvcHelperClassName, string? pageHelperClassName, string? linksHelperClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool? useProcessedPathForContentLinkNullable, bool makeGeneratedClassesInternal, string? generatedClassNamespace, bool enableSubfoldersInViews, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
+        {
+            DisableMvcHelperSourceGeneration = disableMvcHelperSourceGeneration;
+            DisablePageHelperSourceGeneration = disablePageHelperSourceGeneration;
+            DisableLinksHelperSourceGeneration = disableLinksHelperSourceGeneration;
+            MvcHelperClassName = string.IsNullOrWhiteSpace(mvcHelperClassName)
+                ? DefaultMvcHelperClassName
+                : mvcHelperClassName!.Trim();
+            PageHelperClassName = string.IsNullOrWhiteSpace(pageHelperClassName)
+                ? DefaultPageHelperClassName
+                : pageHelperClassName!.Trim();
+            LinksHelperClassName = string.IsNullOrWhiteSpace(linksHelperClassName)
+                ? DefaultLinksHelperClassName
+                : linksHelperClassName!.Trim();
+            StaticFilesPath = string.IsNullOrWhiteSpace(staticFilesPath)
+                ? DefaultStaticFilesPath
+                : staticFilesPath!.Trim();
+            UseVirtualPathProcessor = useVirtualPathProcessor;
+            UseProcessedPathForContentLinkNullable = useProcessedPathForContentLinkNullable;
+            UseProcessedPathForContentLink = useVirtualPathProcessor && (useProcessedPathForContentLinkNullable ?? true);
+            MakeGeneratedClassesInternal = makeGeneratedClassesInternal;
+            GeneratedClassNamespace = string.IsNullOrWhiteSpace(generatedClassNamespace)
+                ? DefaultGeneratedClassNamespace
+                : generatedClassNamespace!.Trim();
+            EnableSubfoldersInViews = enableSubfoldersInViews;
+            ExcludedStaticFileExtensions = excludedStaticFileExtensions;
+            ExcludedStaticFileDirectories = excludedStaticFileDirectories;
+            AdditionalStaticFilesPaths = additionalStaticFilesPaths;
+            CustomStaticFileDirectoryAlias = customStaticFileDirectoryAlias;
+        }
+
+        /// <summary>
+        /// Only use this for tests!
+        /// </summary>
+        internal static JsonConfigModel Create(bool disableMvcHelperSourceGeneration = false, bool disablePageHelperSourceGeneration = false, bool disableLinksHelperSourceGeneration = false, string? mvcHelperClassName = null, string? pageHelperClassName = null, string? linksHelperClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool? useProcessedPathForContentLink = null, bool makeGeneratedClassesInternal = false, string? generatedClassNamespace = null, bool enableSubfoldersInViews = false, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
+            => new(disableMvcHelperSourceGeneration, disablePageHelperSourceGeneration, disableLinksHelperSourceGeneration, mvcHelperClassName, pageHelperClassName, linksHelperClassName, staticFilesPath, useVirtualPathProcessor, useProcessedPathForContentLink, makeGeneratedClassesInternal, generatedClassNamespace, enableSubfoldersInViews, excludedStaticFileExtensions, excludedStaticFileDirectories, additionalStaticFilesPaths, customStaticFileDirectoryAlias);
+    }
+}

@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace G4mvc.TestBase.Providers;
+
 public class G4mvcAnalyzerConfigOptionsProvider(string rootNamspace) : AnalyzerConfigOptionsProvider
 {
     private readonly string _rootNamspace = rootNamspace;

@@ -1,4 +1,7 @@
-﻿namespace G4mvc.Generator.Helpers;
+﻿using G4mvc.Generator.Compilation;
+
+namespace G4mvc.Generator.Helpers;
+
 internal class IdentifierParser(Configuration configuration, string projectDir)
 {
     private readonly Dictionary<string, string> _customStaticFileDirectoryClassNames = configuration.JsonConfig.CustomStaticFileDirectoryAlias?.ToDictionary(kvp => new DirectoryInfo(Path.Combine(projectDir, kvp.Key)).FullName, kvp => kvp.Value) ?? [];

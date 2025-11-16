@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.Helpers;
+
 internal static class GlobalOptionConstant
 {
     internal static class BuildProperty

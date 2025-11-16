@@ -1,8 +1,7 @@
-using G4mvc.Generator;
+using G4mvc.Generator.Compilation;
 using G4mvc.TestBase;
 using G4mvc.TestBase.Utils;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace G4mvc.Test_8;
 
@@ -25,9 +24,9 @@ public class G4mvcTests() : G4mvcTestBase(LanguageVersion.CSharp12, $"{nameof(G4
         const string mvc = "TestMvc";
         const string links = "TestLinks";
 
-        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(helperClassName: mvc, linksClassName: links));
+        var outputCompilation = BaseTest(Configuration.JsonConfigModel.Create(mvcHelperClassName: mvc, linksHelperClassName: links));
 
-        var expectedOutputs = new ExpectedOutputs(mvcClassName: mvc, linksClassName: links);
+        var expectedOutputs = new ExpectedOutputs(mvcClassName: mvc, linksHelperClassName: links);
 
         AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees);
     }
@@ -54,7 +53,7 @@ public class G4mvcTests() : G4mvcTestBase(LanguageVersion.CSharp12, $"{nameof(G4
 
         var expectedOutputs = new ExpectedOutputs(withVpp: true, vppForContent: useProcessedPathForContentLink ?? true);
 
-        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees, 10);
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees, 15);
     }
 
     [TestMethod]
