@@ -218,6 +218,159 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
 
         """;
 
+    public override string IndexPageRoutes => $$"""
+        using {{nameof(G4mvc)}};
+        
+        #nullable enable
+        
+        namespace {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.RazorPages;
+        {{(ClassesInternal ? "internal" : "public")}} partial class IndexRoutes
+        {
+        	public string Name { get; } = "Index";
+        	public IndexMethodNames HttpMethods { get; } = new();
+        	public IndexView View { get; } = new();
+        	public GetParamsClass GetParams { get; } = new();
+        	public PostParamsClass PostParams { get; } = new();
+        	public PostAlternativeParamsClass PostAlternativeParams { get; } = new();
+
+        	public {{nameof(G4mvcPageRouteValues)}} Get()
+        	{
+        		return new(null, "/Index", null, "GET");
+        	}
+
+        	public {{nameof(G4mvcPageRouteValues)}} Post()
+        	{
+        		return new(null, "/Index", null, "POST");
+        	}
+
+        	public {{nameof(G4mvcPageRouteValues)}} Post(global::{{nameof(G4mvc)}}.{{nameof(Test_8)}}.Pages.TestFormModel? testModel)
+        	{
+        		var route = Post();
+
+        		route["testModel"] = testModel;
+
+        		return route;
+        	}
+        	public {{nameof(G4mvcPageRouteValues)}} PostAlternative()
+        	{
+        		return new(null, "/Index", "Alternative", "POST");
+        	}
+
+        	public {{nameof(G4mvcPageRouteValues)}} PostAlternative(global::{{nameof(G4mvc)}}.{{nameof(Test_8)}}.Pages.TestFormModel? testModel)
+        	{
+        		var route = PostAlternative();
+
+        		route["testModel"] = testModel;
+
+        		return route;
+        	}
+        	public class IndexMethodNames
+        	{
+        		public string Get { get; } = nameof(Get);
+        		public string Post { get; } = nameof(Post);
+        		public string PostAlternative { get; } = nameof(PostAlternative);
+        	}
+
+        	public class GetParamsClass
+        	{
+        	}
+
+        	public class PostParamsClass
+        	{
+        		public string testModel { get; } = nameof(testModel);
+        	}
+
+        	public class PostAlternativeParamsClass
+        	{
+        		public string testModel { get; } = nameof(testModel);
+        	}
+        	public class IndexView
+        	{
+        		public string Name { get; } = "Index";
+        		public string AppPath { get; } = "~/Pages/Index.cshtml";
+        	}
+        }
+        """;
+
+    public override string SampleIndexPageRoutes => $$"""
+        using {{nameof(G4mvc)}};
+        
+        #nullable enable
+        
+        namespace {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.RazorPages;
+        {{(ClassesInternal ? "internal" : "public")}} partial class SampleRoutes
+        {
+            public IndexRoutes Index { get; } = new();
+
+            {{(ClassesInternal ? "internal" : "public")}} partial class IndexRoutes
+            {
+            	public string Name { get; } = "Index";
+            	public IndexMethodNames HttpMethods { get; } = new();
+            	public IndexView View { get; } = new();
+            	public GetParamsClass GetParams { get; } = new();
+            	public PostParamsClass PostParams { get; } = new();
+            	public PostAlternativeParamsClass PostAlternativeParams { get; } = new();
+            
+            	public {{nameof(G4mvcPageRouteValues)}} Get()
+            	{
+            		return new(null, "/Sample/Index", null, "GET");
+            	}
+            
+            	public {{nameof(G4mvcPageRouteValues)}} Post()
+            	{
+            		return new(null, "/Sample/Index", null, "POST");
+            	}
+            
+            	public {{nameof(G4mvcPageRouteValues)}} Post(global::{{nameof(G4mvc)}}.{{nameof(Test_8)}}.Pages.Sample.TestFormModel? testModel)
+            	{
+            		var route = Post();
+            
+            		route["testModel"] = testModel;
+            
+            		return route;
+            	}
+            	public {{nameof(G4mvcPageRouteValues)}} PostAlternative()
+            	{
+            		return new(null, "/Sample/Index", "Alternative", "POST");
+            	}
+            
+            	public {{nameof(G4mvcPageRouteValues)}} PostAlternative(global::{{nameof(G4mvc)}}.{{nameof(Test_8)}}.Pages.Sample.TestFormModel? testModel)
+            	{
+            		var route = PostAlternative();
+            
+            		route["testModel"] = testModel;
+            
+            		return route;
+            	}
+            	public class IndexMethodNames
+            	{
+            		public string Get { get; } = nameof(Get);
+            		public string Post { get; } = nameof(Post);
+            		public string PostAlternative { get; } = nameof(PostAlternative);
+            	}
+            
+            	public class GetParamsClass
+            	{
+            	}
+            
+            	public class PostParamsClass
+            	{
+            		public string testModel { get; } = nameof(testModel);
+            	}
+            
+            	public class PostAlternativeParamsClass
+            	{
+            		public string testModel { get; } = nameof(testModel);
+            	}
+            	public class IndexView
+            	{
+            		public string Name { get; } = "Index";
+            		public string AppPath { get; } = "~/Pages/Sample/Index.cshtml";
+            	}
+            }
+        }
+        """;
+
     public override string MvcClass => $$"""
         using {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.Mvc;
 
@@ -229,6 +382,20 @@ internal class ExpectedOutputs(string? mvcClassName = null, string? linksHelperC
             public static TestRoutes Test { get; } = new();
             public static TestPartialRoutes TestPartial { get; } = new();
             public static SharedRoutes Shared { get; } = new();
+        }
+        """;
+
+    public override string RazorPagesClass => $$"""
+        using {{nameof(G4mvc)}}.{{nameof(Test_8)}}.{{nameof(G4mvc)}}.RazorPages;
+        
+        {{(ClassNamespace is null ? "" : $"namespace {ClassNamespace};\n")}}
+        #nullable enable
+
+        {{(ClassesInternal ? "internal" : "public")}} class RazorPages
+        {
+        	//v1;
+        	public static IndexRoutes Index { get; } = new();
+        	public static SampleRoutes Sample { get; } = new();
         }
         """;
 

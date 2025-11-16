@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.TestBase;
+
 public abstract class ExpectedOutputsBase(string? mvcClassName, string? linksHelperClassName, bool altRoot, bool additionalStatic, bool withVpp, bool vppForContent, bool classesInternal, string? classNamespace, bool enumerateSubDirectories, bool excludeIco, bool excludeCss, bool customJsName)
 {
     private const string _mvcDefault = "MVC";
@@ -20,8 +21,11 @@ public abstract class ExpectedOutputsBase(string? mvcClassName, string? linksHel
 
     public abstract string LinksClass { get; }
     public abstract string MvcClass { get; }
+    public abstract string RazorPagesClass { get; }
     public abstract string SharedClass { get; }
     public abstract string TestPartialClass { get; }
     public abstract string TestRoutesClass { get; }
     public abstract string TestPartialRoutesClass { get; }
+    public abstract string IndexPageRoutes { get; }
+    public abstract string SampleIndexPageRoutes { get; }
 }

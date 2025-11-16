@@ -53,7 +53,7 @@ public class G4mvcTests() : G4mvcTestBase(LanguageVersion.CSharp12, $"{nameof(G4
 
         var expectedOutputs = new ExpectedOutputs(withVpp: true, vppForContent: useProcessedPathForContentLink ?? true);
 
-        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees, 10);
+        AssertExpectedSyntaxTrees(expectedOutputs, outputCompilation.SyntaxTrees, 15);
     }
 
     [TestMethod]

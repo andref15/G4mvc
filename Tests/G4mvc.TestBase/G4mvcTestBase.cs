@@ -33,6 +33,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion, string root
         yield return MetadataReference.CreateFromFile(typeof(System.Runtime.JitInfo).Assembly.Location);
         yield return MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
         yield return MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Mvc.Controller).Assembly.Location);
+        yield return MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Mvc.RazorPages.PageModel).Assembly.Location);
         yield return MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Mvc.Core.Infrastructure.IAntiforgeryValidationFailedResult).Assembly.Location);
         yield return MetadataReference.CreateFromFile(typeof(Microsoft.AspNetCore.Http.HttpContext).Assembly.Location);
         yield return MetadataReference.CreateFromFile(typeof(Microsoft.Extensions.Logging.ILogger).Assembly.Location);
@@ -72,33 +73,38 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion, string root
         return outputCompilation;
     }
 
-    protected void AssertExpectedSyntaxTrees(ExpectedOutputsBase expectedOutputs, ImmutableArray<SyntaxTree> syntaxTrees, int expectedCount = 9)
+    protected void AssertExpectedSyntaxTrees(ExpectedOutputsBase expectedOutputs, ImmutableArray<SyntaxTree> syntaxTrees, int expectedCount = 14)
     {
-        Assert.HasCount(expectedCount, syntaxTrees);
-
         try
         {
+            Assert.HasCount(expectedCount, syntaxTrees);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.LinksClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestRoutesClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialRoutesClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.TestPartialClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.SharedClass, syntaxTrees, ParseOptions);
             SyntaxAssert.AreAnyEquivalent(expectedOutputs.MvcClass, syntaxTrees, ParseOptions);
-            SyntaxAssert.AreAnyEquivalent(expectedOutputs.LinksClass, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.IndexPageRoutes, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.SampleIndexPageRoutes, syntaxTrees, ParseOptions);
+            SyntaxAssert.AreAnyEquivalent(expectedOutputs.RazorPagesClass, syntaxTrees, ParseOptions);
         }
         catch
         {
             Console.WriteLine("EXPECTED:\n");
+            Console.WriteLine(expectedOutputs.LinksClass);
             Console.WriteLine(expectedOutputs.TestRoutesClass);
             Console.WriteLine(expectedOutputs.TestPartialRoutesClass);
             Console.WriteLine(expectedOutputs.TestPartialClass);
             Console.WriteLine(expectedOutputs.SharedClass);
             Console.WriteLine(expectedOutputs.MvcClass);
-            Console.WriteLine(expectedOutputs.LinksClass);
+            Console.WriteLine(expectedOutputs.IndexPageRoutes);
+            Console.WriteLine(expectedOutputs.SampleIndexPageRoutes);
+            Console.WriteLine(expectedOutputs.RazorPagesClass);
             Console.WriteLine("\nEND EXPECTED\n");
 
             Console.WriteLine("ACTUAL:");
 
-            foreach (var syntaxTree in syntaxTrees.Where(s => s.FilePath.Length > 0))
+            foreach (var syntaxTree in syntaxTrees.Where(s => !Path.IsPathRooted(s.FilePath)))
             {
                 Console.WriteLine(syntaxTree);
             }
@@ -116,7 +122,7 @@ public abstract class G4mvcTestBase(LanguageVersion languageVersion, string root
         foreach (var file in directoryInfo.EnumerateFiles("*.cs", SearchOption.AllDirectories).OrderBy(f => f.Name))
         {
             using var stream = file.OpenRead();
-            yield return SyntaxUtils.ToSyntaxTree(stream, ParseOptions);
+            yield return SyntaxUtils.ToSyntaxTree(stream, ParseOptions).WithFilePath(file.FullName);
         }
     }
 
