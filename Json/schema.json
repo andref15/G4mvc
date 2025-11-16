@@ -10,15 +10,15 @@
       "format": "uri"
     },
     "DisableMvcHelperSourceGeneration": {
-      "type": "boolean"
+      "type": "boolean",
       "description": "Disables the source code generation for controller route helpers and partial classes."
     },
     "DisablePageHelperSourceGeneration": {
-      "type": "boolean"
+      "type": "boolean",
       "description": "Disables the source code generation for razor page route helpers."
     },
     "DisableLinksHelperSourceGeneration": {
-      "type": "boolean"
+      "type": "boolean",
       "description": "Disables the source code generation for Links (static files, wwwroot)."
     },
     "MvcHelperClassName": {
