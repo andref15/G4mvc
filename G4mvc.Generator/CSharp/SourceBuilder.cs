@@ -2,6 +2,7 @@
 using System.Text;
 
 namespace G4mvc.Generator.CSharp;
+
 internal class SourceBuilder(LanguageVersion languageVersion)
 {
     private readonly StringBuilder _stringBuilder = new();

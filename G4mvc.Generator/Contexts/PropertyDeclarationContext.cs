@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 
 namespace G4mvc.Generator.Contexts;
+
 internal class PropertyDeclarationContext : BaseDeclarationContext
 {
     public string Name { get; }

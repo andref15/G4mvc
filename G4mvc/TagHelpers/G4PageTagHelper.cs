@@ -12,7 +12,7 @@ public class G4PageTagHelper(IUrlHelperFactory urlHelperFactory, IHtmlGenerator 
     private const string _attributeName = "g4-page";
 
     [HtmlAttributeName(_attributeName)]
-    public override G4mvcPageRouteValues RouteValues { get; set; }
+    public override G4mvcPageRouteValues RouteValues { get; set; } = null!;
 
     public override Task PostProcessFormTagAsync(TagHelperContext context, TagHelperOutput output)
     {

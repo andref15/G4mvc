@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 
 namespace G4mvc.Generator.SourceEmitters.Base;
+
 internal abstract class SyntaxProviderGenerator<T>
     where T : ClassDeclarationContext
 {
@@ -13,12 +14,21 @@ internal abstract class SyntaxProviderGenerator<T>
 
         var all = classes.Collect().Combine(configurationProvider);
 
-        context.RegisterSourceOutput(all, (c, a) => Execute(c, a.Left, a.Right));
+        context.RegisterSourceOutput(all, (c, a) =>
+        {
+            if (!IsEnabled(a.Right))
+            {
+                return;
+            }
+
+            Execute(c, a.Left, a.Right);
+        });
 
     }
 
     protected abstract bool IsPossibleDeclaration(SyntaxNode syntaxNode, CancellationToken cancellationToken);
     protected abstract bool DeclatationPredicate(T classContext);
     protected abstract T Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken);
+    protected abstract bool IsEnabled(Configuration configuration);
     protected abstract void Execute(SourceProductionContext context, ImmutableArray<T> classContexts, Configuration configuration);
 }

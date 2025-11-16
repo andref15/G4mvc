@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace G4mvc.Generator.Compilation;
+
 internal readonly struct AnalyzerConfigValues
 {
     public readonly string ProjectDir { get; }

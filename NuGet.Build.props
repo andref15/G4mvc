@@ -8,6 +8,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>G4mvc.png</PackageIcon>
     <Description>A source generator for ASP.NET Core MVC apps that creates strongly typed helpers that eliminate the use of literal strings for routing</Description>
-    <PackageTags>g4mvc;g4mvc.generator;aspnetcore;aspnetcoremvc;cshtml;razor;routing;r4mvc</PackageTags>
+    <PackageTags>g4mvc;g4mvc.generator;aspnetcore;aspnetcoremvc;mvc;cshtml;razor;razorpages;routing;sourcegenerator;incrementalgenerator;r4mvc</PackageTags>
   </PropertyGroup>
 </Project>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 #endif
 
 namespace G4mvc;
+
 public class G4mvcContentLink(
 #if NETCOREAPP
         string path, Func<string, string>? processor = null, bool useProcessedPathForContentUrl = false

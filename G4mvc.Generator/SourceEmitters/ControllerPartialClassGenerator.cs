@@ -1,6 +1,7 @@
 ﻿using G4mvc.Generator.Compilation;
 
 namespace G4mvc.Generator.SourceEmitters;
+
 internal static class ControllerPartialClassGenerator
 {
     internal static void AddControllerPartialClass(SourceProductionContext context, ControllerDeclarationContext controllerContext, Configuration configuration)

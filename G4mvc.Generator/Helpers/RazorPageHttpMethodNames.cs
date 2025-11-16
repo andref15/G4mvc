@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.Helpers;
+
 internal class RazorPageHttpMethodNames
 {
     public const string Connect = "CONNECT";

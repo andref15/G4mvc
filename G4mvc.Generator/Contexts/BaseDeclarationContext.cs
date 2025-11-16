@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.Contexts;
+
 internal abstract class BaseDeclarationContext
 {
     public SemanticModel Model { get; }

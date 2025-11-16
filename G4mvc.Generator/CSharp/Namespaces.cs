@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.CSharp;
+
 internal static class Namespaces
 {
     public const string MicrosoftAspNetCoreMvc = "Microsoft.AspNetCore.Mvc";

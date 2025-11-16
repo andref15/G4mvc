@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace G4mvc.TagHelpers;
+
 [HtmlTargetElement(_embed, Attributes = _attributeName)]
 [HtmlTargetElement(_iframe, Attributes = _attributeName)]
 [HtmlTargetElement(_img, Attributes = _attributeName)]

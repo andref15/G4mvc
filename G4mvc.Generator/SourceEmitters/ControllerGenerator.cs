@@ -3,6 +3,7 @@ using G4mvc.Generator.SourceEmitters.Base;
 using System.Collections.Immutable;
 
 namespace G4mvc.Generator.SourceEmitters;
+
 internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarationContext>
 {
 #if DEBUG
@@ -26,6 +27,9 @@ internal class ControllerGenerator : SyntaxProviderGenerator<ControllerDeclarati
 
     protected override ControllerDeclarationContext Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => ControllerDeclarationContext.Create(context, cancellationToken);
+
+    protected override bool IsEnabled(Configuration configuration)
+        => !configuration.JsonConfig.DisableMvcHelperSourceGeneration;
 
     protected override void Execute(SourceProductionContext context, ImmutableArray<ControllerDeclarationContext> controllerContexts, Configuration configuration)
     {

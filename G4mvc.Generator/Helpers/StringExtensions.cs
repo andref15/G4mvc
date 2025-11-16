@@ -29,12 +29,6 @@ internal static class StringExtensions
             return span.ToString();
         }
 
-        internal string IfNotNullNullOrEmpty(string @if)
-            => IfNotNullNullOrEmpty(@string, @if, string.Empty);
-
-        internal string IfNotNullNullOrEmpty(string @if, string @else)
-            => !string.IsNullOrEmpty(@string) ? @if : @else;
-
         internal string FirstCharLower()
         {
             Span<char> span = stackalloc char[@string.Length];
@@ -48,5 +42,14 @@ internal static class StringExtensions
 
             return span.ToString();
         }
+    }
+
+    extension(string? @string)
+    {
+        internal string IfNotNullNullOrEmpty(string @if)
+            => IfNotNullNullOrEmpty(@string, @if, string.Empty);
+
+        internal string IfNotNullNullOrEmpty(string @if, string @else)
+            => !string.IsNullOrEmpty(@string) ? @if : @else;
     }
 }

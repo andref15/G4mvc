@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.Contexts;
+
 internal class PageDeclarationContext : MvcDeclarationContext
 {
     public const string Suffix = "Model";

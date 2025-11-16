@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.Contexts;
+
 internal class ControllerDeclarationContext : MvcDeclarationContext
 {
     public const string Suffix = "Controller";

@@ -135,6 +135,9 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         internal const string DefaultStaticFilesPath = "wwwroot";
         internal const string DefaultGeneratedClassNamespace = "global";
 
+        public bool DisableMvcHelperSourceGeneration { get; }
+        public bool DisablePageHelperSourceGeneration { get; }
+        public bool DisableLinksHelperSourceGeneration { get; }
         public string MvcHelperClassName { get; }
         public string PageHelperClassName { get; }
         public string LinksHelperClassName { get; }
@@ -165,8 +168,11 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         }
 
         [JsonConstructor]
-        public JsonConfigModel(string? mvcHelperClassName, string? pageHelperClassName, string? linksHelperClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool? useProcessedPathForContentLinkNullable, bool makeGeneratedClassesInternal, string? generatedClassNamespace, bool enableSubfoldersInViews, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
+        public JsonConfigModel(bool disableMvcHelperSourceGeneration, bool disablePageHelperSourceGeneration, bool disableLinksHelperSourceGeneration, string? mvcHelperClassName, string? pageHelperClassName, string? linksHelperClassName, string? staticFilesPath, bool useVirtualPathProcessor, bool? useProcessedPathForContentLinkNullable, bool makeGeneratedClassesInternal, string? generatedClassNamespace, bool enableSubfoldersInViews, string[]? excludedStaticFileExtensions, string[]? excludedStaticFileDirectories, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias)
         {
+            DisableMvcHelperSourceGeneration = disableMvcHelperSourceGeneration;
+            DisablePageHelperSourceGeneration = disablePageHelperSourceGeneration;
+            DisableLinksHelperSourceGeneration = disableLinksHelperSourceGeneration;
             MvcHelperClassName = string.IsNullOrWhiteSpace(mvcHelperClassName)
                 ? DefaultMvcHelperClassName
                 : mvcHelperClassName!.Trim();
@@ -196,7 +202,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
         /// <summary>
         /// Only use this for tests!
         /// </summary>
-        internal static JsonConfigModel Create(string? mvcHelperClassName = null, string? pageHelperClassName = null, string? linksHelperClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool? useProcessedPathForContentLink = null, bool makeGeneratedClassesInternal = false, string? generatedClassNamespace = null, bool enableSubfoldersInViews = false, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
-            => new(mvcHelperClassName, pageHelperClassName, linksHelperClassName, staticFilesPath, useVirtualPathProcessor, useProcessedPathForContentLink, makeGeneratedClassesInternal, generatedClassNamespace, enableSubfoldersInViews, excludedStaticFileExtensions, excludedStaticFileDirectories, additionalStaticFilesPaths, customStaticFileDirectoryAlias);
+        internal static JsonConfigModel Create(bool disableMvcHelperSourceGeneration = false, bool disablePageHelperSourceGeneration = false, bool disableLinksHelperSourceGeneration = false, string? mvcHelperClassName = null, string? pageHelperClassName = null, string? linksHelperClassName = null, string? staticFilesPath = null, bool useVirtualPathProcessor = false, bool? useProcessedPathForContentLink = null, bool makeGeneratedClassesInternal = false, string? generatedClassNamespace = null, bool enableSubfoldersInViews = false, string[]? excludedStaticFileExtensions = null, string[]? excludedStaticFileDirectories = null, IReadOnlyDictionary<string, string>? additionalStaticFilesPaths = null, IReadOnlyDictionary<string, string>? customStaticFileDirectoryAlias = null)
+            => new(disableMvcHelperSourceGeneration, disablePageHelperSourceGeneration, disableLinksHelperSourceGeneration, mvcHelperClassName, pageHelperClassName, linksHelperClassName, staticFilesPath, useVirtualPathProcessor, useProcessedPathForContentLink, makeGeneratedClassesInternal, generatedClassNamespace, enableSubfoldersInViews, excludedStaticFileExtensions, excludedStaticFileDirectories, additionalStaticFilesPaths, customStaticFileDirectoryAlias);
     }
 }

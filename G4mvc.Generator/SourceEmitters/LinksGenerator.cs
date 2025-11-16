@@ -1,6 +1,7 @@
 ﻿using G4mvc.Generator.Compilation;
 
 namespace G4mvc.Generator.SourceEmitters;
+
 internal class LinksGenerator
 {
 #if DEBUG
@@ -16,6 +17,11 @@ internal class LinksGenerator
 
     private void ExecuteLinksGeneration(SourceProductionContext context, Configuration configuration)
     {
+        if (configuration.JsonConfig.DisableLinksHelperSourceGeneration)
+        {
+            return;
+        }
+
 #if DEBUG
         _version++;
 #endif

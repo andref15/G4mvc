@@ -3,6 +3,7 @@ using G4mvc.Generator.SourceEmitters.Base;
 using System.Collections.Immutable;
 
 namespace G4mvc.Generator.SourceEmitters;
+
 internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
 {
 #if DEBUG
@@ -26,6 +27,9 @@ internal class PagesGenerator : SyntaxProviderGenerator<PageDeclarationContext>
 
     protected override PageDeclarationContext Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
         => PageDeclarationContext.Create(context, cancellationToken);
+
+    protected override bool IsEnabled(Configuration configuration)
+        => !configuration.JsonConfig.DisablePageHelperSourceGeneration;
 
     protected override void Execute(SourceProductionContext context, ImmutableArray<PageDeclarationContext> pageContexts, Configuration configuration)
     {

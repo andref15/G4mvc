@@ -1,6 +1,7 @@
 ﻿using G4mvc.Generator.Compilation;
 
 namespace G4mvc.Generator.SourceEmitters;
+
 internal static class AreaClassesGenerator
 {
     internal static void AddMvcAreaClasses(SourceProductionContext context, Dictionary<string, Dictionary<string, string>> routeClassNames, Configuration configuration)

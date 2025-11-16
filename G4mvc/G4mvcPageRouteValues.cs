@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 #endif
 
 namespace G4mvc;
+
 public class G4mvcPageRouteValues : G4mvcBaseRouteValues
 {
     private const string _areaKey = "area";

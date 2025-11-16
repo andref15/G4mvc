@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.Text;
 using System.Text.Json;
 
 namespace G4mvc.TestBase;
+
 internal class ConfigAdditionalText(Configuration.JsonConfigModel jsonConfig) : AdditionalText
 {
     private readonly Configuration.JsonConfigModel _jsonConfig = jsonConfig;

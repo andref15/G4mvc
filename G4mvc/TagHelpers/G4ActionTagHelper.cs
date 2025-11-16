@@ -12,7 +12,7 @@ public class G4ActionTagHelper(IUrlHelperFactory urlHelperFactory, IHtmlGenerato
     private const string _attributeName = "g4-action";
 
     [HtmlAttributeName(_attributeName)]
-    public override G4mvcActionRouteValues RouteValues { get; set; }
+    public override G4mvcActionRouteValues RouteValues { get; set; } = null!;
 
     public override Task PostProcessFormTagAsync(TagHelperContext context, TagHelperOutput output)
     {

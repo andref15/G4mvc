@@ -11,7 +11,8 @@ Install the [G4mvc](https://www.nuget.org/packages/G4mvc/) and [G4mvc.Generator]
 
 To enable the use of the tag helpers for anchor and form tags, add the `@addTagHelper *, G4mvc` directive either in the view, or in the _ViewImports.cshtml to enable them globally.
 
-If you want to use the `IUrlHelper` and `IHtmlHelper` Extension methods, add a using directive for `G4mvc.Extensions` either in the view, or in the _ViewImports.cshtml to enable them globally.
+If you want to use the `IHtmlHelper`, `IUrlHelper` and `LinkGenerator` Extension methods, add a using directive for `G4mvc.Extensions` either in the view, or in the _ViewImports.cshtml to enable them globally.
+These extension methods provide wrappers for existing methods, which accept `G4mvcActionRouteValues` and `G4mvcPageRouteValues`.
 
 It might be necessary to restart Visual Studio for these changes to take affect.
 
@@ -31,6 +32,36 @@ For asyncronous controller actions, the task has to return one of these.
     public ActionResult<IEnumerable<string>> Edit(EditViewModel viewModel)
 
 Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would be ignored.
+
+#### Razor Pages
+The source generator follows the architecture defined in this article [Razor Pages architecture and concepts in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-9.0&tabs=visual-studio).
+
+Views will only be detected if they are in the same folder as the model. Models must end with the suffix `Model` (e.g. `IndexModel`), be inside a Namespace called Pages and derive from `Microsoft.AspNetCore.Mvc.RazorPages.PageModel`.
+If you are working with areas, the pages models have to be in a namespace following the structure `<root-namespace>.Area.<AreaName>.Pages`.
+
+##### Examples
+    namespace SampleApp.Pages;
+    public class PrivacyModel : PageModel
+    { ... }
+
+    namespace SampleApp.Pages.Admin.Users;
+    public class IndexModel : PageModel
+    { ... }
+
+    namespace SampleApp.Areas.Sales.Pages;
+    public class IndexModel : PageModel
+    { ... }
+
+    namespace SampleApp.Areas.Foo.Bar.Baz;
+    public class OrderModel : PageModel
+    { ... }
+
+Handler methods have to have to be named `On<http-method><handler-name?>` and may have an `Async` suffix. The return type does not matter. For more information see [Razor Pages architecture and concepts in ASP.NET Core - Multiple handlers per page](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-9.0&tabs=visual-studio#multiple-handlers-per-page)
+##### Examples
+    public void OnGet()
+    public void OnGetById(int id)
+    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostDifferentlyAsync()
 
 #### Links
 To trigger the generation of the links class, it is necessary to manually build or rebuild the ASP.net core project or make change in the config file.\
@@ -78,6 +109,9 @@ The json schema is available under https://schemastore.af-styx.com/Schema/G4mvc.
 
     {
       "$schema": "https://schemastore.af-styx.com/Schema/G4mvc.json",
+      "DisableMvcHelperSourceGeneration": false,
+      "DisablePageHelperSourceGeneration": false,
+      "DisableLinksHelperSourceGeneration": false,
       "MvcHelperClassName": "MVC",
       "PageHelperClassName": "Razor",
       "LinksHelperClassName":  "Links",
@@ -93,6 +127,15 @@ The json schema is available under https://schemastore.af-styx.com/Schema/G4mvc.
       "CustomStaticFileDirectoryAlias": {}
     }
 
+### DisableMvcHelperSourceGeneration
+Disables the source code generation for controller route helpers and `partial` classes.
+
+### DisablePageHelperSourceGeneration
+Disables the source code generation for razor page route helpers.
+
+### DisableLinksHelperSourceGeneration
+Disables the source code generation for Links (static files, `wwwroot`).
+
 #### MvcHelperClassName
 Defines the name of the MVC helpers class (e.g. MVC.Home.Index()). Default is `MVC`.
 
@@ -106,7 +149,7 @@ Allows you to chnage the name of the helper class in which the links for static 
 The root path (relative to project dir) for which links will be generated. Default is `wwwroot`.
 
 #### UseVirtualPathProcessor
-Defines if you want to define a custom VirtualPathProcessor funcion. By default this is `false`. When this is set to `true`, a partial class `VirtualPathProcessor` with a 
+Enable if you want to define a custom VirtualPathProcessor funcion. By default this is `false`. When this is set to `true`, a partial class `VirtualPathProcessor` with a 
 partial method `Process` will be generated and you have to write the implementation of this partial method. 
 An example of this can be seen here:
 

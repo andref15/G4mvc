@@ -1,4 +1,5 @@
 ﻿namespace G4mvc.Generator.CSharp;
+
 internal static class SourceCode
 {
     public const string NewCtor = "new()";
