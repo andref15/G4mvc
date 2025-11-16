@@ -9,6 +9,18 @@
       "type": "string",
       "format": "uri"
     },
+    "DisableMvcHelperSourceGeneration": {
+      "type": "boolean"
+      "description": "Disables the source code generation for controller route helpers and partial classes."
+    },
+    "DisablePageHelperSourceGeneration": {
+      "type": "boolean"
+      "description": "Disables the source code generation for razor page route helpers."
+    },
+    "DisableLinksHelperSourceGeneration": {
+      "type": "boolean"
+      "description": "Disables the source code generation for Links (static files, wwwroot)."
+    },
     "MvcHelperClassName": {
       "type": "string",
       "description": "Defines the name of the MVC helpers class (e.g. MVC.Home.Index())"
@@ -27,7 +39,7 @@
     },
     "UseVirtualPathProcessor": {
       "type": "boolean",
-      "description": "Defines if you want to define a custom VirtualPathProcessor funcion"
+      "description": "Enable if you want to define a custom VirtualPathProcessor funcion"
     },
     "UseProcessedPathForContentLink": {
       "type": "boolean",
