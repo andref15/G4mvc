@@ -7,9 +7,9 @@ on:
       - '*'
   
 env:
-  Major: 5
+  Major: 6
   Minor: 0
-  Patch: 4
+  Patch: 0
 
 jobs:
   Create:
@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.x.x'
+        dotnet-version: '10.x.x'
 
     - uses: actions/checkout@v3
     

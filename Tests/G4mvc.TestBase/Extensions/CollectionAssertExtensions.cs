@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace G4mvc.TestBase.Extensions;
 
@@ -23,7 +22,7 @@ public static class CollectionAssertExtensions
         Debug.Assert(expected is not null);
         Debug.Assert(actual is not null);
 
-        Assert.AreEqual(expected.Length / 2, actual.Count, $"Expected count <{expected.Length / 2}>, actual count is <{actual.Count}>");
+        Assert.HasCount(expected.Length / 2, actual, $"Expected count <{expected.Length / 2}>, actual count is <{actual.Count}>");
 
         for (var i = 0; i < expected.Length; i += 2)
         {

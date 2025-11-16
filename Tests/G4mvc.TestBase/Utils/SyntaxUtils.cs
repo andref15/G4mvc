@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 
 namespace G4mvc.TestBase.Utils;
+
 public static class SyntaxUtils
 {
     public static SyntaxTree ToSyntaxTree(string script, CSharpParseOptions parseOptions)
