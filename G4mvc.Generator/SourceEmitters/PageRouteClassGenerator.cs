@@ -285,6 +285,11 @@ internal class PageRouteClassGenerator(Configuration configuration)
             pageRouteClassNames.Add(areaKey, classNames);
         }
 
+        if (classNames.ContainsKey(pageRouteClassName))
+        {
+            return;
+        }
+
         classNames.Add(pageRouteClassName, pageNameWithoutSuffix);
     }
 
