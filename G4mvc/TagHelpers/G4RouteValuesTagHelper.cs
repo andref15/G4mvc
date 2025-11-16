@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace G4mvc.TagHelpers;
 
-[HtmlTargetElement(_anchor, Attributes = _attributeName)]
-[HtmlTargetElement(_form, Attributes = _attributeName)]
 public abstract class G4RouteValuesTagHelper<T>(IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : TagHelper
     where T : notnull, G4mvcBaseRouteValues
 {
