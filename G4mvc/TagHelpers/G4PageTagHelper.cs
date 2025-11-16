@@ -5,13 +5,14 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace G4mvc.TagHelpers;
 
-[HtmlTargetElement(_anker, Attributes = _attributeName)]
-[HtmlTargetElement(_form, Attributes = _attributeName)]
-public class G4PageTagHelper(IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : G4RouteValuesTagHelper<G4mvcPageRouteValues>(urlHelperFactory, htmlGenerator)
+[HtmlTargetElement(Anchor, Attributes = _attributeName)]
+[HtmlTargetElement(Form, Attributes = _attributeName)]
+public class G4PageTagHelper(IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : G4RouteValuesTagHelper<G4mvcPageRouteValues>(_attributeName, urlHelperFactory, htmlGenerator)
 {
-    private const string _anker = "a";
-    private const string _form = "form";
     private const string _attributeName = "g4-page";
+
+    [HtmlAttributeName(_attributeName)]
+    public override G4mvcPageRouteValues RouteValues { get; set; }
 
     public override Task PostProcessFormTagAsync(TagHelperContext context, TagHelperOutput output)
     {

@@ -7,19 +7,18 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace G4mvc.TagHelpers;
 
-public abstract class G4RouteValuesTagHelper<T>(IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : TagHelper
-    where T : notnull, G4mvcBaseRouteValues
+public abstract class G4RouteValuesTagHelper<T>(string attributeName, IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : TagHelper
+    where T : G4mvcBaseRouteValues
 {
-    private const string _anchor = "a";
-    private const string _form = "form";
-    private const string _attributeName = "g4-page";
+    public const string Anchor = "a";
+    public const string Form = "form";
     private const string _antiforgeryAttributeName = "asp-antiforgery";
 
+    private readonly string _attributeName = attributeName;
     private readonly IUrlHelperFactory _urlHelperFactory = urlHelperFactory;
     private readonly IHtmlGenerator _htmlGenerator = htmlGenerator;
 
-    [HtmlAttributeName(_attributeName)]
-    public T RouteValues { get; set; } = null!;
+    public abstract T RouteValues { get; set; }
 
     [HtmlAttributeName(_antiforgeryAttributeName)]
     public bool? Antiforgery { get; set; }
@@ -35,11 +34,11 @@ public abstract class G4RouteValuesTagHelper<T>(IUrlHelperFactory urlHelperFacto
 
         switch (output.TagName)
         {
-            case _anchor:
+            case Anchor:
                 output.Attributes.SetAttribute("href", urlHelper.RouteUrl(RouteValues));
                 await PostProcessAnchorTagAsync(context, output);
                 break;
-            case _form:
+            case Form:
                 output.Attributes.SetAttribute("action", urlHelper.RouteUrl(RouteValues));
 
                 if (!Antiforgery.HasValue)

@@ -5,10 +5,15 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace G4mvc.TagHelpers;
 
-[HtmlTargetElement(_anchor, Attributes = _attributeName)]
-[HtmlTargetElement(_form, Attributes = _attributeName)]
-public class G4ActionTagHelper(IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : G4RouteValuesTagHelper<G4mvcActionRouteValues>(urlHelperFactory, htmlGenerator)
+[HtmlTargetElement(Anchor, Attributes = _attributeName)]
+[HtmlTargetElement(Form, Attributes = _attributeName)]
+public class G4ActionTagHelper(IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : G4RouteValuesTagHelper<G4mvcActionRouteValues>(_attributeName, urlHelperFactory, htmlGenerator)
 {
+    private const string _attributeName = "g4-action";
+
+    [HtmlAttributeName(_attributeName)]
+    public override G4mvcActionRouteValues RouteValues { get; set; }
+
     public override Task PostProcessFormTagAsync(TagHelperContext context, TagHelperOutput output)
     {
         if (!context.AllAttributes.TryGetAttribute("method", out var attribute) || string.IsNullOrEmpty(attribute.Value?.ToString()))
