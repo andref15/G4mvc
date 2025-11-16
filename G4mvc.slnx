@@ -5,6 +5,7 @@
   <Folder Name="/Solution Items/">
     <File Path="NuGet.Build.props" />
     <File Path="README.md" />
+    <File Path="G4mvc.png" />
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="Tests/G4mvc.TestBase/G4mvc.TestBase.csproj" />
