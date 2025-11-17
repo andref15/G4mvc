@@ -27,7 +27,7 @@
     },
     "PageHelperClassName": {
       "type": "string",
-      "description": "Defines the name of the Razor Pages helpers class (e.g. Razor.Home.Index())"
+      "description": "Defines the name of the Razor Pages helpers class (e.g. RazorPages.Home.Index())"
     },
     "LinksHelperClassName": {
       "type": "string",

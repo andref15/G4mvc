@@ -113,7 +113,7 @@ The json schema is available under https://schemastore.af-styx.com/Schema/G4mvc.
       "DisablePageHelperSourceGeneration": false,
       "DisableLinksHelperSourceGeneration": false,
       "MvcHelperClassName": "MVC",
-      "PageHelperClassName": "Razor",
+      "PageHelperClassName": "RazorPages",
       "LinksHelperClassName":  "Links",
       "StaticFilesPath": "wwwroot",
       "UseVirtualPathProcessor": false,
@@ -140,7 +140,7 @@ Disables the source code generation for Links (static files, `wwwroot`).
 Defines the name of the MVC helpers class (e.g. MVC.Home.Index()). Default is `MVC`.
 
 #### PageHelperClassName
-Defines the name of the Razor Pages helpers class (e.g. Razor.Home.Index()). Default is `Razor`.
+Defines the name of the Razor Pages helpers class (e.g. RazorPages.Home.Index()). Default is `RazorPages`.
 
 #### LinksHelperClassName
 Allows you to chnage the name of the helper class in which the links for static files are generated in. Default is `Links`.
