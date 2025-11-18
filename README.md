@@ -37,7 +37,7 @@ Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would 
 The source generator follows the architecture defined in this article [Razor Pages architecture and concepts in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-9.0&tabs=visual-studio).
 
 Views will only be detected if they are in the same folder as the model. Models must end with the suffix `Model` (e.g. `IndexModel`), be inside a Namespace called Pages and derive from `Microsoft.AspNetCore.Mvc.RazorPages.PageModel`.
-If you are working with areas, the pages models have to be in a namespace following the structure `<root-namespace>.Area.<AreaName>.Pages`.
+If you are working with areas, the pages models have to be in a namespace following the structure `<root-namespace>.Areas.<AreaName>.Pages`.
 
 ##### Examples
     namespace SampleApp.Pages;

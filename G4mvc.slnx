@@ -8,6 +8,7 @@
     <File Path="G4mvc.png" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="G4mvc.Test/G4mvc.Test.csproj" Id="1f35aaa2-345b-4c98-b897-eca05ff96b62" />
     <Project Path="Tests/G4mvc.TestBase/G4mvc.TestBase.csproj" />
     <Project Path="Tests/G4mvc.Test_10/G4mvc.Test_10.csproj" Id="f9ec3b08-ab56-439e-89a7-0fd989229a25" />
     <Project Path="Tests/G4mvc.Test_8/G4mvc.Test_8.csproj" />
