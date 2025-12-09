@@ -21,7 +21,7 @@ public static class UrlHelperExtensions
             => _urlHelper.RouteUrl(null, route, null, null);
 
         public string? RouteUrl(string? routeName, G4mvcActionRouteValues route, string? protocol = null, string? hostName = null, string? fragment = null)
-            => _urlHelper.RouteUrl(routeName, route, protocol, hostName, fragment);
+            => _urlHelper.RouteUrl(routeName, route.AsRouteValueDictionary(), protocol, hostName, fragment);
 
         public string? Content(G4mvcContentLink contentLink)
             => contentLink.ToContentUrl(_urlHelper);
