@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 

@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 
 namespace G4mvc.Helpers;
 

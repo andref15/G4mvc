@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 using G4mvc.Helpers;
 using Microsoft.AspNetCore.Mvc;
 #endif
@@ -27,7 +27,7 @@ public class G4mvcActionRouteValues : G4mvcBaseRouteValues
     /// <returns>The route formatted as [Area]/[Controller]/[Action]</returns>
     public override string ToString()
     {
-#if NETCOREAPP
+#if !NETSTANDARD
         var length = 3 + (Area?.Length ?? -1) + Controller.Length + Action.Length; //3 is the maximum number of slashes, if area is null count -1
 
         return string.Create(length, this, (span, routeValues) =>

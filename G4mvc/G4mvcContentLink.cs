@@ -1,16 +1,16 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 using Microsoft.AspNetCore.Mvc;
 #endif
 
 namespace G4mvc;
 
 public class G4mvcContentLink(
-#if NETCOREAPP
+#if !NETSTANDARD
         string path, Func<string, string>? processor = null, bool useProcessedPathForContentUrl = false
 #endif
     )
 {
-#if NETCOREAPP
+#if !NETSTANDARD
     private readonly string _path = path;
     private readonly string _processedPath = processor is null ? path : processor(path);
     private readonly bool _useProcessedPathForContentUrl = useProcessedPathForContentUrl;

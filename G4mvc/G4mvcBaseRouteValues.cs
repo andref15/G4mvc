@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 #endif
@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Routing;
 namespace G4mvc;
 
 public abstract class G4mvcBaseRouteValues
-#if NETCOREAPP
-        : RouteValueDictionary
-#else
+#if NETSTANDARD
         : Dictionary<string, object?>
+#else
+        : RouteValueDictionary
 #endif
 {
     private const string _areaKey = "area";
@@ -23,7 +23,7 @@ public abstract class G4mvcBaseRouteValues
         Area = area;
     }
 
-#if NETCOREAPP
+#if !NETSTANDARD
     public RouteValueDictionary AsRouteValueDictionary()
         => this;
 
