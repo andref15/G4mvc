@@ -34,7 +34,7 @@ public abstract class G4mvcBaseRouteValues<TSelf>
         return (TSelf)this;
     }
 
-    public TSelf WithValues(params IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+    public TSelf WithValues(params IEnumerable<KeyValuePair<string, object?>> keyValuePairs)
     {
         foreach (var (key, value) in keyValuePairs)
         {
