@@ -5,9 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace G4mvc;
 
-public class G4mvcActionRouteValues : G4mvcBaseRouteValues
+public class G4mvcActionRouteValues : G4mvcBaseRouteValues<G4mvcActionRouteValues>
 {
-    private const string _areaKey = "area";
     private const string _controllerKey = "controller";
     private const string _actionKey = "action";
 

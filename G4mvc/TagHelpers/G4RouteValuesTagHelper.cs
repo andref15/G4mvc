@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace G4mvc.TagHelpers;
 
 public abstract class G4RouteValuesTagHelper<T>(string attributeName, IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : TagHelper
-    where T : G4mvcBaseRouteValues
+    where T : G4mvcBaseRouteValues<T>
 {
     public const string Anchor = "a";
     public const string Form = "form";

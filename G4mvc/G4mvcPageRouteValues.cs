@@ -2,14 +2,12 @@
 using G4mvc.Extensions;
 using G4mvc.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 #endif
 
 namespace G4mvc;
 
-public class G4mvcPageRouteValues : G4mvcBaseRouteValues
+public class G4mvcPageRouteValues : G4mvcBaseRouteValues<G4mvcPageRouteValues>
 {
-    private const string _areaKey = "area";
     private const string _pageKey = "page";
     private const string _handlerKey = "handler";
 
