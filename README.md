@@ -83,13 +83,23 @@ For the generated `G4mvcContentLink` fields, you can use the `IUrlHelper.Content
 
 ### Tag Helpers
 #### g4-action
-This tag helper can be used on anchor as well as form tags. It creates the `href` attribute for anchor tags or the `action` attribute for form tags. \
-`<a g4-action="MVC.Home.Index()">Home</a>`
+This tag helper can be used on anchor as well as form tags. It creates the `href` attribute for anchor tags or the `action` attribute for form tags.
+    
+    <a g4-action="MVC.Home.Index()">Home</a>
+    <form g4-action="MVC.Home.Index()"></form>
+
+#### g4-page
+This tag helper can be used on anchor as well as form tags. It creates the `href` attribute for anchor tags or the `action` attribute for form tags.
+Additionally it creates and assigns the method attribute if it isn't already set.
+    
+    <a g4-page="RazorPages.Index.Get()">Home</a>
+    <form g4-page="RazorPages.Index.Post()"></form>
 
 #### g4-content
 For static files, which are part of the generated Links, the `g4-content` tag helper can be applied to all html tags, that expect a file.
-It creates the attribute with the virtual path to the file.\
-`<img g4-content="Links.images.sample_svg" />`
+It creates the attribute with the virtual path to the file.
+    
+    <img g4-content="Links.images.sample_svg" />
 
 Supported html tags:
 - embed
