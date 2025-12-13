@@ -1,14 +1,12 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-#endif
 
 namespace G4mvc.Extensions;
 
 public static class HtmlHelperExtensions
 {
-#if NETCOREAPP
     extension(IHtmlHelper _htmlHelper)
     {
 
@@ -48,5 +46,6 @@ public static class HtmlHelperExtensions
         public MvcForm BeginRouteForm(string? routeName, G4mvcActionRouteValues route, FormMethod formMethod, IDictionary<string, object> htmlAttributes)
             => _htmlHelper.BeginRouteForm(routeName, route, formMethod, null, htmlAttributes);
     }
-#endif
 }
+
+#endif

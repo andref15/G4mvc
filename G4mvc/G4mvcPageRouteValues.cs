@@ -1,15 +1,13 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 using G4mvc.Extensions;
 using G4mvc.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 #endif
 
 namespace G4mvc;
 
-public class G4mvcPageRouteValues : G4mvcBaseRouteValues
+public class G4mvcPageRouteValues : G4mvcBaseRouteValues<G4mvcPageRouteValues>
 {
-    private const string _areaKey = "area";
     private const string _pageKey = "page";
     private const string _handlerKey = "handler";
 
@@ -31,7 +29,7 @@ public class G4mvcPageRouteValues : G4mvcBaseRouteValues
     /// <returns>The route formatted as [Area]/[Page]</returns>
     public override string ToString()
     {
-#if NETCOREAPP
+#if !NETSTANDARD
         var length = 2 + (Area?.Length ?? -1) + Page.Length; //2 is the maximum number of slashes, if area is null count -1
 
         return string.Create(length, this, (span, routeValues) =>
