@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;

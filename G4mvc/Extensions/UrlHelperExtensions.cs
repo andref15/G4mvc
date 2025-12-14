@@ -1,4 +1,4 @@
-﻿#if NETCOREAPP
+﻿#if !NETSTANDARD
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
@@ -23,9 +23,6 @@ public static class UrlHelperExtensions
         public string? RouteUrl(string? routeName, G4mvcActionRouteValues route, string? protocol = null, string? hostName = null, string? fragment = null)
             => _urlHelper.RouteUrl(routeName, route.AsRouteValueDictionary(), protocol, hostName, fragment);
 
-        public string? Content(G4mvcContentLink contentLink)
-            => contentLink.ToContentUrl(_urlHelper);
-
         public string? Page(G4mvcPageRouteValues route)
             => _urlHelper.RouteUrl(route);
 
@@ -34,6 +31,15 @@ public static class UrlHelperExtensions
 
         public string PageAbsolute(G4mvcPageRouteValues route)
             => GetAbsoluteUrl(_urlHelper, route);
+
+        public string? RouteUrl(G4mvcPageRouteValues route)
+            => _urlHelper.RouteUrl(null, route, null, null);
+
+        public string? RouteUrl(string? routeName, G4mvcPageRouteValues route, string? protocol = null, string? hostName = null, string? fragment = null)
+            => _urlHelper.RouteUrl(routeName, route.AsRouteValueDictionary(), protocol, hostName, fragment);
+
+        public string? Content(G4mvcContentLink contentLink)
+            => contentLink.ToContentUrl(_urlHelper);
 
         private string GetAbsoluteUrl(RouteValueDictionary route)
         {
