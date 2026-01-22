@@ -36,21 +36,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
                 return _generatedClassNamespace;
             }
 
-            var @namespace = JsonConfig.GeneratedClassNamespace;
-
-            if (@namespace[0] is '.')
-            {
-                @namespace = $"{AnalyzerConfigValues.RootNamespace}{@namespace}";
-            }
-            else if (Enum.TryParse<ClassNamespaceIdentifier>(@namespace, true, out var identifier))
-            {
-                @namespace = identifier switch
-                {
-                    ClassNamespaceIdentifier.Global => null,
-                    ClassNamespaceIdentifier.Project => AnalyzerConfigValues.RootNamespace,
-                    _ => null
-                };
-            }
+            var @namespace = GetRootNamespaceFromConfigValue(JsonConfig.GeneratedClassNamespace, AnalyzerConfigValues.RootNamespace);
 
             _generatedClassNamespaceInitialized = true;
 
@@ -125,6 +111,32 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
 
     internal readonly SourceBuilder CreateSourceBuilder()
         => new(LanguageVersion);
+
+    internal static string? GetRootNamespaceFromConfigValue(string? configValue, string? projectRootNamespace)
+    {
+        var @namespace = configValue?.Trim();
+
+        if (@namespace is null or { Length: 0 })
+        {
+            return null;
+        }
+
+        if (@namespace[0] is '.')
+        {
+            return $"{projectRootNamespace}{@namespace}";
+        }
+        else if (Enum.TryParse<ClassNamespaceIdentifier>(@namespace, true, out var identifier))
+        {
+            return identifier switch
+            {
+                ClassNamespaceIdentifier.Global => null,
+                ClassNamespaceIdentifier.Project => projectRootNamespace,
+                _ => null
+            };
+        }
+
+        return @namespace;
+    }
 
     internal readonly struct JsonConfigModel
     {

@@ -168,7 +168,7 @@ internal class SourceBuilder(LanguageVersion languageVersion)
     }
 
     private void AppendIndentation()
-        => _stringBuilder.Append(string.Empty.PadRight(_indentCounter, '\t'));
+        => _stringBuilder.Append(string.Empty.PadRight(_indentCounter * 4, ' '));
 
     public override string ToString()
         => _stringBuilder.ToString();

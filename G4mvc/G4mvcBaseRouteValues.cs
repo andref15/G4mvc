@@ -48,7 +48,7 @@ public abstract class G4mvcBaseRouteValues<TSelf>
 
     public TSelf WithoutValue(string key)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(key);
+        ThrowIfKeyIsNullOrEmpty(key);
 
         Remove(key);
 
@@ -59,10 +59,7 @@ public abstract class G4mvcBaseRouteValues<TSelf>
     {
         foreach (var key in keys)
         {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                continue;
-            }
+            ThrowIfKeyIsNullOrEmpty(key, nameof(keys));
 
             Remove(key);
         }
