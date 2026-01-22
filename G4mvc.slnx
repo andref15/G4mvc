@@ -8,10 +8,7 @@
     <File Path="G4mvc.png" />
   </Folder>
   <Folder Name="/Tests/">
-    <Project Path="Tests/G4mvc.TestBase/G4mvc.TestBase.csproj" />
-    <Project Path="Tests/G4mvc.Test_10/G4mvc.Test_10.csproj" Id="f9ec3b08-ab56-439e-89a7-0fd989229a25" />
-    <Project Path="Tests/G4mvc.Test_8/G4mvc.Test_8.csproj" />
-    <Project Path="Tests/G4mvc.Test_9/G4mvc.Test_9.csproj" Id="aa2bdc46-4ad9-4bf2-93fd-ef99309d051c" />
+    <Project Path="Tests/G4mvc.Test/G4mvc.Test.csproj" />
   </Folder>
   <Folder Name="/Workloads/">
     <File Path=".github/workflows/ci.yml" />

@@ -245,6 +245,8 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
                 foreach (var subDir in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly).OrderBy(d => d.Name))
                 {
+                    sourceBuilder.AppendLine();
+
                     var subClassName = IdentifierParser.CreateIdentifierFromPath(subDir.Name, classNameSpan);
 
                     sourceBuilder.AppendProperty("public", $"{subClassName}Views", subClassName, "get", null, SourceCode.NewCtor);

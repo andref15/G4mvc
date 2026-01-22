@@ -8,7 +8,7 @@ internal class IdentifierParser(Configuration configuration, string projectDir)
 
     public string GetConfigAliasOrIdentifierFromPath(FileSystemInfo fileSystemInfo, ReadOnlySpan<char> enclosing)
         => _customStaticFileDirectoryClassNames.TryGetValue(fileSystemInfo.FullName, out var alias)
-            ? alias
+            ? $"@{alias}"
             : CreateIdentifierFromPath(fileSystemInfo.Name, enclosing);
 
     public static string CreateIdentifierFromPath(string pathSegment, ReadOnlySpan<char> enclosing)

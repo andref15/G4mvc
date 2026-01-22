@@ -29,7 +29,8 @@ internal class LinksGenerator
 
         sourceBuilder
             .Using(nameof(G4mvc))
-            .AppendLine();
+            .AppendLine()
+            .Nullable(configuration.GlobalNullable);
 
         IDisposable? namespaceDisposable = null;
 
@@ -38,8 +39,6 @@ internal class LinksGenerator
             namespaceDisposable = sourceBuilder.BeginNamespace(configuration.GeneratedClassNamespace, true);
             sourceBuilder.AppendLine();
         }
-
-        sourceBuilder.Nullable(configuration.GlobalNullable);
 
         var projectDir = configuration.AnalyzerConfigValues.ProjectDir;
 
@@ -73,7 +72,7 @@ internal class LinksGenerator
 
             CreateLinksClass(sourceBuilder, new(root), root, null, excludedDirectories, linksHelperClassNameSpan, configuration, linkIdentifierParser, classPath, context.CancellationToken);
 
-            if (additionalStaticFilesPaths is not null)
+            if (additionalStaticFilesPaths is not null and { Count: > 0 })
             {
                 CreateAdditionalStaticFilesLinks(context, configuration, projectDir, sourceBuilder, excludedDirectories, additionalStaticFilesPaths, linksHelperClassNameSpan, linkIdentifierParser);
             }
@@ -176,7 +175,6 @@ internal class LinksGenerator
 
     private void CreateSubClasses(SourceBuilder sourceBuilder, string root, string? subRoute, List<string> excludedDirectories, ReadOnlySpan<char> enclosingClass, Configuration configuration, IdentifierParser linkIdentifierParser, IOrderedEnumerable<DirectoryInfo> subDirectories, string parentClassPath, CancellationToken cancellationToken)
     {
-
         foreach (var subDirectory in subDirectories)
         {
             cancellationToken.ThrowIfCancellationRequested();

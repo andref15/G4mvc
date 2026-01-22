@@ -43,16 +43,17 @@ internal static class RouteHelperClassGenerator
             sourceBuilder.Using(areasNamespace);
         }
 
-        sourceBuilder.Using(helpersNamespace);
+        sourceBuilder.Using(helpersNamespace)
+            .AppendLine()
+            .Nullable(configuration.GlobalNullable);
 
         var namespaceDisposable = (IDisposable?)null;
 
         if (configuration.GeneratedClassNamespace is not null)
         {
             namespaceDisposable = sourceBuilder.BeginNamespace(configuration.GeneratedClassNamespace, true);
+            sourceBuilder.AppendLine();
         }
-
-        sourceBuilder.Nullable(configuration.GlobalNullable);
 
         using (namespaceDisposable)
         using (sourceBuilder.BeginClass(configuration.GeneratedClassModifier, helperClassName))
