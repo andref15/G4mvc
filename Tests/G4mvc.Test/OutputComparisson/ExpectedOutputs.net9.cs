@@ -9,7 +9,7 @@ internal partial class ExpectedOutputs
     {
         return new()
         {
-            [$"G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\{_linksHelperClassName}.generated.cs"] = _withVpp
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", $"{_linksHelperClassName}.generated.cs")] = _withVpp
                 ? $$"""
                 using {{nameof(G4mvc)}};
 
@@ -339,7 +339,7 @@ internal partial class ExpectedOutputs
                     """ : "")}}}
 
                 """,
-            ["G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\TestRoutes.generated.cs"] = $$"""
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", "TestRoutes.generated.cs")] = $$"""
                 using G4mvc;
 
                 #nullable enable
@@ -432,7 +432,7 @@ internal partial class ExpectedOutputs
                 }
 
                 """,
-            ["G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\TestPartialRoutes.generated.cs"] = $$"""
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", "TestPartialRoutes.generated.cs")] = $$"""
                 using G4mvc;
 
                 #nullable enable
@@ -502,7 +502,7 @@ internal partial class ExpectedOutputs
                 }
 
                 """,
-            ["G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\TestPartialController.generated.cs"] = $$"""
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", "TestPartialController.generated.cs")] = $$"""
                 using {{nameof(G4mvc)}};
                 using Microsoft.AspNetCore.Mvc;
                 {{(_classNamespace is null ? "" : $"using {_classNamespace};{Environment.NewLine}")}}
@@ -525,7 +525,7 @@ internal partial class ExpectedOutputs
                 }
 
                 """,
-            ["G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\SharedRoutes.generated.cs"] = $$"""
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", "SharedRoutes.generated.cs")] = $$"""
                 #nullable enable
 
                 namespace {{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc;
@@ -549,7 +549,7 @@ internal partial class ExpectedOutputs
                 }
 
                 """,
-            [$"G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\{_mvcClassName}.generated.cs"] = $$"""
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", $"{_mvcClassName}.generated.cs")] = $$"""
                 using {{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc;
 
                 #nullable enable
@@ -563,7 +563,7 @@ internal partial class ExpectedOutputs
                 }
 
                 """,
-            ["G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\IndexRoutes.generated.cs"] = $$"""
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", "IndexRoutes.generated.cs")] = $$"""
                 using {{nameof(G4mvc)}};
 
                 #nullable enable
@@ -637,7 +637,7 @@ internal partial class ExpectedOutputs
                 }
 
                 """,
-            ["G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\Sample.IndexRoutes.generated.cs"] = $$"""
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", "Sample.IndexRoutes.generated.cs")] = $$"""
                 using {{nameof(G4mvc)}};
         
                 #nullable enable
@@ -716,7 +716,7 @@ internal partial class ExpectedOutputs
                 }
 
                 """,
-            [$"G4mvc.Generator\\G4mvc.Generator.G4mvcGenerator\\{_pageHelperClassName}.generated.cs"] = $$"""
+            [Path.Join("G4mvc.Generator", "G4mvc.Generator.G4mvcGenerator", $"{_pageHelperClassName}.generated.cs")] = $$"""
                 using {{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.RazorPages;
 
                 #nullable enable
