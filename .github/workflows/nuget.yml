@@ -34,13 +34,13 @@ jobs:
       if: ${{ github.ref_name != 'main' || github.event_name != 'workflow_dispatch' }}
 
     - name: Pack Release
-      run: dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -o ./packages/
+      run: dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -p:ContinuousIntegrationBuild=true -o ./packages/
       if: ${{ github.ref_name == 'main' && github.event_name == 'workflow_dispatch' }}
     
     - name: Pack Prerelease
       env:
         VERSIONTAG: ${{ steps.set-prerelease-version-tag.outputs.VERSIONTAG }}
-      run: dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -p:VersionSuffix=${{ env.VERSIONTAG }}.${{ github.run_number }} -o ./packages/
+      run: dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -p:VersionSuffix=${{ env.VERSIONTAG }}.${{ github.run_number }} -p:ContinuousIntegrationBuild=true -o ./packages/
       if: ${{ github.ref_name != 'main' || github.event_name != 'workflow_dispatch' }}
       
     - name: Push
