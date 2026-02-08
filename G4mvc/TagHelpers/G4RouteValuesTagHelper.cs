@@ -26,6 +26,9 @@ public abstract class G4RouteValuesTagHelper<T>(string attributeName, IUrlHelper
     [HtmlAttributeNotBound, ViewContext]
     public ViewContext ViewContext { get; set; } = null!;
 
+    // Run before FormTagHelper (which has Order = -1000) so that we set the 'action' attribute before FormTagHelper which will prevent it adding a duplicate antiforgery token.
+    public override int Order => -1001;
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         output.Attributes.RemoveAll(_attributeName);
