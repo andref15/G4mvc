@@ -52,7 +52,7 @@ If you are working with areas, the pages models have to be in a namespace follow
     public class IndexModel : PageModel
     { ... }
 
-    namespace SampleApp.Areas.Foo.Bar.Baz;
+    namespace SampleApp.Areas.Sales.Pages.Foo.Bar.Baz;
     public class OrderModel : PageModel
     { ... }
 
