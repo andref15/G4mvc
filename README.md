@@ -56,7 +56,7 @@ If you are working with areas, the pages models have to be in a namespace follow
     public class OrderModel : PageModel
     { ... }
 
-Handler methods have to have to be named `On<http-method><handler-name?>` and may have an `Async` suffix. The return type does not matter. For more information see [Razor Pages architecture and concepts in ASP.NET Core - Multiple handlers per page](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-9.0&tabs=visual-studio#multiple-handlers-per-page)
+Handler methods have to be named `On<http-method><handler-name?>` and may have an `Async` suffix. The return type does not matter. For more information see [Razor Pages architecture and concepts in ASP.NET Core - Multiple handlers per page](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-9.0&tabs=visual-studio#multiple-handlers-per-page)
 ##### Examples
     public void OnGet()
     public void OnGetById(int id)
