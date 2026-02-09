@@ -6,7 +6,7 @@ on:
     branches:
       - '*'
     paths-ignore:
-      - '.gitbub/workflows/**'
+      - '.github/workflows/**'
       - 'README.md'
   
 env:
