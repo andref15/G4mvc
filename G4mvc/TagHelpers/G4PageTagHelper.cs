@@ -1,4 +1,5 @@
 ﻿#if !NETSTANDARD
+using G4mvc.Extensions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -13,10 +14,9 @@ public class G4PageTagHelper(IUrlHelperFactory urlHelperFactory, IHtmlGenerator 
 
     [HtmlAttributeName(_attributeName)]
     public override G4mvcPageRouteValues RouteValues { get; set; } = null!;
-
     public override Task PostProcessFormTagAsync(TagHelperContext context, TagHelperOutput output)
     {
-        if (!context.AllAttributes.TryGetAttribute("method", out var attribute) || string.IsNullOrEmpty(attribute.Value?.ToString()))
+        if (!context.AllAttributes.AttributeHasValue("method") && !output.Attributes.AttributeHasValue("method"))
         {
             output.Attributes.SetAttribute("method", RouteValues.Method);
         }
