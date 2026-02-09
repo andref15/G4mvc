@@ -10,18 +10,19 @@ namespace G4mvc.TagHelpers;
 public abstract class G4RouteValuesTagHelper<T>(string attributeName, IUrlHelperFactory urlHelperFactory, IHtmlGenerator htmlGenerator) : TagHelper
     where T : G4mvcBaseRouteValues<T>
 {
-    public const string Anchor = "a";
-    public const string Form = "form";
+    private const int _formTagHelperOrder = -1000;
     private const string _antiforgeryAttributeName = "asp-antiforgery";
+
+    protected const string Anchor = "a";
+    protected const string Form = "form";
 
     private readonly string _attributeName = attributeName;
     private readonly IUrlHelperFactory _urlHelperFactory = urlHelperFactory;
     private readonly IHtmlGenerator _htmlGenerator = htmlGenerator;
 
-    public abstract T RouteValues { get; set; }
+    public override int Order => _formTagHelperOrder - 1;
 
-    [HtmlAttributeName(_antiforgeryAttributeName)]
-    public bool? Antiforgery { get; set; }
+    public abstract T RouteValues { get; set; }
 
     [HtmlAttributeNotBound, ViewContext]
     public ViewContext ViewContext { get; set; } = null!;
@@ -41,7 +42,7 @@ public abstract class G4RouteValuesTagHelper<T>(string attributeName, IUrlHelper
             case Form:
                 output.Attributes.SetAttribute("action", urlHelper.RouteUrl(RouteValues));
 
-                if (!Antiforgery.HasValue)
+                if (!context.AllAttributes.ContainsName(_antiforgeryAttributeName))
                 {
                     var antiforgeryTag = _htmlGenerator.GenerateAntiforgery(ViewContext);
                     if (antiforgeryTag != null)
