@@ -5,8 +5,9 @@ on:
   push:
     branches:
       - '*'
-    paths:
-      - '!.gitbub/workflows'
+    paths-ignore:
+      - '.gitbub/workflows/**'
+      - 'README.md'
   
 env:
   Major: 6
