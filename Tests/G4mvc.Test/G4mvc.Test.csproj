@@ -26,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Areas\**\*.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <None Update="Areas\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Update="Controllers\**\*.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>

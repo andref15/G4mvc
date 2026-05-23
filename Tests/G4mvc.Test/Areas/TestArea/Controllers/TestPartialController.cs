@@ -1,12 +1,13 @@
-﻿using G4mvc.Test.Models;
+﻿using G4mvc.Test.Areas.TestArea.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace G4mvc.Test.Controllers;
+namespace G4mvc.Test.Areas.TestArea.Controllers;
 
-public class TestController(ILogger<TestController> logger) : Controller
+[Area("TestArea")]
+public partial class TestPartialController(ILogger<TestController> logger) : Controller
 {
     private readonly ILogger<TestController> _logger = logger;
 
@@ -23,10 +24,9 @@ public class TestController(ILogger<TestController> logger) : Controller
         => View();
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error(ErrorViewModel model)
+    public IActionResult Error()
     {
-        _ = model;
         _logger.LogError("An error occurred");
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new TestAreaErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
