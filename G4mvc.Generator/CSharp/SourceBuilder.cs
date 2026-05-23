@@ -74,17 +74,6 @@ internal class SourceBuilder(LanguageVersion languageVersion)
         return this;
     }
 
-    public SourceBuilder AppendProperties(string modifier, Dictionary<string, string> propertyDefinitions, string get, string? set, string? assignmnet = null, CancellationToken cancellationToken = default)
-    {
-        foreach (var (type, name) in propertyDefinitions)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            AppendProperty(modifier, type, name, get, set, assignmnet);
-        }
-
-        return this;
-    }
-
     public SourceBuilder AppendPartialMethod(string modifiers, string returnType, string methodName, string? parameters = null)
     {
         AppendIndentation();

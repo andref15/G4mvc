@@ -35,10 +35,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
 
         var mainPageContext = pageContexts[0];
 
-        sourceBuilder
-            .Using(nameof(G4mvc))
-            .AppendLine()
-            .Nullable(mainPageContext.NullableEnabled);
+        sourceBuilder.Nullable(mainPageContext.NullableEnabled);
 
         var topClassName = (string?)null;
         var topClassNameWithoutSuffix = (string?)null;
@@ -82,6 +79,8 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 sourceBuilder.AppendLine();
 
                 var methodParameterGroups = AddHttpMethodsAndGetParameterGroups(context, mainPageContext, sourceBuilder, httpMethodGroups, bindModelProperties, bindPropertiesSupportsGet);
+
+                sourceBuilder.AppendLine();
 
                 using (sourceBuilder.BeginClass("public", $"{mainPageContext.NameWithoutSuffix}MethodNames"))
                 {
@@ -182,9 +181,9 @@ internal class PageRouteClassGenerator(Configuration configuration)
             methodParameterGroups.Add(handlerHethodName, methodsGroupParameterNames);
 
             var (method, handlerName) = RazorPageHttpMethodNames.ParseMethodAndHandlerName(handlerHethodName);
-            using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), handlerHethodName))
+            using (sourceBuilder.BeginMethod("public", $"global::{nameof(G4mvc)}.{nameof(G4mvcPageRouteValues)}", handlerHethodName))
             {
-                sourceBuilder.AppendReturnCtor(nameof(G4mvcPageRouteValues), areaString, pageString, SourceCode.String(handlerName), SourceCode.String(method));
+                sourceBuilder.AppendReturnCtor($"global::{nameof(G4mvc)}.{nameof(G4mvcPageRouteValues)}", areaString, pageString, SourceCode.String(handlerName), SourceCode.String(method));
             }
 
             sourceBuilder.AppendLine();
@@ -227,7 +226,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
                 }
 
                 using (nullableBlock)
-                using (sourceBuilder.BeginMethod("public", nameof(G4mvcPageRouteValues), handlerHethodName, string.Join(", ", relevantParameters.Select(p =>
+                using (sourceBuilder.BeginMethod("public", $"global::{nameof(G4mvc)}.{nameof(G4mvcPageRouteValues)}", handlerHethodName, string.Join(", ", relevantParameters.Select(p =>
                 {
                     var sb = new StringBuilder();
 

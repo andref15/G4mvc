@@ -27,10 +27,7 @@ internal class LinksGenerator
 #endif
         var sourceBuilder = configuration.CreateSourceBuilder();
 
-        sourceBuilder
-            .Using(nameof(G4mvc))
-            .AppendLine()
-            .Nullable(configuration.GlobalNullable);
+        sourceBuilder.Nullable(configuration.GlobalNullable);
 
         IDisposable? namespaceDisposable = null;
 
@@ -164,11 +161,11 @@ internal class LinksGenerator
 
             if (jsonConfig.UseVirtualPathProcessor)
             {
-                sourceBuilder.AppendField("public static readonly", nameof(G4mvcContentLink), linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\", {Configuration.VppClassName}.{Configuration.VppMethodName}, {(jsonConfig.UseProcessedPathForContentLink ? "true" : "false")})");
+                sourceBuilder.AppendField("public static readonly", $"global::{nameof(G4mvc)}.{nameof(G4mvcContentLink)}", linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\", {Configuration.VppClassName}.{Configuration.VppMethodName}, {(jsonConfig.UseProcessedPathForContentLink ? "true" : "false")})");
             }
             else
             {
-                sourceBuilder.AppendField("public static readonly", nameof(G4mvcContentLink), linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\")");
+                sourceBuilder.AppendField("public static readonly", $"global::{nameof(G4mvc)}.{nameof(G4mvcContentLink)}", linkIdentifierParser.GetConfigAliasOrIdentifierFromPath(file, enclosingClass), $"new(\"{GetRelativePath(root, subRoute, file.FullName)}\")");
             }
         }
     }
