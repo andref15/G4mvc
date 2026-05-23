@@ -22,6 +22,45 @@ public sealed class G4mvcTests
     }
 
     [TestMethod]
+    public async Task CustomOptions_DisableMvcHelperSourceGeneration()
+    {
+        var context = new G4mvcSourceGeneraorTest();
+        var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
+            .DisableMvcHelperSourceGeneration()
+            .Build();
+
+        await context.InitializeAsync(config, expectedOutputs, TestContext.CancellationToken);
+
+        await context.RunAsync(TestContext.CancellationToken);
+    }
+
+    [TestMethod]
+    public async Task CustomOptions_DisablePageHelperSourceGeneration()
+    {
+        var context = new G4mvcSourceGeneraorTest();
+        var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
+            .DisablePageHelperSourceGeneration()
+            .Build();
+
+        await context.InitializeAsync(config, expectedOutputs, TestContext.CancellationToken);
+
+        await context.RunAsync(TestContext.CancellationToken);
+    }
+
+    [TestMethod]
+    public async Task CustomOptions_DisableLinksHelperSourceGeneration()
+    {
+        var context = new G4mvcSourceGeneraorTest();
+        var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
+            .DisableLinksHelperSourceGeneration()
+            .Build();
+
+        await context.InitializeAsync(config, expectedOutputs, TestContext.CancellationToken);
+
+        await context.RunAsync(TestContext.CancellationToken);
+    }
+
+    [TestMethod]
     public async Task CustomOptions_ClassNames()
     {
         const string mvc = "TestMvc";

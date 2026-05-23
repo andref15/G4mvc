@@ -38,14 +38,7 @@ internal static class RouteHelperClassGenerator
 
         var areaNames = routeClassNames.Keys.Where(static k => !string.IsNullOrEmpty(k)).ToList();
 
-        if (areaNames.Count > 0)
-        {
-            sourceBuilder.Using(areasNamespace);
-        }
-
-        sourceBuilder.Using(helpersNamespace)
-            .AppendLine()
-            .Nullable(configuration.GlobalNullable);
+        sourceBuilder.Nullable(configuration.GlobalNullable);
 
         var namespaceDisposable = (IDisposable?)null;
 
@@ -64,14 +57,19 @@ internal static class RouteHelperClassGenerator
 
             if (routeClassNames.TryGetValue(string.Empty, out var classNames))
             {
-                sourceBuilder.AppendProperties("public static", classNames, "get", null, SourceCode.NewCtor, context.CancellationToken);
+                foreach (var (classType, className) in classNames)
+                {
+                    context.CancellationToken.ThrowIfCancellationRequested();
+
+                    sourceBuilder.AppendProperty("public static", $"global::{helpersNamespace}.{classType}", className, "get", null, SourceCode.NewCtor);
+                }
             }
 
             foreach (var areaName in areaNames)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
-                sourceBuilder.AppendProperty("public static", $"{areaName}Area", areaName, "get", null, SourceCode.NewCtor);
+                sourceBuilder.AppendProperty("public static", $"global::{areasNamespace}.{areaName}Area", areaName, "get", null, SourceCode.NewCtor);
             }
         }
 

@@ -97,7 +97,7 @@ internal struct Configuration(LanguageVersion languageVersion, bool globalNullab
     {
         var sb = new StringBuilder();
 
-        sb.Append(rootNamespace);
+        sb.Append(rootNamespace).Append('.');
         sb.Append(AreasNameSpace);
 
         return sb.ToString();

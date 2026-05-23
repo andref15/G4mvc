@@ -8,31 +8,29 @@ internal static class ControllerPartialClassGenerator
     {
         var sourceBuilder = configuration.CreateSourceBuilder();
 
-        sourceBuilder.Using(nameof(G4mvc), Namespaces.MicrosoftAspNetCoreMvc);
-
-        if (configuration.GeneratedClassNamespace is not null)
-        {
-            sourceBuilder.Using(configuration.GeneratedClassNamespace);
-        }
-
-        sourceBuilder
-            .AppendLine()
-            .Nullable(controllerContext.NullableEnabled);
+        sourceBuilder.Nullable(controllerContext.NullableEnabled);
 
         using (sourceBuilder.BeginNamespace(controllerContext.TypeSymbol.ContainingNamespace.ToDisplayString(), true))
         using (sourceBuilder.BeginClass(controllerContext.DeclarationNode.Modifiers.ToString(), controllerContext.TypeSymbol.Name))
         {
-            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"global::{configuration.GetMvcNamespace(controllerContext.Area)}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"{configuration.JsonConfig.MvcHelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
+            var helperNamespace = configuration.GeneratedClassNamespace;
+
+            if (helperNamespace is not null)
+            {
+                helperNamespace += '.';
+            }
+
+            sourceBuilder.AppendProperty($"{(configuration.JsonConfig.MakeGeneratedClassesInternal ? "private " : null)}protected", $"global::{configuration.GetMvcNamespace(controllerContext.Area)}.{controllerContext.NameWithoutSuffix}Routes.{controllerContext.NameWithoutSuffix}Views", "Views", $"get", null, $"global::{helperNamespace}{configuration.JsonConfig.MvcHelperClassName}.{(controllerContext.Area is null ? null : $"{controllerContext.Area}.")}{controllerContext.NameWithoutSuffix}.Views");
             sourceBuilder.AppendLine();
 
-            using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToAction", $"{nameof(G4mvcActionRouteValues)} route"))
+            using (sourceBuilder.BeginMethod("protected", $"global::{Namespaces.MicrosoftAspNetCoreMvc}.RedirectToRouteResult", "RedirectToAction", $"global::{nameof(G4mvc)}.{nameof(G4mvcActionRouteValues)} route"))
             {
                 sourceBuilder.AppendReturn("RedirectToRoute(route)");
             }
 
             sourceBuilder.AppendLine();
 
-            using (sourceBuilder.BeginMethod("protected", "RedirectToRouteResult", "RedirectToActionPermanent", $"{nameof(G4mvcActionRouteValues)} route"))
+            using (sourceBuilder.BeginMethod("protected", $"global::{Namespaces.MicrosoftAspNetCoreMvc}.RedirectToRouteResult", "RedirectToActionPermanent", $"global::{nameof(G4mvc)}.{nameof(G4mvcActionRouteValues)} route"))
             {
                 sourceBuilder.AppendReturn("RedirectToRoutePermanent(route)");
             }

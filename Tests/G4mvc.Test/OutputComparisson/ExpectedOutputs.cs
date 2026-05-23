@@ -21,5 +21,29 @@ internal partial class ExpectedOutputs(bool disableMvcHelperSourceGeneration, bo
     private readonly bool _excludeCss = excludeCss;
     private readonly bool _customJsName = customJsName;
 
-    public partial Dictionary<string, string> Get();
+    public Dictionary<string, string> Get()
+    {
+        var enumerable = Enumerable.Empty<KeyValuePair<string, string>>();
+
+        if (!_disableLinksHelperSourceGeneration)
+        {
+            enumerable = enumerable.Concat(GetLinksClasses());
+        }
+
+        if (!_disableMvcHelperSourceGeneration)
+        {
+            enumerable = enumerable.Concat(GetMvcClasses());
+        }
+
+        if (!_disablePageHelperSourceGeneration)
+        {
+            enumerable = enumerable.Concat(GetRazorPagesClasses());
+        }
+
+        return enumerable.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+    }
+
+    private partial IEnumerable<KeyValuePair<string, string>> GetLinksClasses();
+    private partial IEnumerable<KeyValuePair<string, string>> GetMvcClasses();
+    private partial IEnumerable<KeyValuePair<string, string>> GetRazorPagesClasses();
 }

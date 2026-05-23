@@ -1,4 +1,5 @@
 ﻿using G4mvc.Generator.Compilation;
+using System.Text;
 
 namespace G4mvc.Generator.SourceEmitters;
 
@@ -33,10 +34,7 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
 
         var mainControllerContext = controllerContexts[0];
 
-        sourceBuilder
-            .Using(nameof(G4mvc))
-            .AppendLine()
-            .Nullable(mainControllerContext.NullableEnabled);
+        sourceBuilder.Nullable(mainControllerContext.NullableEnabled);
 
         var controllerRouteClassName = $"{mainControllerContext.NameWithoutSuffix}Routes";
         AddClassNameToDictionary(controllerRouteClassNames, mainControllerContext.Area, mainControllerContext.NameWithoutSuffix, controllerRouteClassName);
@@ -130,9 +128,9 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
             var methodsGroupParameterNames = new HashSet<string>();
             actionParameterGroups.Add(actionName, methodsGroupParameterNames);
 
-            using (sourceBuilder.BeginMethod("public", nameof(G4mvcActionRouteValues), actionName))
+            using (sourceBuilder.BeginMethod("public", $"global::{nameof(G4mvc)}.{nameof(G4mvcActionRouteValues)}", actionName))
             {
-                sourceBuilder.AppendReturnCtor(nameof(G4mvcActionRouteValues), SourceCode.String(mainControllerContext.Area), SourceCode.String(mainControllerContext.NameWithoutSuffix), SourceCode.String(actionName));
+                sourceBuilder.AppendReturnCtor($"global::{nameof(G4mvc)}.{nameof(G4mvcActionRouteValues)}", SourceCode.String(mainControllerContext.Area), SourceCode.String(mainControllerContext.NameWithoutSuffix), SourceCode.String(actionName));
             }
 
             sourceBuilder.AppendLine();
@@ -161,7 +159,19 @@ internal class ControllerRouteClassGenerator(Configuration configuration)
                 }
 
                 using (nullableBlock)
-                using (sourceBuilder.BeginMethod("public", nameof(G4mvcActionRouteValues), actionName, string.Join(", ", relevantParameters.Select(p => $"{p.Symbol.Type} {p.Symbol.Name}{GetDefaultValue(p.Syntax)}"))))
+                using (sourceBuilder.BeginMethod("public", $"global::{nameof(G4mvc)}.{nameof(G4mvcActionRouteValues)}", actionName, string.Join(", ", relevantParameters.Select(p =>
+                {
+                    var sb = new StringBuilder();
+
+                    var typeName = p.Symbol.Type.ToDisplayString();
+
+                    if (typeName.Contains('.'))
+                    {
+                        sb.Append("global::");
+                    }
+
+                    return sb.Append(typeName).Append(' ').Append(p.Symbol.Name).Append(GetDefaultValue(p.Syntax));
+                }))))
                 {
                     sourceBuilder.AppendLine($"var route = {actionName}()").AppendLine();
 
