@@ -1,11 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0;net9.0;net10.0</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
+    <TargetFrameworks>netstandard2.0;net10.0;net11.0</TargetFrameworks>
+    <LangVersion>preview<!--      LATEST      --></LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <DebugType>embedded</DebugType>
+
+    
+    
+    
+    <!--      REMOVE      -->
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    
+    
+    
+    
   </PropertyGroup>
 
   <Import Project="../NuGet.Build.props" />
@@ -16,7 +26,7 @@
 
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="" />
-    <None Include="../G4mvc.png" Pack="true" PackagePath=""/>
+    <None Include="../G4mvc.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
