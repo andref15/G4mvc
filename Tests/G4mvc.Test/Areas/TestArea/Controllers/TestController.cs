@@ -20,7 +20,19 @@ public class TestController(ILogger<TestController> logger) : Controller
 #nullable restore
 
     [HttpGet]
-    public IActionResult Privacy()
+    public IActionResult Privacy(
+#if NET11_0_OR_GREATER
+#pragma warning disable IDE0060 // Remove unused parameter
+        StringSplitOptions @union
+#pragma warning restore IDE0060 // Remove unused parameter
+#endif
+        )
+    {
+        return View();
+    }
+
+    [NonAction]
+    public IActionResult Privacy2()
         => View();
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
