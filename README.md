@@ -34,7 +34,7 @@ For asyncronous controller actions, the task has to return one of these.
 Something like `public IEnumerable<string> Edit(EditViewModel viewModel)` would be ignored.
 
 #### Razor Pages
-The source generator follows the architecture defined in this article [Razor Pages architecture and concepts in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-9.0&tabs=visual-studio).
+The source generator follows the architecture defined in this article [Razor Pages architecture and concepts in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-11.0).
 
 Views will only be detected if they are in the same folder as the model. Models must end with the suffix `Model` (e.g. `IndexModel`), be inside a Namespace called Pages and derive from `Microsoft.AspNetCore.Mvc.RazorPages.PageModel`.
 If you are working with areas, the pages models have to be in a namespace following the structure `<root-namespace>.Areas.<AreaName>.Pages`.
@@ -56,7 +56,7 @@ If you are working with areas, the pages models have to be in a namespace follow
     public class OrderModel : PageModel
     { ... }
 
-Handler methods have to be named `On<http-method><handler-name?>` and may have an `Async` suffix. The return type does not matter. For more information see [Razor Pages architecture and concepts in ASP.NET Core - Multiple handlers per page](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-9.0&tabs=visual-studio#multiple-handlers-per-page)
+Handler methods have to be named `On<http-method><handler-name?>` and may have an `Async` suffix. The return type does not matter. For more information see [Razor Pages architecture and concepts in ASP.NET Core - Multiple handlers per page](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/?view=aspnetcore-11.0#multiple-handlers-per-page)
 ##### Examples
     public void OnGet()
     public void OnGetById(int id)
@@ -77,7 +77,7 @@ In case of `ExcludedStaticFileExtensions` or `ExcludedStaticFileDirectories` it'
 ### Extensions
 The [G4mvc](https://www.nuget.org/packages/G4mvc/) package provides a number of extension methods that can make using the generated route helpers a bit easier.
 You do however not have to rely on these because the `G4mvcActionRouteValues` and `G4mvcPageRouteValues` classes derive from the standard `Microsoft.AspNetCore.Routing.RouteValueDictionary`, 
-so you can use any of the methods provided by ASP.NET Core, that have an `object routeValues` parameter. An example would be the [HtmlHelper.RouteLink Method](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.viewfeatures.htmlhelper.routelink?view=aspnetcore-6.0).
+so you can use any of the methods provided by ASP.NET Core, that have an `object routeValues` parameter. An example would be the [HtmlHelper.RouteLink Method](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.viewfeatures.htmlhelper.routelink?view=aspnetcore-11.0).
 The provided extension methods are just wrappers for these methods.\
 For the generated `G4mvcContentLink` fields, you can use the `IUrlHelper.Content` extension method to get the virtual path.
 
@@ -200,10 +200,10 @@ A dictionary of additional static file paths for which links will be generated.
 This is useful when you use the `UseStaticFiles` method to serve files that are outside of the wwwroot folder. 
 The key of this dictionary is the physical path relative to the project root and the value is the request path.
 
-For the example provided in the [Microsoft Documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-7.0#serve-files-outside-of-web-root) the AdditionalStaticFilesPaths configuration would look like this:
+For the example provided in the [Microsoft Documentation](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/static-files?view=aspnetcore-11.0#serve-files-outside-of-the-web-root-directory-via-usestaticfiles) the AdditionalStaticFilesPaths configuration would look like this:
 
     "AdditionalStaticFilesPaths": {
-        "MyStaticFiles": "StaticFiles"
+        "ExtraStaticFiles": "static-files"
     }
 
 #### CustomStaticFileDirectoryAlias
