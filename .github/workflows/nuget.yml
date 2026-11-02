@@ -10,9 +10,9 @@ on:
       - 'README.md'
   
 env:
-  Major: 6
+  Major: 7
   Minor: 0
-  Patch: 5
+  Patch: 0
 
 jobs:
   Create:
@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '10.x.x'
+        dotnet-version: '11.x.x'
 
     - uses: actions/checkout@v3
     
