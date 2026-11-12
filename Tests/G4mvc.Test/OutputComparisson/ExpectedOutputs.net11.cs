@@ -562,11 +562,20 @@ internal partial class ExpectedOutputs
                 #nullable restore
 
 
-                    public global::{{nameof(G4mvc)}}.{{nameof(G4mvcActionRouteValues)}} Privacy(global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(Models)}}.{{nameof(Models.StringOrIntUnionViewModel)}} @union)
+                    public global::{{nameof(G4mvc)}}.{{nameof(G4mvcActionRouteValues)}} Privacy()
                     {
                         return new("{{nameof(Areas.TestArea)}}", "Test", "Privacy");
                     }
-
+                
+                    public global::{{nameof(G4mvc)}}.{{nameof(G4mvcActionRouteValues)}} Privacy(global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(Models)}}.{{nameof(Models.StringOrIntUnionViewModel)}} union)
+                    {
+                        var route = Privacy();
+                
+                        route["union"] = union;
+                
+                        return route;
+                    }
+                
                     public global::{{nameof(G4mvc)}}.{{nameof(G4mvcActionRouteValues)}} Error()
                     {
                         return new("{{nameof(Areas.TestArea)}}", "Test", "Error");
@@ -595,6 +604,7 @@ internal partial class ExpectedOutputs
 
                     public class PrivacyParamsClass
                     {
+                        public string union { get; } = nameof(union);
                     }
 
                     public class ErrorParamsClass

@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+#if NET11_0_OR_GREATER
+using G4mvc.Test.Models;
+#endif
 
 namespace G4mvc.Test.Areas.TestArea.Controllers;
 
@@ -23,10 +26,10 @@ public class TestController(ILogger<TestController> logger) : Controller
     public IActionResult Privacy(
 #if NET11_0_OR_GREATER
 #pragma warning disable IDE0060 // Remove unused parameter
-        StringSplitOptions @union
+        StringOrIntUnionViewModel union
 #pragma warning restore IDE0060 // Remove unused parameter
 #endif
-        )
+    )
     {
         return View();
     }

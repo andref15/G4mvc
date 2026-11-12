@@ -12,13 +12,13 @@ using System.Text.Json;
 
 namespace G4mvc.Test;
 
-internal class G4mvcSourceGeneraorTest : CSharpSourceGeneratorTest<G4mvcGenerator, DefaultVerifier>
+internal class G4mvcSourceGeneratorTest : CSharpSourceGeneratorTest<G4mvcGenerator, DefaultVerifier>
 {
     private static readonly ReferenceAssemblies _referenceAssemblies = new ReferenceAssemblies($"net{Environment.Version.Major}.0", new PackageIdentity("Microsoft.AspNetCore.App.Ref", Environment.Version.ToString(3)), Path.Combine("ref", $"net{Environment.Version.Major}.0")).AddPackages([
             new PackageIdentity("Microsoft.NETCore.App.Ref", Environment.Version.ToString(3))
         ]);
 
-    public G4mvcSourceGeneraorTest()
+    public G4mvcSourceGeneratorTest()
     {
         ReferenceAssemblies = _referenceAssemblies;
         CompilerDiagnostics = CompilerDiagnostics.Suggestions;
@@ -50,7 +50,6 @@ internal class G4mvcSourceGeneraorTest : CSharpSourceGeneratorTest<G4mvcGenerato
         await TestState.AdditionalFiles.AddCshtmlFilesAsync(rootDirectory, cancellationToken);
         await TestState.Sources.AddCsFilesAsync(rootDirectory, cancellationToken);
         TestState.GeneratedSources.AddExpectedOutputs(expectedOutputs);
-
         OptionsTransforms.Add((options) => options
             .WithChangedOption(FormattingOptions.UseTabs, LanguageNames.CSharp, false)
             .WithChangedOption(FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart)
@@ -61,4 +60,23 @@ internal class G4mvcSourceGeneraorTest : CSharpSourceGeneratorTest<G4mvcGenerato
     {
         return new CSharpCompilationOptions(OutputKind.ConsoleApplication, nullableContextOptions: NullableContextOptions.Enable);
     }
+
+    protected override ParseOptions CreateParseOptions()
+
+            => new CSharpParseOptions(
+#if NET11_0_OR_GREATER //until update is released
+                LanguageVersion.Preview
+#else
+                LanguageVersion.Default
+#endif
+                , DocumentationMode.Diagnose, SourceCodeKind.Regular, [
+#if NET10_0_OR_GREATER
+                "NET10_0_OR_GREATER",
+#if NET11_0_OR_GREATER
+                "NET11_0_OR_GREATER",
+                "NET11_0",
+#endif
+                "NET10_0",
+#endif
+            ]);
 }
