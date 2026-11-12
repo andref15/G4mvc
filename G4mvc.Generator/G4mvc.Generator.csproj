@@ -21,8 +21,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" PrivateAssets="all" />
     
-    <PackageReference Include="System.Text.Json" Version="11.0.0-rc.1.26425.128" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Encodings.Web" Version="11.0.0-rc.1.26425.128" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" Version="11.0.0" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="11.0.0" GeneratePathProperty="true" PrivateAssets="all" />
   </ItemGroup>
 
   <PropertyGroup>

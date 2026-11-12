@@ -2,26 +2,19 @@
 
   <PropertyGroup>
     <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
-    <LangVersion>preview<!--      LATEST      --></LangVersion>
+    <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
-    
-    <!--      REMOVE      -->
-    <EnablePreviewFeatures>true</EnablePreviewFeatures>
-    
-    
-    
-    
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.9.0" />
-    <PackageReference Include="MSTest" Version="4.4.1" />
+    <PackageReference Include="MSTest" Version="4.5.3" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing" Version="1.1.4" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
-    <PackageReference Include="System.Linq.AsyncEnumerable" Version="11.0.0-rc.1.26425.128" />
-    <PackageReference Include="System.Text.Json" Version="11.0.0-rc.1.26425.128" />
+    <PackageReference Include="System.Linq.AsyncEnumerable" Version="11.0.0" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0" />
+    <PackageReference Include="System.Text.Json" Version="11.0.0" />
   </ItemGroup>
 
   <ItemGroup>
