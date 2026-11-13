@@ -793,9 +793,9 @@ internal partial class ExpectedOutputs
                 {{(_classesInternal ? "internal" : "public")}} class {{_mvcClassName}}
                 {
                     //v1;
-                    public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.TestRoutes Test { get; } = new();
-                    public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.TestPartialRoutes TestPartial { get; } = new();
                     public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.SharedRoutes Shared { get; } = new();
+                    public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.TestPartialRoutes TestPartial { get; } = new();
+                    public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.TestRoutes Test { get; } = new();
                     public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas)}}.{{nameof(Areas.TestArea)}}Area {{nameof(Areas.TestArea)}} { get; } = new();
                 }
 
