@@ -16,6 +16,8 @@ env:
 
 jobs:
   Create:
+    permissions:
+      id-token: write #for NuGet/login
 
     runs-on: windows-latest
 
