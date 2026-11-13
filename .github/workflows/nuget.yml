@@ -20,11 +20,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/setup-dotnet@v4
+    - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '11.x.x'
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     
     - name: Restore dependencies
       run: dotnet restore
