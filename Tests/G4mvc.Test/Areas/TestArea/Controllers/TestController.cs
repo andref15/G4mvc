@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+#if NET11_0_OR_GREATER
+using G4mvc.Test.Models;
+#endif
 
 namespace G4mvc.Test.Areas.TestArea.Controllers;
 
@@ -20,7 +23,19 @@ public class TestController(ILogger<TestController> logger) : Controller
 #nullable restore
 
     [HttpGet]
-    public IActionResult Privacy()
+    public IActionResult Privacy(
+#if NET11_0_OR_GREATER
+#pragma warning disable IDE0060 // Remove unused parameter
+        StringOrIntUnionViewModel union
+#pragma warning restore IDE0060 // Remove unused parameter
+#endif
+    )
+    {
+        return View();
+    }
+
+    [NonAction]
+    public IActionResult Privacy2()
         => View();
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

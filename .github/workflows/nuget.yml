@@ -10,21 +10,23 @@ on:
       - 'README.md'
   
 env:
-  Major: 6
+  Major: 7
   Minor: 0
-  Patch: 5
+  Patch: 0
 
 jobs:
   Create:
+    permissions:
+      id-token: write #for NuGet/login
 
     runs-on: windows-latest
 
     steps:
-    - uses: actions/setup-dotnet@v4
+    - uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: '10.x.x'
+        dotnet-version: '11.x.x'
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
     
     - name: Restore dependencies
       run: dotnet restore
@@ -46,6 +48,12 @@ jobs:
       run: dotnet pack --no-restore -p:VersionPrefix=${{ env.Major }}.${{ env.Minor }}.${{ env.Patch }} -p:VersionSuffix=${{ env.VERSIONTAG }}.${{ github.run_number }} -p:ContinuousIntegrationBuild=true -o ./packages/
       if: ${{ github.ref_name != 'main' || github.event_name != 'workflow_dispatch' }}
       
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: andref15
+    
     - name: Push
       working-directory: packages
-      run: dotnet nuget push *.nupkg --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push *.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

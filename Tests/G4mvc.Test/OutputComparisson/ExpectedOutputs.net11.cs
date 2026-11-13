@@ -1,4 +1,4 @@
-﻿#if NET8_0
+﻿#if NET11_0
 using G4mvc.Generator.Compilation;
 
 namespace G4mvc.Test.OutputComparisson;
@@ -566,13 +566,22 @@ internal partial class ExpectedOutputs
                     {
                         return new("{{nameof(Areas.TestArea)}}", "Test", "Privacy");
                     }
+                
+                    public global::{{nameof(G4mvc)}}.{{nameof(G4mvcActionRouteValues)}} Privacy(global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(Models)}}.{{nameof(Models.StringOrIntUnionViewModel)}} union)
+                    {
+                        var route = Privacy();
+                
+                        route["union"] = union;
+                
+                        return route;
+                    }
 
                     public global::{{nameof(G4mvc)}}.{{nameof(G4mvcActionRouteValues)}} Error()
                     {
                         return new("{{nameof(Areas.TestArea)}}", "Test", "Error");
                     }
 
-                    public global::{{nameof(G4mvc)}}.{{nameof(G4mvcActionRouteValues)}} Error(global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(Areas)}}.{{nameof(Areas.TestArea)}}.Models.TestAreaErrorViewModel model)
+                    public global::{{nameof(G4mvc)}}.{{nameof(G4mvcActionRouteValues)}} Error(global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(Areas)}}.{{nameof(Areas.TestArea)}}.{{nameof(Areas.TestArea.Models)}}.{{nameof(Areas.TestArea.Models.TestAreaErrorViewModel)}} model)
                     {
                         var route = Error();
 
@@ -595,6 +604,7 @@ internal partial class ExpectedOutputs
 
                     public class PrivacyParamsClass
                     {
+                        public string union { get; } = nameof(union);
                     }
 
                     public class ErrorParamsClass
@@ -780,9 +790,9 @@ internal partial class ExpectedOutputs
                 {{(_classesInternal ? "internal" : "public")}} class {{nameof(Areas.TestArea)}}Area
                 {
                     public string Name { get; } = "{{nameof(Areas.TestArea)}}";
-                    public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.TestRoutes Test { get; } = new();
-                    public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.TestPartialRoutes TestPartial { get; } = new();
                     public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.SharedRoutes Shared { get; } = new();
+                    public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.TestPartialRoutes TestPartial { get; } = new();
+                    public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.TestRoutes Test { get; } = new();
                 }
                 
                 """);
@@ -793,9 +803,9 @@ internal partial class ExpectedOutputs
                 {{(_classesInternal ? "internal" : "public")}} class {{_mvcClassName}}
                 {
                     //v1;
-                    public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.TestRoutes Test { get; } = new();
-                    public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.TestPartialRoutes TestPartial { get; } = new();
                     public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.SharedRoutes Shared { get; } = new();
+                    public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.TestPartialRoutes TestPartial { get; } = new();
+                    public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.TestRoutes Test { get; } = new();
                     public static global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas)}}.{{nameof(Areas.TestArea)}}Area {{nameof(Areas.TestArea)}} { get; } = new();
                 }
 

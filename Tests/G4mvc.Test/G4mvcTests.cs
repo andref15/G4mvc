@@ -13,7 +13,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task DefaultOptions()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create().Build();
 
         await context.InitializeAsync(config, expectedOutputs, TestContext.CancellationToken);
@@ -24,7 +24,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_DisableMvcHelperSourceGeneration()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .DisableMvcHelperSourceGeneration()
             .Build();
@@ -37,7 +37,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_DisablePageHelperSourceGeneration()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .DisablePageHelperSourceGeneration()
             .Build();
@@ -50,7 +50,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_DisableLinksHelperSourceGeneration()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .DisableLinksHelperSourceGeneration()
             .Build();
@@ -67,7 +67,7 @@ public sealed class G4mvcTests
         const string pages = "TestRazorPages";
         const string links = "TestLinks";
 
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .WithMvcClassName(mvc)
             .WithPageHelperClassName(pages)
@@ -85,7 +85,7 @@ public sealed class G4mvcTests
     [DataRow(false, DisplayName = $"{nameof(Configuration.JsonConfig.UseProcessedPathForContentLink)} = false")]
     public async Task CustomOptions_UseVirtualPathProcessor(bool? useProcessedPathForContentLink)
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .UseVirtualPathProcessor()
             .UseVirtualPathProcessorForContentLinks(useProcessedPathForContentLink ?? true)
@@ -108,7 +108,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_MakeGeneratedClassesInternal()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .MakeGeneratedClassesInternal()
             .Build();
@@ -123,7 +123,7 @@ public sealed class G4mvcTests
     {
         const string classNamespace = $"{nameof(G4mvc)}.{nameof(Test)}.GeneratedFiles";
 
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .WithClassNamespace(classNamespace)
             .Build();
@@ -136,7 +136,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_EnableSubfoldersInViews()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .EnumerateSubDirectories()
             .Build();
@@ -149,7 +149,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_StaticFilesPath()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .UseAlternativeRoot()
             .Build();
@@ -162,7 +162,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_ExcludedStaticFileExtensions()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .ExcludeIco()
             .Build();
@@ -175,7 +175,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_ExcludedStaticFileDirectories()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .ExcludeCss()
             .Build();
@@ -188,7 +188,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_AdditionalStaticFilesPaths()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .UseAdditionalStaticFilesPath()
             .Build();
@@ -201,7 +201,7 @@ public sealed class G4mvcTests
     [TestMethod]
     public async Task CustomOptions_CustomStaticFileDirectoryAlias()
     {
-        var context = new G4mvcSourceGeneraorTest();
+        var context = new G4mvcSourceGeneratorTest();
         var (config, expectedOutputs) = ConfigAndExpectedOutputBuilder.Create()
             .UseCustomJsName()
             .Build();
