@@ -57,7 +57,7 @@ internal static class RouteHelperClassGenerator
 
             if (routeClassNames.TryGetValue(string.Empty, out var classNames))
             {
-                foreach (var (classType, className) in classNames)
+                foreach (var (classType, className) in classNames.OrderBy(cn => cn.Key))
                 {
                     context.CancellationToken.ThrowIfCancellationRequested();
 
@@ -65,7 +65,7 @@ internal static class RouteHelperClassGenerator
                 }
             }
 
-            foreach (var areaName in areaNames)
+            foreach (var areaName in areaNames.OrderBy(an => an))
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
 
