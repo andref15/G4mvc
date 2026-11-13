@@ -69,7 +69,7 @@ internal class PageRouteClassGenerator(Configuration configuration)
                     .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}MethodNames", "HttpMethods", "get", null, SourceCode.NewCtor)
                     .AppendProperty("public", $"{mainPageContext.NameWithoutSuffix}View", "View", "get", null, SourceCode.NewCtor);
 
-                var httpMethodGroups = httpMethods.GroupBy(static hm => hm.Syntax.Identifier.Text.Remove("On", "Async", StringComparison.OrdinalIgnoreCase)).ToDictionary(g => g.Key, g => g.AsEnumerable());
+                var httpMethodGroups = httpMethods.GroupBy(static hm => hm.Syntax.Identifier.Text.Remove("On", "Async", StringComparison.OrdinalIgnoreCase)).OrderBy(g => g.Key).ToDictionary(g => g.Key, g => g.AsEnumerable());
 
                 foreach (var actionName in httpMethodGroups.Keys)
                 {

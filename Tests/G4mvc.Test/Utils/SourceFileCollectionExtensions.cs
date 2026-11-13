@@ -23,19 +23,39 @@ internal static class SourceFileCollectionExtensions
 
         public async Task AddCshtmlFilesAsync(DirectoryInfo rootDirectory, CancellationToken cancellationToken)
         {
-            await foreach (var (file, content) in rootDirectory.EnumerateFilesWithStream("*.cshtml", SearchOption.AllDirectories).WithCancellation(cancellationToken))
+            var tasks = rootDirectory.EnumerateFileStreamReaders("*.cshtml", SearchOption.AllDirectories).Select(ReadFileNameAndContent(cancellationToken));
+            await foreach (var task in Task.WhenEach(tasks))
             {
-                sourceFileCollection.Add((file.FullName, await content.ReadToEndAsync(cancellationToken)));
+                var (fileInfo, content) = await task;
+                sourceFileCollection.Add((fileInfo.FullName, content));
             }
         }
 
         public async Task AddCsFilesAsync(DirectoryInfo rootDirectory, CancellationToken cancellationToken)
         {
-            await foreach (var (file, content) in rootDirectory.EnumerateFilesWithStream("*.cs", SearchOption.AllDirectories))
+            var tasks = rootDirectory.EnumerateFileStreamReaders("*.cs", SearchOption.AllDirectories).Select(ReadFileNameAndContent(cancellationToken));
+            await foreach (var task in Task.WhenEach(tasks))
             {
-                var text = SourceText.From(await content.ReadToEndAsync(cancellationToken), Encoding.UTF8);
-                sourceFileCollection.Add((file.FullName, text));
+                var (fileInfo, content) = await task;
+                var text = SourceText.From(content, Encoding.UTF8);
+                sourceFileCollection.Add((fileInfo.FullName, text));
             }
+        }
+
+        private static Func<FileStreamReader, Task<(FileInfo File, string Content)>> ReadFileNameAndContent(CancellationToken cancellationToken)
+        {
+            return async reader =>
+            {
+                try
+                {
+                    var content = await reader.ReadToEndAsync(cancellationToken);
+                    return (reader.FileInfo, content);
+                }
+                finally
+                {
+                    reader?.Dispose();
+                }
+            };
         }
     }
 }

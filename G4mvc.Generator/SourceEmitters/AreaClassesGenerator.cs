@@ -25,7 +25,7 @@ internal static class AreaClassesGenerator
             {
                 sourceBuilder.AppendProperty("public", "string", "Name", "get", null, SourceCode.String(areaName));
 
-                foreach (var (classType, className) in classNames)
+                foreach (var (classType, className) in classNames.OrderBy(c => c.Key))
                 {
                     sourceBuilder.AppendProperty("public", $"global::{getHelperNamespace(areaName)}.{classType}", className, "get", null, "new()");
                 }

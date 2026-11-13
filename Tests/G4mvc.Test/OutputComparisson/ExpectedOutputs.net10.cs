@@ -780,9 +780,9 @@ internal partial class ExpectedOutputs
                 {{(_classesInternal ? "internal" : "public")}} class {{nameof(Areas.TestArea)}}Area
                 {
                     public string Name { get; } = "{{nameof(Areas.TestArea)}}";
-                    public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.TestRoutes Test { get; } = new();
-                    public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.TestPartialRoutes TestPartial { get; } = new();
                     public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.SharedRoutes Shared { get; } = new();
+                    public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.TestPartialRoutes TestPartial { get; } = new();
+                    public global::{{nameof(G4mvc)}}.{{nameof(Test)}}.{{nameof(G4mvc)}}.Mvc.{{nameof(Areas.TestArea)}}.TestRoutes Test { get; } = new();
                 }
                 
                 """);
